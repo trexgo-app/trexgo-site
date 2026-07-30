@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ЭТрН для перевозчиков — подписание с телефона за 1 тап | TrexGo</title>
+  <meta name="description" content="С 1 сентября 2026 ЭТрН обязательна. Подключение за 1 день, документ от 8 ₽, подпись с телефона — без КриптоПро и смены оператора ЭДО. Перезвоним за 15 минут" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://trexgo.ru/perevozchiki" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ЭТрН для перевозчиков — подписание с телефона за 1 тап | TrexGo" />
+  <meta property="og:description" content="Документы на рейс — одним тапом с телефона. Без КриптоПро, без интеграций, без смены оператора ЭДО. Подключение за 1 день, документ от 8 ₽." />
+  <meta property="og:url" content="https://trexgo.ru/perevozchiki" />
+  <meta property="og:locale" content="ru_RU" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://trexgo.ru/#org",
+        "name": "TrexGo",
+        "url": "https://trexgo.ru",
+        "telephone": "+79850757675",
+        "description": "Сервис электронных транспортных накладных для перевозчиков. Аккредитованный оператор ГИС ЭПД.",
+        "areaServed": "RU"
+      },
+      {
+        "@type": "Product",
+        "name": "ЭТрН для перевозчиков TrexGo",
+        "description": "Подписание электронных транспортных накладных с телефона. Без КриптоПро, без интеграций, без смены оператора ЭДО.",
+        "offers": {
+          "@type": "Offer",
+          "price": "8",
+          "priceCurrency": "RUB",
+          "description": "от 8 ₽ за документ"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "На складе или трассе нет интернета — как подписывать и показывать документы?",
+            "acceptedAnswer": {"@type": "Answer", "text": "QR формируется при подписании и сохраняется в приложении — на выезде и при проверке он читается офлайн. Если на площадке связи нет вовсе — поможем настроить резервный канал."}
+          },
+          {
+            "@type": "Question",
+            "name": "Подписывает логист или водитель, а не директор — это законно?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Да: сотруднику оформляется доверенность (МЧД) и личная УКЭП — и дальше подписывает тот, кто фактически на погрузке. Поможем оформить и то и другое."}
+          },
+          {
+            "@type": "Question",
+            "name": "У нас 1С/Контур — придётся что-то менять или интегрировать?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Нет. TrexGo — отдельное приложение для документов на рейс. Ваша учётная система и ваш оператор ЭДО остаются как есть."}
+          },
+          {
+            "@type": "Question",
+            "name": "У контрагентов другой оператор ЭДО — документы дойдут?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Да, работаем со всеми операторами, роуминг настроен."}
+          },
+          {
+            "@type": "Question",
+            "name": "Сколько времени занимает подключение?",
+            "acceptedAnswer": {"@type": "Answer", "text": "День. Заявка → звонок за 15 минут → настроим компанию за вас → первый рейс проходим вместе. Если нужно выпустить УКЭП — плюс 1–2 дня на удостоверяющий центр."}
+          },
+          {
+            "@type": "Question",
+            "name": "Что будет после того, как я оставлю заявку?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Один звонок за 15 минут в рабочее время: покажем сервис, ответим на вопросы, договоримся о подключении. Никаких рассылок и «прогревов»."}
+          },
+          {
+            "@type": "Question",
+            "name": "Сколько это стоит?",
+            "acceptedAnswer": {"@type": "Answer", "text": "От 8 ₽ за документ, пакетами, цены с НДС. Платите только за документы — без абонентской платы за «платформу»."}
+          },
+          {
+            "@type": "Question",
+            "name": "А если пока работать по-старому?",
+            "acceptedAnswer": {"@type": "Answer", "text": "С 1 сентября 2026 ЭТрН обязательна и проверяется. Штраф — до 100 000 ₽, плюс риск остановки рейса при проверке. Чем ближе к сентябрю, тем длиннее очереди на выпуск подписей."}
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* ===== Page-specific: /perevozchiki ===== */
+
+    /* --- Sticky header --- */
+    .pv-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(252, 248, 242, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(197, 192, 177, 0.2);
+      height: 64px;
+      transition: transform 0.25s ease;
+    }
+    .pv-nav.hidden { transform: translateY(-100%); }
+    .pv-nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .pv-anchors { display: flex; gap: 24px; list-style: none; }
+    .pv-anchors a {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      text-decoration: none;
+    }
+    .pv-anchors a:hover { color: var(--orange); }
+    .pv-nav-right { display: flex; align-items: center; gap: 14px; }
+    .pv-deadline-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a6400;
+      background: #fdf3d7;
+      border-radius: 20px;
+      padding: 6px 12px;
+      white-space: nowrap;
+    }
+
+    /* --- Hero --- */
+    .pv-hero {
+      padding: 72px 0 0;
+      background: rgba(254, 252, 249, 0.5);
+      overflow: hidden;
+    }
+    .pv-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 48px;
+    }
+    .pv-hero-content { padding-bottom: 72px; }
+    .pv-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: #ede8de;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--charcoal);
+      letter-spacing: 0.2px;
+      margin-bottom: 28px;
+    }
+    .pv-kicker .dot {
+      width: 6px; height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    .pv-h1 {
+      font-size: clamp(36px, 4.6vw, 60px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.5px;
+      color: var(--black);
+      margin-bottom: 22px;
+    }
+    .pv-h1 em { color: var(--orange); font-style: normal; }
+    .pv-sub {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--charcoal);
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+    .pv-microtrust {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 14px;
+    }
+    .pv-secondary-link {
+      display: inline-block;
+      margin-top: 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      text-decoration: none;
+      border-bottom: 1px solid var(--sand);
+    }
+    .pv-secondary-link:hover { color: var(--orange); border-color: var(--orange); }
+
+    /* --- Phone mockup --- */
+    .pv-phone-wrap { display: flex; justify-content: center; align-self: end; width: 100%; }
+    .pv-phone {
+      width: 300px;
+      margin: 0 auto;
+      background: var(--black);
+      border-radius: 36px 36px 0 0;
+      padding: 14px 12px 0;
+      box-shadow: 0 24px 60px rgba(32, 21, 21, 0.18);
+    }
+    .pv-phone-screen {
+      background: #fff;
+      border-radius: 24px 24px 0 0;
+      min-height: 420px;
+      padding: 20px 16px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pv-app-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; }
+    .pv-route-card {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .pv-route-cities { font-size: 16px; font-weight: 800; color: var(--black); }
+    .pv-route-meta { font-size: 11px; color: var(--gray); margin-top: 4px; }
+    .pv-sign-btn {
+      display: block;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font);
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .pv-tap-dot {
+      position: absolute;
+      right: 28px; top: 50%;
+      width: 28px; height: 28px;
+      margin-top: -14px;
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      opacity: 0;
+      animation: pv-tap 5s ease-in-out infinite;
+    }
+    @keyframes pv-tap {
+      0%, 10% { opacity: 0; transform: scale(1.4); }
+      16% { opacity: 1; transform: scale(0.85); }
+      24% { opacity: 0; transform: scale(1.2); }
+      100% { opacity: 0; }
+    }
+    .pv-signed {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1d8a3f;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: pv-signed 5s ease-in-out infinite;
+    }
+    @keyframes pv-signed {
+      0%, 26% { opacity: 0; }
+      36%, 100% { opacity: 1; }
+    }
+    .pv-qr-block {
+      text-align: center;
+      opacity: 0;
+      animation: pv-qr 5s ease-in-out infinite;
+    }
+    @keyframes pv-qr {
+      0%, 40% { opacity: 0; transform: translateY(8px); }
+      52%, 100% { opacity: 1; transform: translateY(0); }
+    }
+    .pv-qr-note { font-size: 11px; color: var(--gray); margin-top: 8px; }
+
+    /* --- Trust bar --- */
+    .pv-trust { padding: 36px 0; border-bottom: 1px solid rgba(197,192,177,0.25); }
+    .pv-trust-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .pv-trust-press { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .pv-trust-label { font-size: 12px; color: var(--gray); font-weight: 600; }
+    .pv-trust-press img { height: 26px; width: auto; display: block; opacity: 0.75; border-radius: 6px; }
+    .pv-trust-press a:hover img { opacity: 1; }
+    .pv-trust-nums { display: flex; gap: 32px; }
+    .pv-trust-num { font-size: 20px; font-weight: 900; color: var(--black); }
+    .pv-trust-num span { display: block; font-size: 11px; font-weight: 500; color: var(--gray); margin-top: 2px; }
+
+    /* --- Pain cards (Знакомая ситуация) --- */
+    .pv-pain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .pv-pain-card {
+      background: #f4f1ea;
+      border-radius: 16px;
+      padding: 28px 32px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--charcoal);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .pv-pain-card svg { flex-shrink: 0; color: var(--gray); margin-top: 2px; }
+    .pv-pain-outro {
+      margin-top: 28px;
+      font-size: 16px;
+      color: var(--charcoal);
+      max-width: 640px;
+    }
+
+    /* --- Как проходит рейс --- */
+    .pv-trip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .pv-trip-steps { display: flex; flex-direction: column; gap: 12px; }
+    .pv-trip-step {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 26px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .pv-trip-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--cream);
+      color: var(--orange);
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pv-trip-step h3 { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .pv-trip-step p { font-size: 14px; color: var(--gray); line-height: 1.5; }
+    .pv-trip-note { font-size: 14px; color: var(--gray); margin-top: 20px; }
+
+    /* --- Что не придётся делать --- */
+    .pv-not-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .pv-not-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px 32px;
+    }
+    .pv-not-card .strike {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pv-not-card .strike::before {
+      content: '';
+      display: block;
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      background-color: var(--orange);
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain; mask-size: contain;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    }
+    .pv-not-card p { font-size: 14px; color: var(--charcoal); line-height: 1.6; }
+
+    /* --- Дедлайн-блок --- */
+    .pv-deadline { padding: 80px 0; background: var(--black); }
+    .pv-deadline .section-heading { color: var(--cream); }
+    .pv-deadline .label-upper { color: #e8b64c; }
+    .pv-risk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .pv-risk-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 30px 32px;
+    }
+    .pv-risk-num { font-size: 30px; font-weight: 900; color: #e8b64c; margin-bottom: 10px; letter-spacing: -1px; }
+    .pv-risk-card h3 { font-size: 16px; font-weight: 700; color: var(--cream); margin-bottom: 6px; }
+    .pv-risk-card p { font-size: 14px; color: var(--sand); line-height: 1.6; }
+    .pv-timeline { margin-bottom: 40px; }
+    .pv-timeline-track {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      padding-top: 14px;
+    }
+    .pv-timeline-track::before {
+      content: '';
+      position: absolute;
+      top: 19px; left: 6px; right: 6px;
+      height: 2px;
+      background: rgba(197,192,177,0.3);
+    }
+    .pv-tl-point { flex: 1; position: relative; padding-right: 16px; }
+    .pv-tl-point::before {
+      content: '';
+      display: block;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--sand);
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .pv-tl-point.now::before { background: var(--orange); }
+    .pv-tl-point.danger::before { background: #e8b64c; }
+    .pv-tl-point b { display: block; font-size: 14px; color: var(--cream); margin-bottom: 4px; }
+    .pv-tl-point span { font-size: 12px; color: var(--sand); line-height: 1.5; display: block; max-width: 240px; }
+    .pv-deadline-cta { text-align: center; }
+    .pv-deadline-cta p { font-size: 16px; color: var(--sand); margin-bottom: 24px; }
+
+    /* --- Подключение (степпер) --- */
+    .pv-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .pv-step-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .pv-step-time { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--orange); margin-bottom: 12px; }
+    .pv-step-card h3 { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 6px; }
+    .pv-step-card p { font-size: 13px; color: var(--gray); line-height: 1.55; }
+    .pv-need-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .pv-need-col {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 26px 30px;
+    }
+    .pv-need-col h4 { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 10px; }
+    .pv-need-col ul { list-style: none; }
+    .pv-need-col li {
+      font-size: 14px;
+      color: var(--charcoal);
+      padding: 5px 0 5px 22px;
+      position: relative;
+    }
+    .pv-need-col li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10px;
+      width: 13px; height: 13px;
+      background-color: var(--orange);
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain; mask-size: contain;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    }
+
+    /* --- Про подпись --- */
+    .pv-sign-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .pv-sign-card { background: #fff; border-radius: 16px; padding: 30px 32px; }
+    .pv-sign-card h3 { font-size: 16px; font-weight: 800; color: var(--black); margin-bottom: 8px; }
+    .pv-sign-card p { font-size: 14px; color: var(--charcoal); line-height: 1.6; }
+    .pv-sign-intro { font-size: 15px; color: var(--charcoal); max-width: 640px; margin-bottom: 32px; }
+
+    /* --- Кому подходит --- */
+    .pv-fit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .pv-fit-card { background: #fff; border-radius: 16px; padding: 32px; }
+    .pv-fit-card h3 { font-size: 17px; font-weight: 800; color: var(--black); margin: 14px 0 8px; }
+    .pv-fit-card p { font-size: 14px; color: var(--charcoal); line-height: 1.6; }
+    .pv-fit-icon {
+      width: 50px; height: 50px;
+      background: var(--cream);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+    }
+
+    /* --- Финальный CTA --- */
+    .pv-final { padding: 80px 0; background: var(--black); }
+    .pv-final-box { max-width: 640px; margin: 0 auto; text-align: center; }
+    .pv-final h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      color: var(--cream);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .pv-final-pic { font-size: 15px; color: var(--sand); margin-bottom: 8px; }
+    .pv-final-sub { font-size: 15px; color: var(--sand); margin-bottom: 36px; line-height: 1.6; }
+    .pv-final .form-row { justify-content: center; }
+    .pv-final-msngrs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .pv-final-msngrs span { font-size: 13px; color: var(--sand); align-self: center; }
+
+    /* --- Mobile sticky bar --- */
+    .pv-sticky-bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 90;
+      display: none;
+      gap: 10px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(252, 248, 242, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(197,192,177,0.3);
+      transform: translateY(110%);
+      transition: transform 0.25s ease;
+    }
+    .pv-sticky-bar.visible { transform: translateY(0); }
+    .pv-sticky-bar .btn-orange { flex: 1; justify-content: center; }
+    .pv-sticky-bar .btn-whatsapp { width: 48px; height: 48px; }
+
+    /* --- Responsive --- */
+    @media (max-width: 960px) {
+      .pv-anchors { display: none; }
+      .pv-hero-inner { grid-template-columns: 1fr; gap: 32px; }
+      .pv-hero-content { padding-bottom: 0; }
+      .pv-phone-wrap { padding-top: 8px; }
+      .pv-trip-grid { grid-template-columns: 1fr; }
+      .pv-steps-grid { grid-template-columns: 1fr 1fr; }
+      .pv-risk-grid { grid-template-columns: 1fr; }
+      .pv-fit-grid { grid-template-columns: 1fr; }
+      .pv-trust-inner { flex-direction: column; align-items: center; }
+      .pv-trust-press { justify-content: center; }
+      .pv-trust-nums { justify-content: center; width: 100%; text-align: center; }
+    }
+    @media (max-width: 768px) {
+      .pv-nav-inner { padding: 0 20px; }
+      .pv-deadline-badge { display: none; }
+      .pv-hero { padding-top: 48px; }
+      .pv-hero-inner { padding: 0 20px; }
+      .pv-pain-grid { grid-template-columns: 1fr; }
+      .pv-not-grid { grid-template-columns: 1fr; }
+      .pv-sign-grid { grid-template-columns: 1fr; }
+      .pv-need-grid { grid-template-columns: 1fr; }
+      .pv-steps-grid { grid-template-columns: 1fr; }
+      .pv-timeline-track { flex-direction: column; gap: 24px; padding-top: 0; padding-left: 20px; }
+      .pv-timeline-track::before { display: none; }
+      .pv-tl-point::before { position: absolute; left: -20px; top: 4px; margin-bottom: 0; }
+      .pv-trust-inner { flex-direction: column; align-items: center; }
+      .pv-trust-press { justify-content: center; }
+      .pv-trust-nums { justify-content: center; width: 100%; text-align: center; }
+      .pv-sticky-bar { display: flex; }
+      body { padding-bottom: 76px; }
+    }
+  </style>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,"script","https://mc.yandex.ru/metrika/tag.js?id=110073510", "ym");
+
+    ym(110073510, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110073510" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</head>
+<body>
+
+<!-- [0] Sticky header -->
+<nav class="pv-nav" id="pvNav">
+  <div class="pv-nav-inner">
+    <a href="perevozchiki.html" class="nav-logo">Trex<span>Go</span></a>
+    <ul class="pv-anchors">
+      <li><a href="#trip">Как работает</a></li>
+      <li><a href="#connect">Подключение</a></li>
+      <li><a href="#pricing">Тарифы</a></li>
+      <li><a href="#faq">Вопросы</a></li>
+    </ul>
+    <div class="pv-nav-right">
+      <span class="pv-deadline-badge" id="deadlineBadge">До обязательной ЭТрН: — дней</span>
+      <a href="tel:+79850757675" class="nav-phone">+7 985 075-76-75</a>
+      <a href="#lead" class="btn-nav-cta">Оставить заявку</a>
+    </div>
+  </div>
+</nav>
+
+<!-- [1] Hero -->
+<section class="pv-hero">
+  <div class="pv-hero-inner">
+    <div class="pv-hero-content">
+      <div class="pv-kicker"><span class="dot"></span> С 1 сентября 2026 ЭТрН обязательна для всех перевозчиков</div>
+      <h1 class="pv-h1">Документы на рейс — <em>одним тапом</em> с телефона</h1>
+      <p class="pv-sub">TrexGo подписывает ЭТрН с любым оператором ЭДО — без КриптоПро, без интеграции с 1С и без изменения ваших процессов. Подключение за 1 день, документ от 8 ₽.</p>
+      <div class="hero-actions">
+        <a href="#lead" class="btn btn-orange btn-lg">Оставить заявку</a>
+        <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+        <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+          <img src="maxicon.webp" alt="Max" />
+        </a>
+      </div>
+      <p class="pv-microtrust">Перезвоним за 15 минут · Покажем на вашем первом рейсе · Без обязательств</p>
+      <a href="#trip" class="pv-secondary-link">Посмотреть, как проходит рейс ↓</a>
+    </div>
+    <div class="pv-phone-wrap">
+      <div class="pv-phone">
+        <div class="pv-phone-screen">
+          <div class="pv-app-title">TrexGo · Рейс № 4821</div>
+          <div class="pv-route-card">
+            <div class="pv-route-cities">Москва → Тверь</div>
+            <div class="pv-route-meta">КАМАЗ М426ОР 177 · Иванов С. · сегодня, 08:40</div>
+          </div>
+          <button class="pv-sign-btn" type="button" tabindex="-1">Подписать<span class="pv-tap-dot"></span></button>
+          <div class="pv-signed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Документ подписан
+          </div>
+          <div class="pv-qr-block">
+            <svg width="120" height="120" viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg"><rect width="29" height="29" fill="#fff"/><path fill="#201515" d="M0 0h7v7H0zM2 2h3v3H2zM22 0h7v7h-7zM24 2h3v3h-3zM0 22h7v7H0zM2 24h3v3H2zM9 0h2v2H9zM13 0h2v3h-2zM17 0h1v4h-1zM19 2h2v2h-2zM9 3h1v3H9zM11 4h2v2h-2zM15 4h2v1h-2zM18 5h2v2h-2zM0 9h2v2H0zM3 9h2v1H3zM6 9h1v3H6zM8 8h2v2H8zM12 8h1v2h-1zM14 9h3v1h-3zM20 8h2v2h-2zM24 8h1v2h-1zM26 9h3v1h-3zM1 12h2v2H1zM4 13h2v1H4zM8 11h1v4H8zM10 12h3v2h-3zM15 12h2v2h-2zM18 12h2v1h-2zM21 11h2v3h-2zM25 12h2v2h-2zM28 12h1v2h-1zM0 15h1v3H0zM2 16h3v1H2zM6 15h2v2H6zM9 16h2v2H9zM12 15h2v2h-2zM16 15h1v3h-1zM18 16h2v2h-2zM22 15h2v1h-2zM25 15h1v3h-1zM27 16h2v2h-2zM8 19h2v2H8zM11 19h1v3h-1zM13 19h3v2h-3zM17 20h2v1h-2zM20 19h2v2h-2zM23 19h1v3h-1zM26 19h3v2h-3zM9 22h1v3H9zM12 23h2v2h-2zM15 22h2v2h-2zM18 23h2v1h-2zM21 23h2v2h-2zM24 22h2v2h-2zM27 23h2v2h-2zM9 26h3v2H9zM14 26h1v3h-1zM16 27h2v2h-2zM19 26h2v2h-2zM22 26h2v1h-2zM25 27h3v2h-3z"/></svg>
+            <div class="pv-qr-note">QR читается даже без интернета</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [2] Trust bar -->
+<div class="pv-trust">
+  <div class="container">
+    <div class="pv-trust-inner">
+      <div class="pv-trust-press">
+        <span class="pv-trust-label">Про нас пишут:</span>
+        <a href="https://vc.ru/id252775" target="_blank" rel="noopener"><img src="logos/vc.jpg" alt="vc.ru" /></a>
+        <a href="https://dzen.ru/a/ajqS9O56aC2rqtTJ" target="_blank" rel="noopener"><img src="logos/dzen.png" alt="Дзен" /></a>
+        <a href="https://tenchat.ru/0140290" target="_blank" rel="noopener"><img src="logos/tenchat.png" alt="TenChat" /></a>
+        <a href="https://www.sostav.ru/blogs/291596" target="_blank" rel="noopener"><img src="logos/sblogs.png" alt="Sostav" /></a>
+        <a href="https://www.klerk.ru/user/2699801/696905/" target="_blank" rel="noopener"><img src="logos/klerk.png" alt="Клерк" /></a>
+      </div>
+      <div class="pv-trust-nums">
+        <div class="pv-trust-num">от 8 ₽<span>за документ</span></div>
+        <div class="pv-trust-num">1 день<span>подключение</span></div>
+        <div class="pv-trust-num">24/7<span>поддержка</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- [3] Знакомая ситуация -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Про ваш рабочий день</span>
+      <h2 class="section-heading">Знакомая ситуация?</h2>
+    </div>
+    <div class="pv-pain-grid">
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+        Машина стоит под погрузкой, а подписать некому — ответственный далеко от компьютера.
+      </div>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M8.5 16.5a5 5 0 0 1 5.9-.87M5 12.55a11 11 0 0 1 5.17-2.39M1.42 9a16 16 0 0 1 5.02-3.05M10.71 5.05A16 16 0 0 1 22.58 9M16.85 11.25a10.95 10.95 0 0 1 2.17 1.68M12 20h.01"/></svg>
+        На складе или в промзоне нет интернета ровно тогда, когда нужно.
+      </div>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/></svg>
+        Всё держится на звонках: кто где, кому диктовать, кто подпишет.
+      </div>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+        Планы поменялись в последний момент — а документы под это не подстроены.
+      </div>
+    </div>
+    <p class="pv-pain-outro">Так происходит потому, что процесс спроектирован под чужую учётную систему, а не под рабочий день перевозчика.</p>
+  </div>
+</section>
+
+<!-- [4] Как проходит рейс -->
+<section class="section" id="trip">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Как это выглядит на практике</span>
+      <h2 class="section-heading">Весь рейс — четыре тапа</h2>
+    </div>
+    <div class="pv-trip-grid">
+      <div class="pv-trip-steps">
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">1</div>
+          <div>
+            <h3>Открываете TrexGo</h3>
+            <p>Рейс уже в телефоне: машина, водитель, маршрут.</p>
+          </div>
+        </div>
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">2</div>
+          <div>
+            <h3>Тап на погрузке</h3>
+            <p>Документ подписан. Подписывает тот, кто стоит на погрузке.</p>
+          </div>
+        </div>
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">3</div>
+          <div>
+            <h3>QR-код готов</h3>
+            <p>Читается даже без интернета на площадке.</p>
+          </div>
+        </div>
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">4</div>
+          <div>
+            <h3>Тап на разгрузке</h3>
+            <p>Рейс закрыт. Документы уже в ГИС ЭПД.</p>
+          </div>
+        </div>
+        <p class="pv-trip-note">Ничего не нужно печатать, дублировать в учётную систему или диктовать по телефону.</p>
+      </div>
+      <div class="pv-phone-wrap">
+        <div class="pv-phone" style="border-radius:36px; padding-bottom:14px">
+          <div class="pv-phone-screen" style="border-radius:24px; min-height:400px">
+            <div class="pv-app-title">TrexGo · Рейс № 4822</div>
+            <div class="pv-route-card">
+              <div class="pv-route-cities">Тверь → Москва</div>
+              <div class="pv-route-meta">Валдай А312ТК 69 · Петров Н. · сегодня, 14:10</div>
+            </div>
+            <div class="pv-signed" style="animation:none; opacity:1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Погрузка подписана · 14:12
+            </div>
+            <div class="pv-signed" style="animation:none; opacity:1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Разгрузка подписана · 17:40
+            </div>
+            <div class="pv-qr-block" style="animation:none; opacity:1; margin-top:12px">
+              <svg width="110" height="110" viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg"><rect width="29" height="29" fill="#fff"/><path fill="#201515" d="M0 0h7v7H0zM2 2h3v3H2zM22 0h7v7h-7zM24 2h3v3h-3zM0 22h7v7H0zM2 24h3v3H2zM9 0h2v2H9zM13 0h2v3h-2zM17 0h1v4h-1zM19 2h2v2h-2zM9 3h1v3H9zM11 4h2v2h-2zM15 4h2v1h-2zM18 5h2v2h-2zM0 9h2v2H0zM3 9h2v1H3zM6 9h1v3H6zM8 8h2v2H8zM12 8h1v2h-1zM14 9h3v1h-3zM20 8h2v2h-2zM24 8h1v2h-1zM26 9h3v1h-3zM1 12h2v2H1zM4 13h2v1H4zM8 11h1v4H8zM10 12h3v2h-3zM15 12h2v2h-2zM18 12h2v1h-2zM21 11h2v3h-2zM25 12h2v2h-2zM28 12h1v2h-1zM0 15h1v3H0zM2 16h3v1H2zM6 15h2v2H6zM9 16h2v2H9zM12 15h2v2h-2zM16 15h1v3h-1zM18 16h2v2h-2zM22 15h2v1h-2zM25 15h1v3h-1zM27 16h2v2h-2zM8 19h2v2H8zM11 19h1v3h-1zM13 19h3v2h-3zM17 20h2v1h-2zM20 19h2v2h-2zM23 19h1v3h-1zM26 19h3v2h-3zM9 22h1v3H9zM12 23h2v2h-2zM15 22h2v2h-2zM18 23h2v1h-2zM21 23h2v2h-2zM24 22h2v2h-2zM27 23h2v2h-2zM9 26h3v2H9zM14 26h1v3h-1zM16 27h2v2h-2zM19 26h2v2h-2zM22 26h2v1h-2zM25 27h3v2h-3z"/></svg>
+              <div class="pv-qr-note">Рейс закрыт · документы в ГИС ЭПД</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [5] Что не придётся делать -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Без подвоха</span>
+      <h2 class="section-heading">Что вам НЕ придётся делать</h2>
+    </div>
+    <div class="pv-not-grid">
+      <div class="pv-not-card">
+        <div class="strike">Менять оператора ЭДО</div>
+        <p>Работаем со всеми операторами: документы доходят, где бы ни были ваши партнёры.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Ставить КриптоПро</div>
+        <p>Подпись — с телефона. Для УКЭП есть NFC-брелок: приложили к телефону, как карту на кассе, — документ подписан.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Трогать 1С или учётную систему</div>
+        <p>TrexGo — отдельное приложение для документов на рейс. Ваша учётка остаётся как есть.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Менять процессы и переучивать людей</div>
+        <p>Водителю приходит push — он делает один тап. Поменялся водитель, машина или маршрут — правка в пару тапов, а не новый комплект документов.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Следить за документами вручную</div>
+        <p>Пришёл документ на подпись — придёт уведомление.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [6] Что будет, если ничего не делать -->
+<section class="pv-deadline">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Цена бездействия</span>
+      <h2 class="section-heading">Что будет, если оставить как есть</h2>
+    </div>
+    <div class="pv-risk-grid">
+      <div class="pv-risk-card">
+        <div class="pv-risk-num">до 100 000 ₽</div>
+        <h3>Штраф</h3>
+        <p>За перевозку без ЭТрН, когда она обязательна.</p>
+      </div>
+      <div class="pv-risk-card">
+        <div class="pv-risk-num">Рейс стоит</div>
+        <h3>Остановка при проверке</h3>
+        <p>Машина стоит, груз ждёт, клиент нервничает.</p>
+      </div>
+      <div class="pv-risk-card">
+        <div class="pv-risk-num">Август</div>
+        <h3>Время очередей</h3>
+        <p>Тысячи компаний будут подключаться в последние недели: УЦ, выпуск подписей и поддержка будут перегружены.</p>
+      </div>
+    </div>
+    <div class="pv-timeline">
+      <div class="pv-timeline-track">
+        <div class="pv-tl-point now">
+          <b>Сегодня</b>
+          <span>Свободные слоты подключения. Подключение в TrexGo занимает 1 день.</span>
+        </div>
+        <div class="pv-tl-point danger">
+          <b>Август</b>
+          <span>Пик очередей: выпуск УКЭП и МЧД лучше не оставлять на последнюю неделю.</span>
+        </div>
+        <div class="pv-tl-point danger">
+          <b>1 сентября 2026</b>
+          <span>Обязательность и проверки для всех перевозчиков.</span>
+        </div>
+      </div>
+    </div>
+    <div class="pv-deadline-cta">
+      <p>Подключитесь сейчас — 1 сентября встретите спокойно.</p>
+      <a href="#lead" class="btn btn-orange btn-lg">Оставить заявку</a>
+    </div>
+  </div>
+</section>
+
+<!-- [7] Как проходит подключение -->
+<section class="section" id="connect">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Подключение</span>
+      <h2 class="section-heading">От заявки до первого рейса — 1 день</h2>
+    </div>
+    <div class="pv-steps-grid">
+      <div class="pv-step-card">
+        <div class="pv-step-time">15 минут</div>
+        <h3>Вы оставляете заявку</h3>
+        <p>Перезвоним в течение 15 минут в рабочее время.</p>
+      </div>
+      <div class="pv-step-card">
+        <div class="pv-step-time">День 1</div>
+        <h3>Настраиваем за вас</h3>
+        <p>Менеджер заводит компанию, водителей и машины. Если нет УКЭП или МЧД — <a href="#signature" style="color:var(--orange)">поможем оформить</a> (обычно 1–2 дня в аккредитованном УЦ).</p>
+      </div>
+      <div class="pv-step-card">
+        <div class="pv-step-time">День 1</div>
+        <h3>Первый рейс вместе</h3>
+        <p>Проходим ваш реальный рейс на тестовом контуре, отвечаем на вопросы.</p>
+      </div>
+      <div class="pv-step-card">
+        <div class="pv-step-time">Дальше</div>
+        <h3>Работаете сами</h3>
+        <p>Поддержка 24/7 остаётся на связи.</p>
+      </div>
+    </div>
+    <div class="pv-need-grid">
+      <div class="pv-need-col">
+        <h4>Что нужно от компании</h4>
+        <ul>
+          <li>ИНН и реквизиты</li>
+          <li>Список водителей и машин</li>
+          <li>УКЭП подписанта — нет, оформим</li>
+        </ul>
+      </div>
+      <div class="pv-need-col">
+        <h4>Что нужно от водителя</h4>
+        <ul>
+          <li>Телефон с приложением</li>
+          <li>Одна минута на первое подписание. Всё.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [9] Тарифы -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Тарифы</span>
+      <h2 class="section-heading">Платите только за документы</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-label">Старт</div>
+        <div class="price-amount">8 ₽</div>
+        <div class="price-per">за документ · пакет 500 шт</div>
+        <p class="price-desc">Малому парку и ИП, только начинающим работу с электронными документами</p>
+        <ul class="price-features">
+          <li class="price-feature">500 документов в пакете</li>
+          <li class="price-feature">Приложение для водителей</li>
+          <li class="price-feature">Подпись УКЭП и простой ЭП</li>
+          <li class="price-feature">Хранение в ГИС ЭПД</li>
+          <li class="price-feature">Поддержка 24/7</li>
+          <li class="price-feature">Неиспользованные документы переносятся</li>
+        </ul>
+        <a href="#lead" class="btn btn-dark" style="width:100%;justify-content:center">Оставить заявку</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-label">Бизнес · Популярный</div>
+        <div class="price-amount">7 ₽</div>
+        <div class="price-per">за документ · пакет 2 000 шт</div>
+        <p class="price-desc">Компаниям со стабильным грузопотоком</p>
+        <ul class="price-features">
+          <li class="price-feature">2 000 документов в пакете</li>
+          <li class="price-feature">Приложение для водителей</li>
+          <li class="price-feature">Подпись УКЭП и простой ЭП</li>
+          <li class="price-feature">Хранение в ГИС ЭПД</li>
+          <li class="price-feature">Приоритетная поддержка 24/7</li>
+          <li class="price-feature">Неиспользованные документы переносятся</li>
+        </ul>
+        <a href="#lead" class="btn btn-orange" style="width:100%;justify-content:center">Оставить заявку</a>
+      </div>
+      <div class="price-card">
+        <div class="price-label">Корпоратив</div>
+        <div class="price-amount">По запросу</div>
+        <div class="price-per">от 10 000 документов / мес</div>
+        <p class="price-desc">Крупным логистическим операторам и транспортным холдингам</p>
+        <ul class="price-features">
+          <li class="price-feature">Неограниченные объёмы</li>
+          <li class="price-feature">Выделенный сервер и SLA 99,9%</li>
+          <li class="price-feature">Многоуровневые права доступа</li>
+          <li class="price-feature">Персональный менеджер постоянно</li>
+        </ul>
+        <a href="#lead" class="btn btn-dark" style="width:100%;justify-content:center">Обсудить объёмы</a>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:13px; color:var(--gray); margin-top:28px">Во всех тарифах: приложение для водителей, подпись УКЭП, хранение в ГИС ЭПД, поддержка 24/7. Неиспользованные документы переносятся. Цены с НДС.</p>
+  </div>
+</section>
+
+<!-- [10] Кому подходит -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Сегменты</span>
+      <h2 class="section-heading">TrexGo подходит вам, если…</h2>
+    </div>
+    <div class="pv-fit-grid">
+      <div class="pv-fit-card">
+        <div class="pv-fit-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+        </div>
+        <h3>Небольшой автопарк</h3>
+        <p>Решение принимает тот, кто сам стоит на погрузке. От заявки до первого рейса — самый короткий путь.</p>
+      </div>
+      <div class="pv-fit-card">
+        <div class="pv-fit-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+        </div>
+        <h3>Логист или диспетчер</h3>
+        <p>Вместо «кто где и кому звонить» — рейсы и статусы в одном экране, подписывает тот, кто на месте.</p>
+      </div>
+      <div class="pv-fit-card">
+        <div class="pv-fit-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+        </div>
+        <h3>Нужна одна задача</h3>
+        <p>Не хотите покупать модуль ЭДО в учётной системе или менять оператора ради подписания документов на рейс — это ровно наш случай.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [8] Про подпись — честно -->
+<section class="section" id="signature">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Электронная подпись</span>
+      <h2 class="section-heading">Про подпись — честно</h2>
+    </div>
+    <p class="pv-sign-intro">Подпись — требование закона, без неё ЭТрН не подписывается ни в одном сервисе. Вот что нужно знать.</p>
+    <div class="pv-sign-grid">
+      <div class="pv-sign-card">
+        <h3>Нужна УКЭП</h3>
+        <p>Каждый документ подписывается усиленной квалифицированной подписью — юридически это та же подпись, что от руки на бумаге.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Подписывает не директор?</h3>
+        <p>Логисту, диспетчеру или водителю нужна доверенность (МЧД — доверенность на подпись) и своя УКЭП. Поможем оформить и то и другое.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Нет подписи — оформим</h3>
+        <p>Через аккредитованный удостоверяющий центр. Носитель на выбор: USB-токен или NFC-брелок — приложили к телефону, документ подписан.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Ключ остаётся у вас</h3>
+        <p>TrexGo и оператор ЭДО не видят и не хранят ваш закрытый ключ — к нам приходит уже подписанный документ.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [11] FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head" style="text-align:center">
+      <span class="label-upper">Вопросы и ответы</span>
+      <h2 class="section-heading">Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary class="faq-q">На складе или трассе нет интернета — как подписывать и показывать документы?</summary>
+        <p class="faq-a">QR формируется при подписании и сохраняется в приложении — на выезде и при проверке он читается офлайн. Если на площадке связи нет вовсе — поможем настроить резервный канал.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Подписывает логист или водитель, а не директор — это законно?</summary>
+        <p class="faq-a">Да: сотруднику оформляется доверенность (МЧД) и личная УКЭП — и дальше подписывает тот, кто фактически на погрузке. Поможем оформить и то и другое.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">У нас 1С/Контур — придётся что-то менять или интегрировать?</summary>
+        <p class="faq-a">Нет. TrexGo — отдельное приложение для документов на рейс. Ваша учётная система и ваш оператор ЭДО остаются как есть.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">У контрагентов другой оператор ЭДО — документы дойдут?</summary>
+        <p class="faq-a">Да, работаем со всеми операторами, роуминг настроен.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Сколько времени занимает подключение?</summary>
+        <p class="faq-a">День. Заявка → звонок за 15 минут → настроим компанию за вас → первый рейс проходим вместе. Если нужно выпустить УКЭП — плюс 1–2 дня на удостоверяющий центр.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Что будет после того, как я оставлю заявку?</summary>
+        <p class="faq-a">Один звонок за 15 минут в рабочее время: покажем сервис, ответим на вопросы, договоримся о подключении. Никаких рассылок и «прогревов».</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Сколько это стоит?</summary>
+        <p class="faq-a">От 8 ₽ за документ, пакетами, цены с НДС. Платите только за документы — без абонентской платы за «платформу». Подробнее — в тарифах выше.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">А если пока работать по-старому?</summary>
+        <p class="faq-a">С 1 сентября 2026 ЭТрН обязательна и проверяется. Штраф — до 100 000 ₽, плюс риск остановки рейса при проверке. Не нашли ответ — <a href="https://wa.me/79850757675" target="_blank" rel="noopener" style="color:var(--orange)">спросите в WhatsApp</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- [12] Финальный CTA + форма -->
+<section class="pv-final" id="lead">
+  <div class="container">
+    <div class="pv-final-box">
+      <h2>Не откладывайте на август</h2>
+      <p class="pv-final-pic">Рейс закрывается без единого звонка «кто подпишет». Вы просто видите в телефоне: документ подписан.</p>
+      <p class="pv-final-sub">Оставьте телефон — перезвоним за 15 минут, покажем сервис на вашем реальном рейсе и подключим за 1 день. Без обязательств.</p>
+      <div class="form-wrap">
+        <form class="lead-form" novalidate>
+          <div class="form-row">
+            <input class="form-input" type="tel" name="phone" inputmode="numeric" placeholder="+7 (___) ___-__-__" required />
+            <button class="btn btn-orange" type="submit">Оставить заявку</button>
+          </div>
+          <p class="form-privacy">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и принимаете <a href="privacy.html">политику конфиденциальности</a>. Перезвоним за 15 минут в рабочее время (Пн–Пт 9:00–18:00 МСК).</p>
+        </form>
+        <div class="form-success">✓ Заявка принята! Перезвоним в течение 15 минут в рабочее время. Дальше: настроим компанию за вас → первый рейс пройдём вместе → поддержка 24/7 на связи.</div>
+      </div>
+      <div class="pv-final-msngrs">
+        <span>Удобнее в мессенджере — напишите нам:</span>
+        <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+        <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+          <img src="maxicon.webp" alt="Max" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [13] Футер -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <a href="index.html" class="footer-logo">Trex<span>Go</span></a>
+        <p class="footer-tagline">Электронные путевые листы и транспортные накладные для транспортных компаний России. Аккредитованный оператор ГИС ЭПД.</p>
+        <a href="tel:+79850757675" class="footer-phone">+7 985 075-76-75</a>
+        <p style="font-size:12px;color:var(--gray);margin-top:6px">Бесплатно · Пн–Пт 9:00–18:00 МСК</p>
+      </div>
+      <div class="footer-col">
+        <h4>Услуги</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Электронные ТрН (ЭТрН)</a></li>
+          <li><a href="waybills.html">Электронные путевые листы</a></li>
+          <li><a href="ai-analytics.html">AI-аналитика расходов</a></li>
+          <li><a href="#pricing">Тарифы</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Компания</h4>
+        <ul class="footer-links">
+          <li><a href="#">О нас</a></li>
+          <li><a href="blog.html">Блог</a></li>
+          <li><a href="#">Стать партнёром</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Правовое</h4>
+        <ul class="footer-links">
+          <li><a href="privacy.html">Политика конфиденциальности</a></li>
+          <li><a href="#">Пользовательское соглашение</a></li>
+          <li><a href="#">Оферта</a></li>
+          <li><a href="#">Реквизиты</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 TrexGo. Все права защищены.</span>
+      <div class="footer-legal">
+        <a href="#">ИНН 7700000000</a>
+        <a href="#">ОГРН 1027700000000</a>
+        <a href="#">Аккредитация № ЭПД-0000</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- [M] Mobile sticky CTA bar -->
+<div class="pv-sticky-bar" id="stickyBar">
+  <a href="#lead" class="btn btn-orange">Оставить заявку</a>
+  <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+  </a>
+</div>
+
+<script src="script.js"></script>
+<script>
+// Deadline badge: days until 01.09.2026
+(function () {
+  var badge = document.getElementById('deadlineBadge');
+  if (!badge) return;
+  var deadline = new Date(2026, 8, 1); // 1 сентября 2026
+  var now = new Date();
+  var days = Math.ceil((deadline - now) / 86400000);
+  badge.textContent = days > 0 ? 'До обязательной ЭТрН: ' + days + ' дн.' : 'ЭТрН уже обязательна';
+})();
+
+// Header hide on scroll down / show on scroll up
+(function () {
+  var nav = document.getElementById('pvNav');
+  var lastY = 0;
+  window.addEventListener('scroll', function () {
+    var y = window.scrollY;
+    if (y > 120 && y > lastY) nav.classList.add('hidden');
+    else nav.classList.remove('hidden');
+    lastY = y;
+  }, { passive: true });
+})();
+
+// Mobile sticky bar: appears after hero CTA leaves viewport
+(function () {
+  var bar = document.getElementById('stickyBar');
+  var heroCta = document.querySelector('.pv-hero .btn-orange');
+  if (!bar || !heroCta || !('IntersectionObserver' in window)) return;
+  var leadSection = document.getElementById('lead');
+  var leadVisible = false;
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.target === heroCta) {
+        bar.classList.toggle('visible', !e.isIntersecting && !leadVisible);
+      } else if (e.target === leadSection) {
+        leadVisible = e.isIntersecting;
+        if (leadVisible) bar.classList.remove('visible');
+      }
+    });
+  }).observe(heroCta);
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      leadVisible = e.isIntersecting;
+      if (leadVisible) bar.classList.remove('visible');
+      else if (heroCta.getBoundingClientRect().bottom < 0) bar.classList.add('visible');
+    });
+  }).observe(leadSection);
+})();
+</script>
+</body>
+</html>
