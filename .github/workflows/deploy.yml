@@ -22,13 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Залить по FTPS
+      # Хостинг не поддерживает шифрование: на AUTH TLS отвечает "500 AUTH not
+      # understood", порт 990 закрыт. Поэтому protocol: ftp — пароль идёт по сети
+      # открытым текстом. Просить у Макхоста SFTP или включение FTPS.
+      - name: Залить по FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
+          protocol: ftp
           server-dir: httpdocs/
           dry-run: ${{ inputs.dry-run == true }}
           # Что не относится к сайту — на хостинг не попадает.
