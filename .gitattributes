@@ -1,0 +1,11 @@
+# Сервер линуксовый — переводы строк везде LF, иначе .htaccess может не сработать.
+* text=auto eol=lf
+
+# Бинарники не трогать.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

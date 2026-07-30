@@ -1,0 +1,45 @@
+name: Выкладка сайта на хостинг
+
+# Запускается при push в main — и вручную, кнопкой в разделе Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Холостой прогон: показать, что изменилось бы, но ничего не заливать"
+        type: boolean
+        default: false
+
+# Две выкладки одновременно затопчут друг друга. Ждём предыдущую, не отменяем её на полпути.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Залить по FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          server-dir: httpdocs/
+          dry-run: ${{ inputs.dry-run == true }}
+          # Что не относится к сайту — на хостинг не попадает.
+          # Всё, чего нет в репозитории, с хостинга удаляется: репозиторий — источник правды.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .github/**
+            CLAUDE.md
+            README.md
+            temp/**
+            **/.DS_Store
+            **/Thumbs.db
