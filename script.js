@@ -7,6 +7,22 @@ document.querySelectorAll('.nav-toggle').forEach(btn => {
   });
 });
 
+// Выпадающий список в меню («Кому подходит»)
+document.querySelectorAll('.nav-sub-toggle').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    document.querySelectorAll('.nav-sub-toggle').forEach(b => b.setAttribute('aria-expanded', 'false'));
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+});
+
+const closeNavSubs = () => {
+  document.querySelectorAll('.nav-sub-toggle').forEach(b => b.setAttribute('aria-expanded', 'false'));
+};
+document.addEventListener('click', closeNavSubs);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
+
 // Lead forms
 document.querySelectorAll('.lead-form').forEach(form => {
   form.addEventListener('submit', e => {

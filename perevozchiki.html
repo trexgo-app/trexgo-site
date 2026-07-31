@@ -125,6 +125,19 @@
       text-decoration: none;
     }
     .pv-anchors a:hover { color: var(--orange); }
+    /* Выход из лендинга в раздел — типографику берём у соседних якорей */
+    .pv-anchors .nav-sub-toggle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      padding: 0;
+      gap: 4px;
+    }
+    .pv-anchors .nav-sub-toggle:hover { background: none; color: var(--orange); }
+    .pv-anchors .nav-sub { right: 0; left: auto; }
+    .pv-anchors .nav-sub a { padding: 8px 12px; border-radius: 5px; }
+    .pv-anchors .nav-sub a:hover { background: var(--light-sand); color: var(--black); }
+    .pv-anchors .nav-sub a.active { font-weight: 700; }
     .pv-nav-right { display: flex; align-items: center; gap: 14px; }
     .pv-deadline-badge {
       font-size: 12px;
@@ -602,12 +615,20 @@
 <!-- [0] Sticky header -->
 <nav class="pv-nav" id="pvNav">
   <div class="pv-nav-inner">
-    <a href="perevozchiki.html" class="nav-logo">Trex<span>Go</span></a>
+    <a href="index.html" class="nav-logo">Trex<span>Go</span></a>
     <ul class="pv-anchors">
       <li><a href="#trip">Как работает</a></li>
       <li><a href="#connect">Подключение</a></li>
       <li><a href="#pricing">Тарифы</a></li>
       <li><a href="#faq">Вопросы</a></li>
+      <li class="nav-has-sub">
+        <button class="nav-sub-toggle active" type="button" aria-expanded="false">Кому подходит<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 3 3-3"/></svg></button>
+        <ul class="nav-sub">
+          <li><a href="perevozchiki.html" class="active">Перевозчикам</a></li>
+          <li><a href="gruzootpravitelyam.html">Грузоотправителям</a></li>
+          <li><a href="gruzopoluchatelyam.html">Грузополучателям</a></li>
+        </ul>
+      </li>
     </ul>
     <div class="pv-nav-right">
       <span class="pv-deadline-badge" id="deadlineBadge">До обязательной ЭТрН: — дней</span>
@@ -1112,6 +1133,14 @@
           <li><a href="waybills.html">Электронные путевые листы</a></li>
           <li><a href="ai-analytics.html">AI-аналитика расходов</a></li>
           <li><a href="#pricing">Тарифы</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Кому подходит</h4>
+        <ul class="footer-links">
+          <li><a href="perevozchiki.html">Перевозчикам</a></li>
+          <li><a href="gruzootpravitelyam.html">Грузоотправителям</a></li>
+          <li><a href="gruzopoluchatelyam.html">Грузополучателям</a></li>
         </ul>
       </div>
       <div class="footer-col">
