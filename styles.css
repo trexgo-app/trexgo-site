@@ -207,6 +207,17 @@ body {
   padding: 80px 0;
 }
 
+/* Две равные колонки, схлопывающиеся в одну на узком экране.
+   Через класс с медиа-запросом, а не `auto-fit`: у `auto-fit` при двух детях
+   на широком экране появляются пустые треки, и колонки не добирают ширину
+   контейнера. Раньше такие сетки стояли инлайном жёсткими `1fr 1fr` и на
+   узких экранах давали горизонтальный скролл. */
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
 .section-head {
   margin-bottom: 48px;
 }
@@ -1338,6 +1349,7 @@ footer {
 
   .display-hero { font-size: 36px; letter-spacing: -1.5px; }
   .section-heading { font-size: 26px; }
+  .split-2 { grid-template-columns: 1fr; gap: 32px; }
   .promo-inner { flex-direction: column; text-align: center; padding: 36px 24px; gap: 28px; }
   .promo-text { padding-left: 0; }
   .promo-image img { max-width: 260px; height: auto; margin: 0 auto; }
