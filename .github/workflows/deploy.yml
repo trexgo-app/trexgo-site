@@ -43,6 +43,8 @@ jobs:
             .github/**
             CLAUDE.md
             README.md
+            docs/**
+            config-snapshots/**
             temp/**
             **/.DS_Store
             **/Thumbs.db
