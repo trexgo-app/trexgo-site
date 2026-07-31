@@ -29,15 +29,15 @@
   <em>С 01.09.2026 заказ (заявка) и ЭТрН обязательны в электронном виде</em> — в том числе для грузоотправителя. <a href="#lead">Подключиться →</a>
 </div>
 
-<!-- [0] Шапка -->
-<nav class="pv-nav" id="pvNav">
-  <div class="pv-nav-inner">
+<!-- [0] Шапка — общая для всего сайта, вместе с бургером в адаптиве.
+     Навигация по самой странице — в плавающей таблетке ниже. -->
+<nav class="nav">
+  <div class="nav-inner">
     <a href="index.html" class="nav-logo">Trex<span>Go</span></a>
-    <ul class="pv-anchors">
-      <li><a href="#trip">Как работает</a></li>
-      <li><a href="#fork">Роли</a></li>
-      <li><a href="#signature">Подпись</a></li>
-      <li><a href="#faq">Вопросы</a></li>
+    <ul class="nav-links">
+      <li><a href="index.html">ЭТрН</a></li>
+      <li><a href="waybills.html">Путевые листы</a></li>
+      <li><a href="ai-analytics.html">AI-аналитика</a></li>
       <li class="nav-has-sub">
         <button class="nav-sub-toggle active" type="button" aria-expanded="false">Кому подходит<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 3 3-3"/></svg></button>
         <ul class="nav-sub">
@@ -46,12 +46,26 @@
           <li><a href="gruzopoluchatelyam.html">Грузополучателям</a></li>
         </ul>
       </li>
+      <li><a href="blog.html">Блог</a></li>
     </ul>
-    <div class="pv-nav-right">
+    <div class="nav-right">
       <span class="pv-deadline-badge" id="deadlineBadge">До ЭТрН: … дней</span>
       <a href="tel:+79850757675" class="nav-phone">+7 985 075-76-75</a>
       <a href="#lead" class="btn-nav-cta">Оставить заявку</a>
     </div>
+    <button class="nav-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+  </div>
+</nav>
+
+<!-- [0.1] Плавающее меню по странице -->
+<nav class="pv-pagenav" id="pageNav" aria-label="Разделы страницы">
+  <div class="pv-pagenav-inner">
+    <span class="pv-pagenav-marker" aria-hidden="true"></span>
+    <a href="#trip">Как работает</a>
+    <a href="#fork">Роли</a>
+    <a href="#signature">Подпись</a>
+    <a href="#faq">Вопросы</a>
+    <a href="#lead" class="pv-pagenav-cta" aria-label="Оставить заявку"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </nav>
 

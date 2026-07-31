@@ -55,7 +55,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const target = document.querySelector(a.getAttribute('href'));
     if (target) {
       e.preventDefault();
-      const offset = 80;
+      // Отступ под шапку. На ролевых лендингах под ней висит ещё и плавающее
+      // меню по странице — там заголовок раздела иначе уезжает под таблетку.
+      // 160 вместо 140: у последних разделов страница упирается в конец и
+      // доезжает не до конца, съедая запас.
+      const offset = document.getElementById('pageNav') ? 160 : 80;
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: 'smooth' });
     }

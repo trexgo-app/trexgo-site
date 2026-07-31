@@ -571,9 +571,12 @@ body {
 }
 
 /* ===== PRICING ===== */
+/* auto-fit, а не жёсткие три колонки: на промежуточных ширинах (около 800px)
+   карточка с padding 32px в треть экрана уже не помещается и вылезала за край,
+   давая горизонтальный скролл. Здесь колонки схлопываются сами. */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
   align-items: stretch;
 }
@@ -695,8 +698,12 @@ body {
   gap: 48px;
 }
 
+/* Отступ слева — декоративный, отодвигает текст от картинки с подарком.
+   На узких экранах он обязан обнуляться (см. Responsive): иначе текст и кнопка
+   уезжают за правый край и появляется горизонтальный скролл. */
 .promo-text {
   flex: 1;
+  min-width: 0;
   padding-left: 180px;
 }
 
@@ -1263,25 +1270,28 @@ footer {
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 0; }
   .stat-item { padding: 0 24px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .promo-inner { padding: 40px 36px; gap: 32px; }
+  .promo-text { padding-left: 40px; }
 }
 
-@media (max-width: 800px) {
-  .btn-nav-cta { display: none; }
-  .nav-toggle { display: block; }
-  .nav-phone { display: none; }
-}
-
-@media (max-width: 768px) {
-  .container { padding: 0 20px; }
-  .nav-inner { padding: 0 20px; }
-  .footer-inner { padding: 0 20px; }
-
+/* Шапка уходит в бургер целиком и на одной ширине.
+   960px — предел, на котором ряд из пяти пунктов, телефон и кнопка ещё влезают
+   в 1200px-контейнер; ниже они наезжают друг на друга. Раньше кнопка и телефон
+   прятались на 800px, а сам список — только на 768, и в промежутке на экране
+   оказывались сразу и меню, и бургер. */
+@media (max-width: 960px) {
   .nav-links { display: none; }
   .nav-toggle { display: block; }
   .nav-phone { display: none; }
+  .btn-nav-cta { display: none; }
+
   .nav-links.open {
     display: flex;
     flex-direction: column;
+    /* Перебивает align-items: center из базового правила: в колонке оно
+       центрировало пункты по горизонтали, и у каждого получался свой отступ
+       от края — ряд выглядел рваным. */
+    align-items: stretch;
     position: fixed;
     top: 64px;
     left: 0;
@@ -1297,21 +1307,18 @@ footer {
   }
   .nav-links.open a { padding: 12px 16px; border-radius: 5px; }
 
-  /* В бургере подраздел раскрыт всегда — аккордеон прячет пункты без пользы */
-  .nav-links.open .nav-sub-toggle {
-    width: 100%;
-    padding: 12px 16px;
-    pointer-events: none;
-    color: var(--gray);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-  }
-  .nav-links.open .nav-sub-toggle svg { display: none; }
+  /* В бургере — один плоский список: продуктовые пункты и ролевые страницы
+     подряд, одинаковым кеглем и отступом. Заголовок «Кому подходит» здесь не
+     нужен: на узкой колонке он не группировал пункты, а рвал ряд лишним
+     стилем. Раскрывать нечего — кнопку-переключатель прячем совсем, а её
+     подсписок раскладываем в тот же столбец с тем же отступом. */
+  .nav-links.open .nav-sub-toggle { display: none; }
   .nav-links.open .nav-sub {
     position: static;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     background: none;
     border: none;
     box-shadow: none;
@@ -1322,11 +1329,17 @@ footer {
     transition: none;
   }
   .nav-links.open .nav-sub::before { display: none; }
-  .nav-links.open .nav-sub a { padding-left: 28px; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  .nav-inner { padding: 0 20px; }
+  .footer-inner { padding: 0 20px; }
 
   .display-hero { font-size: 36px; letter-spacing: -1.5px; }
   .section-heading { font-size: 26px; }
-  .promo-inner { flex-direction: column; text-align: center; padding: 36px 24px; }
+  .promo-inner { flex-direction: column; text-align: center; padding: 36px 24px; gap: 28px; }
+  .promo-text { padding-left: 0; }
   .promo-image img { max-width: 260px; height: auto; margin: 0 auto; }
   .hero { padding: 48px 0 0; }
   .hero-inner { grid-template-columns: 1fr; gap: 32px; padding: 0 20px; }

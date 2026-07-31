@@ -4,63 +4,10 @@
 
 /* ===== Ролевой лендинг ===== */
 
-/* --- Sticky header --- */
-.pv-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(252, 248, 242, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(197, 192, 177, 0.2);
-  height: 64px;
-  transition: transform 0.25s ease;
-}
-.pv-nav.hidden { transform: translateY(-100%); }
-.pv-nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 32px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-/* Якоря не переносятся: перенос ломает шапку высотой 64px.
-   Ряд ужимается за счёт gap, а если места всё равно нет — прячутся сначала
-   счётчик, потом телефон (ниже в блоке Responsive). Подписи держим в одно слово. */
-.pv-anchors {
-  display: flex;
-  gap: 22px;
-  list-style: none;
-  flex-wrap: nowrap;
-  min-width: 0;
-}
-.pv-anchors > li { flex-shrink: 0; }
-.pv-anchors a {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--charcoal);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.pv-anchors a:hover { color: var(--orange); }
-/* Выход из лендинга в раздел — типографику берём у соседних якорей */
-.pv-anchors .nav-sub-toggle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--charcoal);
-  padding: 0;
-  gap: 4px;
-  white-space: nowrap;
-}
-.pv-anchors .nav-sub-toggle:hover { background: none; color: var(--orange); }
-.pv-anchors .nav-sub { right: 0; left: auto; }
-.pv-anchors .nav-sub a { padding: 8px 12px; border-radius: 5px; }
-.pv-anchors .nav-sub a:hover { background: var(--light-sand); color: var(--black); }
-.pv-anchors .nav-sub a.active { font-weight: 700; }
-.pv-nav-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+/* --- Шапка ---
+   Ролевые лендинги используют общесайтовую шапку `.nav` из styles.css: одна
+   шапка на все страницы — один бургер, одно поведение в адаптиве. Навигация
+   по самой странице живёт отдельно, в плавающей таблетке `.pv-pagenav` ниже. */
 .pv-deadline-badge {
   font-size: 12px;
   font-weight: 700;
@@ -70,6 +17,101 @@
   padding: 6px 12px;
   white-space: nowrap;
 }
+
+/* --- Плавающее меню по странице ---
+   Таблетка висит под общей шапкой и выезжает, когда первый экран прокручен:
+   пока герой на виду, навигация по разделам не нужна, и второй ряд меню
+   в этот момент только спорит с шапкой. Прячется снова на форме заявки.
+   Шапка высотой 64px, отсюда top: 76px — 12px зазора.
+   Стекло держим слабым (blur 8px): сильное размытие на светлом фоне
+   съедает контраст подписей, а «стеклянный» элемент на странице всего один. */
+.pv-pagenav {
+  position: fixed;
+  left: 50%;
+  top: 76px;
+  z-index: 90;
+  transform: translate(-50%, -140%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease, visibility 0s linear 0.35s;
+  max-width: calc(100vw - 32px);
+}
+.pv-pagenav.visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease, visibility 0s;
+}
+.pv-pagenav-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  padding: 6px;
+  border-radius: 100vw;
+  background: rgba(252, 248, 242, 0.82);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  border: 1px solid rgba(197, 192, 177, 0.55);
+  box-shadow: 0 8px 28px rgba(26, 22, 18, 0.14);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+.pv-pagenav-inner::-webkit-scrollbar { display: none; }
+.pv-pagenav a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+  text-decoration: none;
+  padding: 9px 16px;
+  border-radius: 100vw;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.pv-pagenav a:hover { color: var(--black); }
+.pv-pagenav a.active { color: var(--cream); }
+/* Маркер едет за активным пунктом. Позицию ему задаёт role-landing.js:
+   CSS не умеет измерить ширину произвольной подписи.
+   Маркер лежит внутри .pv-pagenav-inner и скроллится вместе с пунктами —
+   иначе при горизонтальной прокрутке он остаётся на месте, а пункт уезжает. */
+.pv-pagenav-marker {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  height: calc(100% - 12px);
+  border-radius: 100vw;
+  background: var(--black);
+  opacity: 0;
+  transform: translateX(0);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+  pointer-events: none;
+}
+.pv-pagenav-marker.ready { opacity: 1; }
+/* Кнопка заявки — тот же ряд, отдельным кружком справа.
+   Селектор с `a` намеренно: правило `.pv-pagenav a` выше задаёт padding
+   и display, и по специфичности одного класса его не перебить. */
+.pv-pagenav a.pv-pagenav-cta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--light-sand);
+  color: var(--charcoal);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.pv-pagenav a.pv-pagenav-cta:hover { background: var(--orange); color: var(--cream); }
 
 /* --- Hero --- */
 .pv-hero {
@@ -497,6 +539,10 @@
   .js-reveal .pv-reveal { opacity: 1; transform: none; transition: none; }
   .pv-tap-dot, .pv-signed, .pv-qr-block, .pv-kicker .dot { animation: none; }
   .pv-signed, .pv-qr-block { opacity: 1; }
+  /* Таблетка появляется и переключается без движения — но появляться должна:
+     transition убираем, а сами transform из .visible оставляем. */
+  .pv-pagenav, .pv-pagenav-marker { transition: opacity 0.2s ease; }
+  .pv-pagenav-inner { scroll-behavior: auto; }
 }
 
 /* --- Экран приёмки/отгрузки в макете телефона (варианты pv-phone) --- */
@@ -667,21 +713,13 @@
 
 /* --- Responsive --- */
 
-/* Шапка ужимается по очереди, а не переносит якоря: сначала уходит счётчик
-   дней, потом телефон. Оба дублируются ниже по странице, якоря — нет. */
+/* Счётчик дней в шапке уходит первым: он дублируется в тексте страницы,
+   а телефон и кнопка заявки — нет. */
 @media (max-width: 1180px) {
-  .pv-anchors { gap: 18px; }
   .pv-deadline-badge { display: none; }
-}
-@media (max-width: 1040px) {
-  .pv-nav-inner { padding: 0 20px; }
-  .pv-anchors { gap: 16px; }
-  .pv-anchors a, .pv-anchors .nav-sub-toggle { font-size: 13px; }
-  .pv-nav .nav-phone { display: none; }
 }
 
 @media (max-width: 960px) {
-  .pv-anchors { display: none; }
   .pv-hero-inner { grid-template-columns: 1fr; gap: 32px; }
   .pv-hero-content { padding-bottom: 0; }
   .pv-phone-wrap { padding-top: 8px; }
@@ -694,7 +732,6 @@
   .pv-trust-nums { justify-content: center; width: 100%; text-align: center; }
 }
 @media (max-width: 768px) {
-  .pv-nav-inner { padding: 0 20px; }
   .pv-deadline-badge { display: none; }
   .pv-hero { padding-top: 48px; }
   .pv-hero-inner { padding: 0 20px; }
@@ -711,4 +748,14 @@
   .pv-trust-nums { justify-content: center; width: 100%; text-align: center; }
   .pv-sticky-bar { display: flex; }
   body { padding-bottom: 76px; }
+
+  /* Во всю ширину минус поля: подписи не влезают в центрированную таблетку,
+     список скроллится горизонтально, активный пункт JS подтягивает в видимую
+     часть. Кнопка «наверх» уходит — внизу уже стоит плашка с заявкой,
+     а её роль берёт на себя жест прокрутки. */
+  .pv-pagenav { top: 72px; left: 12px; right: 12px; max-width: none; transform: translateY(-140%); }
+  .pv-pagenav.visible { transform: translateY(0); }
+  .pv-pagenav-inner { padding: 5px; }
+  .pv-pagenav a { font-size: 13px; padding: 8px 13px; }
+  .pv-pagenav a.pv-pagenav-cta { display: none; }
 }
