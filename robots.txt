@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Превью веток — черновики, в поиске им не место.
+# Вторая линия защиты: заголовок X-Robots-Tag внутри самой папки.
+Disallow: /preview/
+
 Sitemap: https://trexgo.ru/sitemap.xml
