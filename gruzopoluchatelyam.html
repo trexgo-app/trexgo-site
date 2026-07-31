@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ЭТрН для грузополучателей — TrexGo</title>
-  <meta name="description" content="Подписание титула «Приёмка» в электронной транспортной накладной для грузополучателя. Страница готовится — расскажем по телефону." />
+  <title>ЭТрН для грузополучателей — подписать приёмку с телефона | TrexGo</title>
+  <meta name="description" content="Регистрация в ГИС ЭПД грузополучателю не нужна, но подписать приёмку он обязан — иначе перевозчик не закроет рейс. TrexGo: кладовщик подписывает с телефона, без доступа в учётную систему." />
   <meta name="robots" content="noindex, follow" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="role-landing.css" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -28,13 +29,15 @@
   <em>Регистрация в ГИС ЭПД грузополучателю не нужна</em> — но без вашей подписи в приёмке ЭТрН не закрыть. <a href="#lead">Подключиться →</a>
 </div>
 
-<nav class="nav">
-  <div class="nav-inner">
+<!-- [0] Шапка -->
+<nav class="pv-nav" id="pvNav">
+  <div class="pv-nav-inner">
     <a href="index.html" class="nav-logo">Trex<span>Go</span></a>
-    <ul class="nav-links">
-      <li><a href="index.html">ЭТрН</a></li>
-      <li><a href="waybills.html">Путевые листы</a></li>
-      <li><a href="ai-analytics.html">AI-аналитика</a></li>
+    <ul class="pv-anchors">
+      <li><a href="#why">Ваша роль</a></li>
+      <li><a href="#trip">Как работает</a></li>
+      <li><a href="#signature">Подпись</a></li>
+      <li><a href="#faq">Вопросы</a></li>
       <li class="nav-has-sub">
         <button class="nav-sub-toggle active" type="button" aria-expanded="false">Кому подходит<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 3 3-3"/></svg></button>
         <ul class="nav-sub">
@@ -43,86 +46,323 @@
           <li><a href="gruzopoluchatelyam.html" class="active">Грузополучателям</a></li>
         </ul>
       </li>
-      <li><a href="blog.html">Блог</a></li>
     </ul>
-    <div class="nav-right">
+    <div class="pv-nav-right">
+      <span class="pv-deadline-badge" id="deadlineBadge">До ЭТрН: … дней</span>
       <a href="tel:+79850757675" class="nav-phone">+7 985 075-76-75</a>
       <a href="#lead" class="btn-nav-cta">Оставить заявку</a>
     </div>
-    <button class="nav-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
   </div>
 </nav>
 
-<!-- Hero -->
-<section class="page-hero">
-  <div class="container">
-    <div class="hero-badge"><span class="dot"></span> Страница готовится</div>
-    <h1 class="display-hero">ЭТрН для<br><em>грузополучателей</em></h1>
-    <p class="hero-subtitle" style="margin-top:22px">Подробный разбор сценария готовим. Пока коротко — что от вас требуется при приёмке груза по электронной транспортной накладной.</p>
-    <div class="hero-actions" style="margin-top:32px">
-      <a href="#lead" class="btn btn-orange btn-lg">Оставить заявку</a>
-      <a href="perevozchiki.html" class="btn btn-light">Посмотреть страницу для перевозчиков</a>
+<!-- [1] Hero -->
+<section class="pv-hero">
+  <div class="pv-hero-inner">
+    <div class="pv-hero-content">
+      <div class="pv-kicker"><span class="dot"></span> Регистрация в ГИС ЭПД вам не нужна</div>
+      <h1 class="pv-h1">Приняли груз — <em>подписали приёмку</em></h1>
+      <p class="pv-sub">Приёмку подписывает с телефона тот, кто принял машину на складе. Без доступа в учётную систему, без компьютера на складе и без регистрации в ГИС ЭПД.</p>
+      <div class="hero-actions">
+        <a href="#lead" class="btn btn-orange btn-lg">Оставить заявку</a>
+        <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9C%D1%8B%20%D0%B3%D1%80%D1%83%D0%B7%D0%BE%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%20%E2%80%94%20%D1%85%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+        <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+          <img src="maxicon.webp" alt="Max" />
+        </a>
+      </div>
+      <p class="pv-microtrust">Перезвоним за 15 минут · Разберём вашу схему приёмки · Без обязательств</p>
+      <a href="#why" class="pv-secondary-link">Это точно нас касается? ↓</a>
     </div>
-    <p class="hero-note" style="margin-top:12px">Перезвоним и разберём ваш случай · Без обязательств</p>
+    <div class="pv-phone-wrap">
+      <div class="pv-phone">
+        <div class="pv-phone-screen">
+          <div class="pv-phone-head">
+            <div class="pv-app-title">TrexGo · Приёмка</div>
+            <div class="pv-phone-tag">Ваш ход</div>
+          </div>
+          <div class="pv-route-card">
+            <div class="pv-route-cities">Тверь → Склад №1</div>
+            <div class="pv-route-meta">Перевозчик «Логистик» · КАМАЗ М426ОР 177 · 17:35</div>
+          </div>
+          <div class="pv-field-row">
+            <div class="pv-field"><span>В накладной</span><b>4,2 т</b></div>
+            <div class="pv-field edited"><span>Фактически</span><b>4,0 т</b></div>
+          </div>
+          <button class="pv-sign-btn" type="button" tabindex="-1">Принять груз<span class="pv-tap-dot"></span></button>
+          <div class="pv-signed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Принято · машина свободна
+          </div>
+          <div class="pv-qr-block">
+            <div class="pv-doc-row"><span>Расхождение по массе</span><span class="pv-doc-status mine">зафиксировано</span></div>
+            <div class="pv-doc-row"><span>Рейс</span><span class="pv-doc-status">закрыт</span></div>
+            <div class="pv-qr-note">Подписали то, что увидели, а не то, что заявлено</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- Что означает роль -->
-<section class="section">
+<!-- [2] Почему это вас касается -->
+<section class="section pv-reveal" id="why">
   <div class="container">
     <div class="section-head">
-      <span class="label-upper">Роль в перевозке</span>
-      <h2 class="section-heading">Что требуется<br>от грузополучателя</h2>
+      <span class="label-upper">Почему это ваша задача</span>
+      <h2 class="section-heading">Вы не перевозчик —<br>но без вас рейс не закрыт</h2>
     </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <h3 class="card-title">Регистрация в ГИС ЭПД не нужна</h3>
-        <p class="body">Для грузополучателя регистрация в государственной информационной системе электронных перевозочных документов не предусмотрена. Роль возникает и у компании, не связанной с грузоперевозками, — например при обычной закупке мебели в офис с доставкой.</p>
+    <div class="pv-chain">
+      <div class="pv-chain-step">
+        <div class="pv-chain-role">Отправитель</div>
+        <b>Подписал</b>
+        <p>Оформил накладную на отгрузке.</p>
       </div>
-      <div class="feature-card">
-        <h3 class="card-title">Подписывается титул «Приёмка»</h3>
-        <p class="body">После приёмки груза. Можно принять груз с фактическими данными — например указать другую массу, если она не совпала с заявленной, — либо отказаться от приёмки.</p>
+      <div class="pv-chain-step">
+        <div class="pv-chain-role">Перевозчик</div>
+        <b>Подписал</b>
+        <p>Погрузка и разгрузка.</p>
       </div>
-      <div class="feature-card">
-        <h3 class="card-title">Без подписи получателя документ не закрыт</h3>
-        <p class="body">ЭТрН без титула приёмки нельзя предъявить в налоговую для сдачи отчётности. На практике это означает, что перевозчики неохотно возят таким получателям.</p>
+      <div class="pv-chain-step is-you">
+        <div class="pv-chain-role">Получатель — вы</div>
+        <b>Ждёт вашей подписи</b>
+        <p>Без неё документ не закрыт и в налоговую его не сдать.</p>
       </div>
-      <div class="feature-card">
-        <h3 class="card-title">Получатель — тот, кто фактически принял</h3>
-        <p class="body">Если груз едет не покупателю по договору, а третьему лицу — например на склад хранения, — грузополучателем в ЭТрН указывается тот, кто принимает груз в пункте назначения.</p>
+    </div>
+    <div class="pv-pain-grid">
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h.375c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 0h17.25"/></svg>
+        Кто не подписывает — к тому возят неохотно: перевозчику такой рейс не закрыть.
       </div>
-      <div class="feature-card">
-        <h3 class="card-title">Узкий интерфейс под задачу</h3>
-        <p class="body">Кладовщик на приёмке подписывает свой титул, не получая доступа к ролям отправителя и перевозчика и не заходя в учётную систему компании.</p>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25M20.25 14.15A2.18 2.18 0 0 0 21 12.489V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m0 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"/></svg>
+        Роль возникает, даже если вы не про логистику: купили мебель в офис с доставкой — вы получатель.
       </div>
-      <div class="feature-card">
-        <h3 class="card-title">Оператора ЭДО менять не нужно</h3>
-        <p class="body">TrexGo — отдельное приложение для документов на рейс. Ваша учётная система и ваш оператор электронного документооборота остаются как есть.</p>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        Груз принял кладовщик, а подпись ставит бухгалтер с его слов — расхождения всплывают потом.
+      </div>
+      <div class="pv-pain-card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>
+        Ради одной подписи предлагают поставить учётную систему на склад и купить модуль ЭДО.
       </div>
     </div>
   </div>
 </section>
 
-<!-- Lead -->
-<section class="lead-section" id="lead">
+<!-- [3] Как проходит приёмка -->
+<section class="section pv-reveal" id="trip">
   <div class="container">
-    <div class="lead-form-box">
-      <span class="label-upper">Оставить заявку</span>
-      <h2>Расскажем про ваш<br>сценарий приёмки</h2>
-      <p>Пока страница готовится — разберём вашу схему по телефону. Звоним в течение 15 минут в рабочее время, бесплатно.</p>
+    <div class="section-head">
+      <span class="label-upper">Как это выглядит на практике</span>
+      <h2 class="section-heading">Приёмка — один тап</h2>
+    </div>
+    <div class="pv-trip-grid">
+      <div class="pv-trip-steps">
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">1</div>
+          <div>
+            <h3>Машина ещё в пути</h3>
+            <p>Рейс уже виден в телефоне — можно спланировать разгрузку заранее.</p>
+          </div>
+        </div>
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">2</div>
+          <div>
+            <h3>Приняли груз</h3>
+            <p>Всё сошлось — один тап. Не сошлось — вписали фактическую массу или отказались.</p>
+          </div>
+        </div>
+        <div class="pv-trip-step">
+          <div class="pv-trip-num">3</div>
+          <div>
+            <h3>Машина уехала</h3>
+            <p>Рейс закрыт, подписанный документ хранится у вас в электронном виде.</p>
+          </div>
+        </div>
+        <p class="pv-trip-note">Ничего не нужно печатать, возвращать вторым экземпляром и подшивать.</p>
+      </div>
+      <div class="pv-phone-wrap">
+        <div class="pv-phone" style="border-radius:36px; padding-bottom:14px">
+          <div class="pv-phone-screen" style="border-radius:24px; min-height:400px">
+            <div class="pv-phone-head">
+              <div class="pv-app-title">TrexGo · Сегодня</div>
+              <div class="pv-phone-tag">3 машины</div>
+            </div>
+            <div class="pv-doc-row"><span><b>09:20</b> · Тверь</span><span class="pv-doc-status">принято</span></div>
+            <div class="pv-doc-row"><span><b>13:05</b> · Клин</span><span class="pv-doc-status">принято</span></div>
+            <div class="pv-doc-row"><span><b>17:35</b> · Тверь</span><span class="pv-doc-status mine">ваш ход</span></div>
+            <div class="pv-route-card" style="margin-top:14px">
+              <div class="pv-route-cities">4,2 т · 18 мест</div>
+              <div class="pv-route-meta">Перевозчик «Логистик» · КАМАЗ М426ОР 177</div>
+            </div>
+            <button class="pv-sign-btn" type="button" tabindex="-1" style="margin-top:12px">Принять груз<span class="pv-tap-dot"></span></button>
+            <div class="pv-qr-note" style="text-align:center">Кладовщику нужен только телефон</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [4] Что не придётся делать -->
+<section class="section pv-reveal">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Без подвоха</span>
+      <h2 class="section-heading">Что вам НЕ придётся делать</h2>
+    </div>
+    <div class="pv-not-grid">
+      <div class="pv-not-card">
+        <div class="strike">Регистрироваться в ГИС ЭПД</div>
+        <p>Государственная система электронных перевозочных документов регистрации получателя не требует. Подписать приёмку нужно, вставать на учёт нет.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Ставить компьютер на склад</div>
+        <p>Кладовщику нужен только его телефон. Учётная система и модуль ЭДО для приёмки не нужны.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Пускать кладовщика в 1С</div>
+        <p>Он видит только приёмку своего склада — не контрагентов, не цены, не остатки.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Менять оператора ЭДО</div>
+        <p>Отправитель и перевозчик могут быть на любом операторе — документ всё равно дойдёт.</p>
+      </div>
+      <div class="pv-not-card">
+        <div class="strike">Подписывать вслепую</div>
+        <p>Приёмка — не «нажми, чтобы закрыть». Фактическую массу и количество вносите вы, а не тот груз — оформляется отказ.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [5] Что меняется -->
+<section class="section pv-reveal">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Что меняется</span>
+      <h2 class="section-heading">Разница только в одном</h2>
+    </div>
+    <div class="pv-swap">
+      <div class="pv-swap-old">Кладовщик расписывается на бумаге, экземпляр едет обратно с водителем</div>
+      <div class="pv-swap-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="pv-swap-new">Тот же кладовщик нажимает в телефоне, документ сразу у всех</div>
+    </div>
+    <div class="pv-swap">
+      <div class="pv-swap-old">Расхождение по массе выясняют через неделю по звонку</div>
+      <div class="pv-swap-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="pv-swap-new">Фактические данные вносятся в момент приёмки</div>
+    </div>
+    <div class="pv-swap">
+      <div class="pv-swap-old">Накладную ищут в подшивке, когда запросила налоговая</div>
+      <div class="pv-swap-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="pv-swap-new">Документ хранится электронно и не теряется</div>
+    </div>
+  </div>
+</section>
+
+<!-- [6] Про подпись -->
+<section class="section pv-reveal" id="signature">
+  <div class="container">
+    <div class="section-head">
+      <span class="label-upper">Электронная подпись</span>
+      <h2 class="section-heading">Про подпись — честно</h2>
+    </div>
+    <p class="pv-sign-intro">Регистрация в ГИС ЭПД не нужна, а вот подпись — нужна: без неё приёмку не подписать ни в одном сервисе. Вот что потребуется.</p>
+    <div class="pv-sign-grid">
+      <div class="pv-sign-card">
+        <h3>Нужна УКЭП</h3>
+        <p>Усиленная квалифицированная подпись — юридически та же подпись, что от руки на бумаге.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Подписывает не директор?</h3>
+        <p>Кладовщику нужна своя УКЭП и доверенность на подпись (МЧД). Поможем оформить и то и другое.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Нет подписи — оформим</h3>
+        <p>Через аккредитованный удостоверяющий центр, обычно 1–2 дня. Носитель на выбор: USB-токен или NFC-брелок.</p>
+      </div>
+      <div class="pv-sign-card">
+        <h3>Ключ остаётся у вас</h3>
+        <p>TrexGo и оператор ЭДО не видят и не хранят ваш закрытый ключ — к нам приходит уже подписанный документ.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [7] FAQ -->
+<section class="section pv-reveal" id="faq">
+  <div class="container">
+    <div class="section-head" style="text-align:center">
+      <span class="label-upper">Вопросы и ответы</span>
+      <h2 class="section-heading">Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary class="faq-q">Мы не перевозчик и не отправитель. Нам-то это зачем?</summary>
+        <p class="faq-a">Роль получателя возникает у любой компании, которой везут груз через нанятого перевозчика. Регистрироваться в ГИС ЭПД не нужно, но подписать приёмку придётся: без неё накладная не закрыта.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">А если просто не подписывать?</summary>
+        <p class="faq-a">Штрафа лично вам за это нет. На практике перевозчику не закрыть рейс — и таким получателям возят неохотно. Порядок электронной приёмки стоит прописать в договоре заранее.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Груз идёт не нам, а на склад хранения. Кто подписывает?</summary>
+        <p class="faq-a">Тот, кто фактически принимает груз в пункте назначения, а не покупатель по договору. Накладная отражает участников перевозки, а не сделки.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Данные не совпали с фактом — что делать?</summary>
+        <p class="faq-a">Принять с фактическими данными, указав реальную массу, либо отказаться от приёмки. Оба варианта штатные и доступны прямо на месте.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">У нас на складе нет компьютера и нет 1С. Это проблема?</summary>
+        <p class="faq-a">Нет. Кладовщику нужен только телефон и его собственная подпись.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Кто должен подписывать — директор или кладовщик?</summary>
+        <p class="faq-a">Тот, кто фактически принимает груз: у него своя УКЭП и доверенность (МЧД). Тогда в документе оказывается то, что человек видел сам, а директору не приходится подписывать со слов. Нет подписи — <a href="https://wa.me/79850757675" target="_blank" rel="noopener" style="color:var(--orange)">поможем оформить</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- [8] Финальный CTA + форма -->
+<section class="pv-final" id="lead">
+  <div class="container">
+    <div class="pv-final-box">
+      <h2>Разберём вашу схему приёмки</h2>
+      <p class="pv-final-pic">Кладовщик принял груз и нажал кнопку. Машина уехала, документ закрыт.</p>
+      <p class="pv-final-sub">Оставьте телефон — перезвоним за 15 минут, покажем, кто у вас должен подписывать и что для этого нужно. Без обязательств.</p>
       <div class="form-wrap">
         <form class="lead-form" novalidate>
           <div class="form-row">
-            <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
-            <button class="btn btn-orange" type="submit">Перезвоните мне</button>
+            <input class="form-input" type="tel" name="phone" inputmode="numeric" placeholder="+7 (___) ___-__-__" required />
+            <button class="btn btn-orange" type="submit">Оставить заявку</button>
           </div>
-          <p class="form-privacy">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и принимаете <a href="privacy.html">политику конфиденциальности</a>. Сайт использует файлы cookie.</p>
+          <p class="form-privacy">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и принимаете <a href="privacy.html">политику конфиденциальности</a>. Перезвоним за 15 минут в рабочее время (Пн–Пт 9:00–18:00 МСК).</p>
         </form>
         <div class="form-success">✓ Заявка принята! Перезвоним в течение 15 минут в рабочее время.</div>
+      </div>
+      <div class="pv-final-msngrs">
+        <span>Удобнее в мессенджере — напишите нам:</span>
+        <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9C%D1%8B%20%D0%B3%D1%80%D1%83%D0%B7%D0%BE%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%20%E2%80%94%20%D1%85%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+        <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+          <img src="maxicon.webp" alt="Max" />
+        </a>
       </div>
     </div>
   </div>
 </section>
+
 
 <!-- Footer -->
 <footer>
@@ -180,6 +420,15 @@
   </div>
 </footer>
 
+<!-- [M] Мобильная плашка с кнопкой -->
+<div class="pv-sticky-bar" id="stickyBar">
+  <a href="#lead" class="btn btn-orange">Оставить заявку</a>
+  <a href="https://wa.me/79850757675?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9C%D1%8B%20%D0%B3%D1%80%D1%83%D0%B7%D0%BE%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%20%E2%80%94%20%D1%85%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%20%D0%AD%D0%A2%D1%80%D0%9D" target="_blank" rel="noopener" class="btn-whatsapp" aria-label="WhatsApp">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+  </a>
+</div>
+
 <script src="script.js"></script>
+<script src="role-landing.js"></script>
 </body>
 </html>
