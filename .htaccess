@@ -10,7 +10,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 # --- Один адрес вместо двух ---
 # Без этого trexgo.ru и www.trexgo.ru — разные сайты для поисковиков.
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-RewriteRule ^(.*)$ %{REQUEST_SCHEME}://%1/$1 [R=301,L]
+RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
 # --- Кодировка ---
 AddDefaultCharset UTF-8
@@ -44,3 +44,8 @@ AddDefaultCharset UTF-8
 
 # Не показывать содержимое папок, если в них нет index.html
 Options -Indexes
+
+# Служебные файлы наружу не отдаём. Правило через mod_rewrite —
+# работает и на Apache 2.2, и на 2.4, в отличие от Require/Deny.
+RewriteRule ^\.ftp-deploy-sync-state\.json$ - [F,L]
+RewriteRule (^|/)\.(?!well-known/) - [F,L]
