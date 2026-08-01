@@ -47,5 +47,6 @@ jobs:
             docs/**
             config-snapshots/**
             temp/**
+            vercel.json
             **/.DS_Store
             **/Thumbs.db

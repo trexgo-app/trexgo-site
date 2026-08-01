@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://trexgo.ru/$1",
+      "statusCode": 301
+    }
+  ]
+}
