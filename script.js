@@ -26,6 +26,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs
 // Lead forms are collected by Yandex Forms. Answers are stored in the form's
 // response table and the connected Metrika counter receives ya-forms_* events.
 const YANDEX_LEAD_FORM_URL = 'https://forms.yandex.ru/u/6a74dbdc6d2d732057ffb6d9/?iframe=1';
+const METRIKA_COUNTER_ID = 111364095;
+
+const reachMetrikaGoal = (goal, params = {}) => {
+  if (typeof window.ym === 'function') {
+    window.ym(METRIKA_COUNTER_ID, 'reachGoal', goal, params);
+  }
+};
 
 document.querySelectorAll('.lead-form').forEach((form, index) => {
   const frame = document.createElement('iframe');
@@ -35,6 +42,21 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
   frame.className = `yandex-lead-form${form.classList.contains('inline-subscribe-form') ? ' inline-subscribe-form' : ''}`;
   frame.loading = 'lazy';
   frame.setAttribute('frameborder', '0');
+
+  // The iframe navigates once more only after Yandex Forms accepts the answer
+  // and opens its success page. This keeps the conversion on trexgo.ru.
+  let initialLoadComplete = false;
+  let conversionSent = false;
+  frame.addEventListener('load', () => {
+    if (initialLoadComplete && !conversionSent) {
+      conversionSent = true;
+      reachMetrikaGoal('lead_submit_success', {
+        page: window.location.pathname,
+        form_index: index
+      });
+    }
+    initialLoadComplete = true;
+  });
 
   const row = form.querySelector('.form-row');
   if (row) {
@@ -47,12 +69,10 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
 // Phone clicks are a separate high-intent conversion in Yandex Metrika.
 document.querySelectorAll('a[href^="tel:"]').forEach(link => {
   link.addEventListener('click', () => {
-    if (typeof window.ym === 'function') {
-      window.ym(111364095, 'reachGoal', 'phone_click', {
-        page: window.location.pathname,
-        placement: link.className || 'phone-link'
-      });
-    }
+    reachMetrikaGoal('phone_click', {
+      page: window.location.pathname,
+      placement: link.className || 'phone-link'
+    });
   });
 });
 
