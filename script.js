@@ -23,17 +23,35 @@ const closeNavSubs = () => {
 document.addEventListener('click', closeNavSubs);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
 
-// Lead forms
-document.querySelectorAll('.lead-form').forEach(form => {
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const phone = form.querySelector('input[type="tel"]').value.trim();
-    if (!phone) return;
-    const successEl = form.closest('.form-wrap')?.querySelector('.form-success')
-      || form.parentElement.querySelector('.form-success');
-    if (successEl) {
-      form.style.display = 'none';
-      successEl.style.display = 'block';
+// Lead forms are collected by Yandex Forms. Answers are stored in the form's
+// response table and the connected Metrika counter receives ya-forms_* events.
+const YANDEX_LEAD_FORM_URL = 'https://forms.yandex.ru/u/6a74dbdc6d2d732057ffb6d9/?iframe=1';
+
+document.querySelectorAll('.lead-form').forEach((form, index) => {
+  const frame = document.createElement('iframe');
+  frame.src = YANDEX_LEAD_FORM_URL;
+  frame.name = `ya-form-trexgo-${index}`;
+  frame.title = 'Форма заявки TrexGo';
+  frame.className = `yandex-lead-form${form.classList.contains('inline-subscribe-form') ? ' inline-subscribe-form' : ''}`;
+  frame.loading = 'lazy';
+  frame.setAttribute('frameborder', '0');
+
+  const row = form.querySelector('.form-row');
+  if (row) {
+    row.replaceWith(frame);
+  } else {
+    form.replaceWith(frame);
+  }
+});
+
+// Phone clicks are a separate high-intent conversion in Yandex Metrika.
+document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+  link.addEventListener('click', () => {
+    if (typeof window.ym === 'function') {
+      window.ym(111364095, 'reachGoal', 'phone_click', {
+        page: window.location.pathname,
+        placement: link.className || 'phone-link'
+      });
     }
   });
 });
