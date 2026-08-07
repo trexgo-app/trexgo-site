@@ -23,9 +23,14 @@ const closeNavSubs = () => {
 document.addEventListener('click', closeNavSubs);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
 
-// Lead forms are collected by Yandex Forms. Answers are stored in the form's
-// response table and the connected Metrika counter receives ya-forms_* events.
-const YANDEX_LEAD_FORM_URL = 'https://forms.yandex.ru/u/6a74dbdc6d2d732057ffb6d9/?iframe=1';
+// The original site forms stay visible while the server-side receiver is being
+// prepared. Enabling delivery later requires only changing this flag after
+// /api/leads.php is deployed and verified against the MySQL database.
+const LEAD_FORM_CONFIG = {
+  enabled: false,
+  endpoint: '/api/leads.php',
+  successGoal: 'lead_submit_success_mysql'
+};
 const METRIKA_COUNTER_ID = 111364095;
 
 const reachMetrikaGoal = (goal, params = {}) => {
@@ -34,36 +39,140 @@ const reachMetrikaGoal = (goal, params = {}) => {
   }
 };
 
-document.querySelectorAll('.lead-form').forEach((form, index) => {
-  const frame = document.createElement('iframe');
-  frame.src = YANDEX_LEAD_FORM_URL;
-  frame.name = `ya-form-trexgo-${index}`;
-  frame.title = 'Форма заявки TrexGo';
-  frame.className = `yandex-lead-form${form.classList.contains('inline-subscribe-form') ? ' inline-subscribe-form' : ''}`;
-  frame.loading = 'lazy';
-  frame.setAttribute('frameborder', '0');
+const normalizePhone = value => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 10) return `+7${digits}`;
+  if (digits.length === 11 && digits.startsWith('8')) return `+7${digits.slice(1)}`;
+  return digits ? `+${digits}` : '';
+};
 
-  // The iframe navigates once more only after Yandex Forms accepts the answer
-  // and opens its success page. This keeps the conversion on trexgo.ru.
-  let initialLoadComplete = false;
-  let conversionSent = false;
-  frame.addEventListener('load', () => {
-    if (initialLoadComplete && !conversionSent) {
-      conversionSent = true;
-      reachMetrikaGoal('lead_submit_success', {
-        page: window.location.pathname,
-        form_index: index
-      });
-    }
-    initialLoadComplete = true;
-  });
+const createRequestId = () => {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 
-  const row = form.querySelector('.form-row');
-  if (row) {
-    row.replaceWith(frame);
-  } else {
-    form.replaceWith(frame);
+const getTrackingParams = () => {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get('utm_source') || '',
+    utm_medium: params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content: params.get('utm_content') || '',
+    utm_term: params.get('utm_term') || '',
+    yclid: params.get('yclid') || ''
+  };
+};
+
+const getFormStatus = (form, index) => {
+  let status = form.parentElement.querySelector(`.form-status[data-form-index="${index}"]`);
+  if (!status) {
+    status = document.createElement('p');
+    status.className = 'form-status';
+    status.dataset.formIndex = index;
+    status.id = `form-status-${index}`;
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    form.insertAdjacentElement('afterend', status);
   }
+  return status;
+};
+
+const showFormStatus = (status, message, state = 'info') => {
+  status.textContent = message;
+  status.dataset.state = state;
+  status.classList.add('is-visible');
+};
+
+document.querySelectorAll('.lead-form').forEach((form, index) => {
+  const phoneField = form.querySelector('input[type="tel"]');
+  const submitButton = form.querySelector('button[type="submit"]');
+  const status = getFormStatus(form, index);
+
+  if (phoneField) {
+    phoneField.setAttribute('aria-describedby', status.id);
+    phoneField.setAttribute('autocomplete', 'tel');
+    phoneField.addEventListener('input', () => {
+      phoneField.classList.remove('is-invalid');
+      phoneField.removeAttribute('aria-invalid');
+      status.classList.remove('is-visible');
+    });
+  }
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const rawPhone = phoneField?.value.trim() || '';
+    const normalizedPhone = normalizePhone(rawPhone);
+    const phoneDigits = normalizedPhone.replace(/\D/g, '');
+
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      phoneField?.classList.add('is-invalid');
+      phoneField?.setAttribute('aria-invalid', 'true');
+      showFormStatus(status, 'Проверьте номер телефона: нужно указать не менее 10 цифр.', 'error');
+      phoneField?.focus();
+      return;
+    }
+
+    if (!LEAD_FORM_CONFIG.enabled) {
+      showFormStatus(
+        status,
+        'Форма готовится к подключению. Пока позвоните нам: +7 985 075-76-75.',
+        'info'
+      );
+      return;
+    }
+
+    form.dataset.requestId ||= createRequestId();
+    const consentField = form.querySelector('input[name="consent_pd"]');
+    const payload = {
+      request_id: form.dataset.requestId,
+      form_kind: form.dataset.formKind || 'lead',
+      phone: normalizedPhone,
+      page_url: window.location.href,
+      referrer: document.referrer,
+      consent_pd: consentField ? consentField.checked : null,
+      ...getTrackingParams()
+    };
+
+    form.classList.add('is-loading');
+    if (submitButton) submitButton.disabled = true;
+    showFormStatus(status, 'Отправляем заявку…', 'info');
+
+    try {
+      const response = await fetch(LEAD_FORM_CONFIG.endpoint, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.error || `HTTP ${response.status}`);
+      }
+
+      const successEl = form.closest('.form-wrap')?.querySelector('.form-success')
+        || form.parentElement.querySelector('.form-success');
+      if (successEl) {
+        form.style.display = 'none';
+        status.classList.remove('is-visible');
+        successEl.style.display = 'block';
+      }
+      delete form.dataset.requestId;
+      reachMetrikaGoal(LEAD_FORM_CONFIG.successGoal, {
+        page: window.location.pathname,
+        form_kind: payload.form_kind
+      });
+    } catch (error) {
+      showFormStatus(
+        status,
+        'Не удалось отправить заявку. Позвоните нам: +7 985 075-76-75.',
+        'error'
+      );
+    } finally {
+      form.classList.remove('is-loading');
+      if (submitButton) submitButton.disabled = false;
+    }
+  });
 });
 
 // Phone clicks are a separate high-intent conversion in Yandex Metrika.
