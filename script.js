@@ -23,18 +23,13 @@ const closeNavSubs = () => {
 document.addEventListener('click', closeNavSubs);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
 
-// The original site forms stay visible while the server-side receiver is being
-// prepared. Enabling delivery later requires only changing this flag after
-// /api/leads.php is deployed and verified against the MySQL database.
-const LEAD_FORM_CONFIG = {
-  enabled: false,
-  endpoint: '/api/leads.php',
-  successGoals: {
-    lead: 'lead_submit_success',
-    subscribe: 'subscription_submit_success'
-  }
-};
+// Lead and subscription forms + их цели в Метрике.
+const LEADS_ENDPOINT = 'api/leads';
 const METRIKA_COUNTER_ID = 111364095;
+const LEAD_SUCCESS_GOALS = {
+  lead: 'lead_submit_success',
+  subscription: 'subscription_submit_success'
+};
 
 const reachMetrikaGoal = (goal, params = {}) => {
   if (typeof window.ym === 'function') {
@@ -42,19 +37,28 @@ const reachMetrikaGoal = (goal, params = {}) => {
   }
 };
 
-const normalizePhone = value => {
-  const digits = value.replace(/\D/g, '');
-  if (digits.length === 10) return `+7${digits}`;
-  if (digits.length === 11 && digits.startsWith('8')) return `+7${digits.slice(1)}`;
+const normalizeLeadPhone = value => {
+  let digits = value.replace(/\D/g, '');
+  if (digits.length === 10) digits = `7${digits}`;
+  if (digits.length === 11 && digits.startsWith('8')) digits = `7${digits.slice(1)}`;
   return digits ? `+${digits}` : '';
 };
 
-const createRequestId = () => {
+const createLeadRequestId = () => {
   if (window.crypto?.randomUUID) return window.crypto.randomUUID();
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const bytes = new Uint8Array(16);
+  if (window.crypto?.getRandomValues) {
+    window.crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 };
 
-const getTrackingParams = () => {
+const leadTrackingParams = () => {
   const params = new URLSearchParams(window.location.search);
   return {
     utm_source: params.get('utm_source') || '',
@@ -66,7 +70,7 @@ const getTrackingParams = () => {
   };
 };
 
-const getFormStatus = (form, index) => {
+const leadFormStatus = (form, index) => {
   let status = form.parentElement.querySelector(`.form-status[data-form-index="${index}"]`);
   if (!status) {
     status = document.createElement('p');
@@ -75,12 +79,16 @@ const getFormStatus = (form, index) => {
     status.id = `form-status-${index}`;
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
-    form.insertAdjacentElement('afterend', status);
+    if (form.classList.contains('inline-subscribe-form')) {
+      form.appendChild(status);
+    } else {
+      form.insertAdjacentElement('afterend', status);
+    }
   }
   return status;
 };
 
-const showFormStatus = (status, message, state = 'info') => {
+const showLeadFormStatus = (status, message, state = 'info') => {
   status.textContent = message;
   status.dataset.state = state;
   status.classList.add('is-visible');
@@ -88,69 +96,94 @@ const showFormStatus = (status, message, state = 'info') => {
 
 document.querySelectorAll('.lead-form').forEach((form, index) => {
   const phoneField = form.querySelector('input[type="tel"]');
+  const emailField = form.querySelector('input[type="email"]');
   const submitButton = form.querySelector('button[type="submit"]');
-  const status = getFormStatus(form, index);
+  const status = leadFormStatus(form, index);
+  const startedAt = Math.floor(Date.now() / 1000);
 
-  if (phoneField) {
-    phoneField.setAttribute('aria-describedby', status.id);
-    phoneField.setAttribute('autocomplete', 'tel');
-    phoneField.addEventListener('input', () => {
-      phoneField.classList.remove('is-invalid');
-      phoneField.removeAttribute('aria-invalid');
+  const honeypot = document.createElement('input');
+  honeypot.type = 'text';
+  honeypot.name = 'website';
+  honeypot.tabIndex = -1;
+  honeypot.autocomplete = 'off';
+  honeypot.className = 'form-honeypot';
+  honeypot.setAttribute('aria-hidden', 'true');
+  form.appendChild(honeypot);
+
+  [phoneField, emailField].filter(Boolean).forEach(field => {
+    field.setAttribute('aria-describedby', status.id);
+    field.addEventListener('input', () => {
+      field.classList.remove('is-invalid');
+      field.removeAttribute('aria-invalid');
       status.classList.remove('is-visible');
     });
-  }
+  });
+  phoneField?.setAttribute('autocomplete', 'tel');
+  emailField?.setAttribute('autocomplete', 'email');
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
 
-    const rawPhone = phoneField?.value.trim() || '';
-    const normalizedPhone = normalizePhone(rawPhone);
+    const declaredFormKind = form.dataset.formKind
+      || (form.classList.contains('inline-subscribe-form') ? 'subscribe' : 'lead');
+    const formKind = declaredFormKind === 'subscribe' ? 'subscription' : 'lead';
+    const normalizedPhone = normalizeLeadPhone(phoneField?.value.trim() || '');
     const phoneDigits = normalizedPhone.replace(/\D/g, '');
+    const email = emailField?.value.trim() || '';
 
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+    if (normalizedPhone && (phoneDigits.length < 10 || phoneDigits.length > 15)) {
       phoneField?.classList.add('is-invalid');
       phoneField?.setAttribute('aria-invalid', 'true');
-      showFormStatus(status, 'Проверьте номер телефона: нужно указать не менее 10 цифр.', 'error');
+      showLeadFormStatus(status, 'Проверьте номер телефона: нужно указать от 10 до 15 цифр.', 'error');
       phoneField?.focus();
       return;
     }
-
-    if (!LEAD_FORM_CONFIG.enabled) {
-      showFormStatus(
-        status,
-        'Форма готовится к подключению. Пока позвоните нам: +7 985 075-76-75.',
-        'info'
-      );
+    if (formKind === 'lead' && !normalizedPhone) {
+      showLeadFormStatus(status, 'Укажите номер телефона.', 'error');
+      phoneField?.focus();
+      return;
+    }
+    if (formKind === 'subscription' && !normalizedPhone && !email) {
+      showLeadFormStatus(status, 'Укажите телефон или электронную почту.', 'error');
+      (emailField || phoneField)?.focus();
       return;
     }
 
-    form.dataset.requestId ||= createRequestId();
-    const consentField = form.querySelector('input[name="consent_pd"]');
+    form.dataset.requestId ||= createLeadRequestId();
+    const fields = Object.fromEntries(new FormData(form).entries());
     const payload = {
+      ...fields,
       request_id: form.dataset.requestId,
-      form_kind: form.dataset.formKind || 'lead',
+      form_kind: formKind,
+      form_started_at: startedAt,
       phone: normalizedPhone,
+      email,
+      source: form.dataset.source || 'website',
       page_url: window.location.href,
       referrer: document.referrer,
-      consent_pd: consentField ? consentField.checked : null,
-      ...getTrackingParams()
+      ...leadTrackingParams()
     };
 
     form.classList.add('is-loading');
     if (submitButton) submitButton.disabled = true;
-    showFormStatus(status, 'Отправляем заявку…', 'info');
+    showLeadFormStatus(status, 'Отправляем…');
 
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
     try {
-      const response = await fetch(LEAD_FORM_CONFIG.endpoint, {
+      const response = await fetch(LEADS_ENDPOINT, {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.ok === false) {
-        throw new Error(result.error || `HTTP ${response.status}`);
+      if (!response.ok || result.ok !== true) {
+        if (response.status === 422 && result.message) {
+          throw new Error(result.message);
+        }
+        throw new Error('Не удалось отправить заявку.');
       }
 
       const successEl = form.closest('.form-wrap')?.querySelector('.form-success')
@@ -159,22 +192,28 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
         form.style.display = 'none';
         status.classList.remove('is-visible');
         successEl.style.display = 'block';
+      } else {
+        showLeadFormStatus(status, 'Готово. Мы свяжемся с вами.', 'success');
       }
       delete form.dataset.requestId;
-      const successGoal = LEAD_FORM_CONFIG.successGoals[payload.form_kind];
+      const successGoal = LEAD_SUCCESS_GOALS[formKind];
       if (successGoal) {
         reachMetrikaGoal(successGoal, {
           page: window.location.pathname,
-          form_kind: payload.form_kind
+          form_kind: formKind
         });
       }
     } catch (error) {
-      showFormStatus(
+      const message = error.name === 'AbortError'
+        ? 'Сервер не ответил вовремя. Попробуйте ещё раз — повторная отправка не создаст дубль.'
+        : (error.message || 'Не удалось отправить заявку.');
+      showLeadFormStatus(
         status,
-        'Не удалось отправить заявку. Позвоните нам: +7 985 075-76-75.',
+        `${message} Позвоните нам: +7 985 075-76-75.`,
         'error'
       );
     } finally {
+      window.clearTimeout(timeout);
       form.classList.remove('is-loading');
       if (submitButton) submitButton.disabled = false;
     }
