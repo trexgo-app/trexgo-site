@@ -37,7 +37,7 @@ return [
         'client_id' => '',
         'client_secret' => '',
         'refresh_token' => '',
-        'path' => 'app:/Заявки TrexGo.xlsx',
+        'path' => 'app:/TrexGo — заявки.xlsx',
     ],
     'paths' => [
         'exports' => '/home/httpd/vhosts/trexgo.ru/private/exports',
