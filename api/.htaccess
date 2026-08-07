@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Единственная публичная точка входа. Остальные файлы каталога подключаются
+# только через PHP и не должны скачиваться даже в превью ветки.
+RewriteRule ^leads/?$ leads.php [L]
+RewriteRule ^leads\.php$ - [L]
+RewriteRule ^ - [F,L]

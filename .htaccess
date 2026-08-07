@@ -18,6 +18,9 @@ AddDefaultCharset UTF-8
 # Старые браузеры и поисковики просят /favicon.ico — отдаём им SVG.
 RewriteRule ^favicon\.ico$ /favicon.svg [L]
 
+# Публичный контракт формы без привязки к расширению серверного файла.
+RewriteRule ^api/leads/?$ api/leads.php [L]
+
 # --- Кэш для картинок и стилей ---
 # Браузер не перекачивает то, что не менялось.
 <IfModule mod_expires.c>
@@ -52,3 +55,8 @@ Options -Indexes
 # работает и на Apache 2.2, и на 2.4, в отличие от Require/Deny.
 RewriteRule ^\.ftp-deploy-sync-state\.json$ - [F,L]
 RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+# Миграции, CLI-скрипты, тесты и внутренние PHP-модули хранятся в git, но не
+# должны исполняться или скачиваться через веб. Публичен только /api/leads.php.
+RewriteRule ^(db|ops|tests)(/|$) - [F,L]
+RewriteRule ^api/(config\.example\.php|lib)(/|$) - [F,L]
