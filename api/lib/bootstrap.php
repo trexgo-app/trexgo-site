@@ -9,7 +9,10 @@ function trexgo_config_path(): string
         return $override;
     }
 
-    return dirname(__DIR__, 3) . '/private/leads-config.php';
+    // Абсолютный путь, а не dirname(__DIR__, N): в превью код лежит на уровень
+    // глубже (httpdocs/preview/<ветка>/...), и относительный расчёт промахивается
+    // мимо private/, который физически один и тот же и для прода, и для превью.
+    return '/home/httpd/vhosts/trexgo.ru/private/leads-config.php';
 }
 
 /** @return array<string, mixed> */
