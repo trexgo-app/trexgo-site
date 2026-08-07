@@ -87,10 +87,16 @@ $row['id'] = '2f6b5f5f-5a3a-4fef-8fd5-aed5fc64a023';
 $row['Телефон'] = '+79850757675';
 $row['Комментарий клиента'] = '=не формула';
 $row['Статус'] = 'new';
+$row['Дата создания'] = '2026-08-07';
+$row['Время создания'] = '14:30:00';
+$row['Дата контакта'] = '2026-08-06 12:15:00';
 $sheet->write($path, [$row]);
 $roundTrip = $sheet->read($path);
 @unlink($path);
 expect(count($roundTrip) === 1, 'XLSX row count changed');
 expect($roundTrip[0] === $row, 'XLSX round trip changed cell values');
+expect($roundTrip[0]['Дата создания'] === '2026-08-07', 'Date-only cell lost its value on round trip');
+expect($roundTrip[0]['Время создания'] === '14:30:00', 'Time-only cell lost its value on round trip');
+expect($roundTrip[0]['Дата контакта'] === '2026-08-06 12:15:00', 'Datetime cell lost its value on round trip');
 
 fwrite(STDOUT, "Passed {$tests} tests" . PHP_EOL);

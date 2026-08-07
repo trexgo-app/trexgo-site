@@ -10,7 +10,7 @@ require_once __DIR__ . '/vendor/shuchkin/simplexlsxgen/src/SimpleXLSXGen.php';
 require_once __DIR__ . '/lib/YandexDiskClient.php';
 require_once __DIR__ . '/lib/XlsxLeadSheet.php';
 
-const TREXGO_LEAD_STATUSES = ['new', 'contacted', 'qualified', 'won', 'lost', 'archived'];
+const TREXGO_LEAD_STATUSES = XlsxLeadSheet::STATUSES;
 
 /** @param array<string, string> $row */
 function trexgo_manual_row_has_data(array $row): bool
@@ -43,14 +43,28 @@ function trexgo_sheet_to_utc(?string $value): ?string
     throw new RuntimeException('Invalid contact date in XLSX');
 }
 
-function trexgo_utc_to_sheet(?string $value): string
+function trexgo_utc_to_moscow(?string $value): ?DateTimeImmutable
 {
     if ($value === null || $value === '') {
-        return '';
+        return null;
     }
     return (new DateTimeImmutable($value, new DateTimeZone('UTC')))
-        ->setTimezone(new DateTimeZone('Europe/Moscow'))
-        ->format('d.m.Y H:i');
+        ->setTimezone(new DateTimeZone('Europe/Moscow'));
+}
+
+function trexgo_utc_to_sheet_date(?string $value): string
+{
+    return trexgo_utc_to_moscow($value)?->format('Y-m-d') ?? '';
+}
+
+function trexgo_utc_to_sheet_time(?string $value): string
+{
+    return trexgo_utc_to_moscow($value)?->format('H:i:s') ?? '';
+}
+
+function trexgo_utc_to_sheet_datetime(?string $value): string
+{
+    return trexgo_utc_to_moscow($value)?->format('Y-m-d H:i:s') ?? '';
 }
 
 /** @return array<string, array<string, mixed>> */
@@ -69,7 +83,8 @@ function trexgo_lead_to_sheet_row(array $lead): array
 {
     return [
         'id' => (string) $lead['id'],
-        'Создана' => trexgo_utc_to_sheet((string) $lead['created_at']),
+        'Дата создания' => trexgo_utc_to_sheet_date((string) $lead['created_at']),
+        'Время создания' => trexgo_utc_to_sheet_time((string) $lead['created_at']),
         'Имя' => (string) ($lead['name'] ?? ''),
         'Телефон' => (string) ($lead['phone'] ?? ''),
         'Email' => (string) ($lead['email'] ?? ''),
@@ -77,17 +92,17 @@ function trexgo_lead_to_sheet_row(array $lead): array
         'Комментарий клиента' => (string) ($lead['comment'] ?? ''),
         'Источник' => (string) ($lead['source'] ?? ''),
         'Страница' => (string) ($lead['page_url'] ?? ''),
+        'Статус' => (string) ($lead['status'] ?? 'new'),
+        'Заметка' => (string) ($lead['note'] ?? ''),
+        'Следующий шаг' => (string) ($lead['next_step'] ?? ''),
+        'Дата контакта' => trexgo_utc_to_sheet_datetime($lead['contacted_at'] ?? null),
+        'Ответственный' => (string) ($lead['owner'] ?? ''),
         'utm_source' => (string) ($lead['utm_source'] ?? ''),
         'utm_medium' => (string) ($lead['utm_medium'] ?? ''),
         'utm_campaign' => (string) ($lead['utm_campaign'] ?? ''),
         'utm_content' => (string) ($lead['utm_content'] ?? ''),
         'utm_term' => (string) ($lead['utm_term'] ?? ''),
         'yclid' => (string) ($lead['yclid'] ?? ''),
-        'Статус' => (string) ($lead['status'] ?? 'new'),
-        'Заметка' => (string) ($lead['note'] ?? ''),
-        'Следующий шаг' => (string) ($lead['next_step'] ?? ''),
-        'Дата контакта' => trexgo_utc_to_sheet($lead['contacted_at'] ?? null),
-        'Ответственный' => (string) ($lead['owner'] ?? ''),
     ];
 }
 
