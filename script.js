@@ -29,7 +29,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs
 const LEAD_FORM_CONFIG = {
   enabled: false,
   endpoint: '/api/leads.php',
-  successGoal: 'lead_submit_success_mysql'
+  successGoals: {
+    lead: 'lead_submit_success',
+    subscribe: 'subscription_submit_success'
+  }
 };
 const METRIKA_COUNTER_ID = 111364095;
 
@@ -158,10 +161,13 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
         successEl.style.display = 'block';
       }
       delete form.dataset.requestId;
-      reachMetrikaGoal(LEAD_FORM_CONFIG.successGoal, {
-        page: window.location.pathname,
-        form_kind: payload.form_kind
-      });
+      const successGoal = LEAD_FORM_CONFIG.successGoals[payload.form_kind];
+      if (successGoal) {
+        reachMetrikaGoal(successGoal, {
+          page: window.location.pathname,
+          form_kind: payload.form_kind
+        });
+      }
     } catch (error) {
       showFormStatus(
         status,
@@ -181,6 +187,19 @@ document.querySelectorAll('a[href^="tel:"]').forEach(link => {
     reachMetrikaGoal('phone_click', {
       page: window.location.pathname,
       placement: link.className || 'phone-link'
+    });
+  });
+});
+
+// Messenger transitions are useful secondary conversions while the form is
+// disabled, but they stay separate from a successfully delivered lead.
+document.querySelectorAll('a[href^="https://wa.me/"], a[href^="https://max.ru/"]').forEach(link => {
+  link.addEventListener('click', () => {
+    const messenger = link.href.startsWith('https://wa.me/') ? 'whatsapp' : 'max';
+    reachMetrikaGoal('messenger_click', {
+      page: window.location.pathname,
+      messenger,
+      placement: link.getAttribute('aria-label') || link.className || 'messenger-link'
     });
   });
 });
