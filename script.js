@@ -114,7 +114,9 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
   form.addEventListener('submit', async event => {
     event.preventDefault();
 
-    const formKind = form.classList.contains('inline-subscribe-form') ? 'subscription' : 'lead';
+    const declaredFormKind = form.dataset.formKind
+      || (form.classList.contains('inline-subscribe-form') ? 'subscribe' : 'lead');
+    const formKind = declaredFormKind === 'subscribe' ? 'subscription' : 'lead';
     const normalizedPhone = normalizeLeadPhone(phoneField?.value.trim() || '');
     const phoneDigits = normalizedPhone.replace(/\D/g, '');
     const email = emailField?.value.trim() || '';
