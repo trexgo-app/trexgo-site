@@ -8,6 +8,7 @@ require_once dirname(__DIR__) . '/api/lib/notifications.php';
 require_once dirname(__DIR__) . '/ops/vendor/shuchkin/simplexlsx/src/SimpleXLSX.php';
 require_once dirname(__DIR__) . '/ops/vendor/shuchkin/simplexlsxgen/src/SimpleXLSXGen.php';
 require_once dirname(__DIR__) . '/ops/lib/XlsxLeadSheet.php';
+require_once dirname(__DIR__) . '/ops/lib/RowValidation.php';
 
 $tests = 0;
 
@@ -98,5 +99,56 @@ expect($roundTrip[0] === $row, 'XLSX round trip changed cell values');
 expect($roundTrip[0]['Дата создания'] === '2026-08-07', 'Date-only cell lost its value on round trip');
 expect($roundTrip[0]['Время создания'] === '14:30:00', 'Time-only cell lost its value on round trip');
 expect($roundTrip[0]['Дата контакта'] === '2026-08-06 12:15:00', 'Datetime cell lost its value on round trip');
+
+function expect_row_exception(callable $callback, string $message): void
+{
+    global $tests;
+    $tests++;
+    try {
+        $callback();
+    } catch (TrexgoRowException $error) {
+        return;
+    }
+    throw new RuntimeException($message);
+}
+
+$validRow = array_fill_keys(XlsxLeadSheet::HEADERS, '');
+$validRow['Телефон'] = '+79850757675';
+$validRow['Email'] = 'client@example.com';
+$validRow['Статус'] = 'new';
+$validated = trexgo_validate_manual_row($validRow, XlsxLeadSheet::STATUSES);
+expect($validated['phone'] === '+79850757675', 'Valid manual row phone was not normalized');
+expect($validated['email'] === 'client@example.com', 'Valid manual row email changed unexpectedly');
+expect($validated['status'] === 'new', 'Valid manual row status changed unexpectedly');
+
+expect_row_exception(
+    static fn (): array => trexgo_validate_manual_row(
+        array_merge($validRow, ['Телефон' => '123']),
+        XlsxLeadSheet::STATUSES
+    ),
+    'Manual row with a short phone should raise TrexgoRowException'
+);
+expect_row_exception(
+    static fn (): array => trexgo_validate_manual_row(
+        array_merge($validRow, ['Email' => 'not-an-email']),
+        XlsxLeadSheet::STATUSES
+    ),
+    'Manual row with a malformed email should raise TrexgoRowException'
+);
+expect_row_exception(
+    static fn (): array => trexgo_validate_manual_row(
+        array_merge($validRow, ['Статус' => 'not-a-status']),
+        XlsxLeadSheet::STATUSES
+    ),
+    'Manual row with an unknown status should raise TrexgoRowException'
+);
+expect_row_exception(
+    static fn (): string => trexgo_validate_status('not-a-status', XlsxLeadSheet::STATUSES),
+    'Unknown status update should raise TrexgoRowException'
+);
+expect(
+    trexgo_validate_status('qualified', XlsxLeadSheet::STATUSES) === 'qualified',
+    'Valid status update was rejected'
+);
 
 fwrite(STDOUT, "Passed {$tests} tests" . PHP_EOL);

@@ -9,6 +9,7 @@ require_once __DIR__ . '/vendor/shuchkin/simplexlsx/src/SimpleXLSX.php';
 require_once __DIR__ . '/vendor/shuchkin/simplexlsxgen/src/SimpleXLSXGen.php';
 require_once __DIR__ . '/lib/YandexDiskClient.php';
 require_once __DIR__ . '/lib/XlsxLeadSheet.php';
+require_once __DIR__ . '/lib/RowValidation.php';
 
 const TREXGO_LEAD_STATUSES = XlsxLeadSheet::STATUSES;
 
@@ -40,7 +41,7 @@ function trexgo_sheet_to_utc(?string $value): ?string
             }
         }
     }
-    throw new RuntimeException('Invalid contact date in XLSX');
+    throw new TrexgoRowException('Invalid contact date in XLSX');
 }
 
 function trexgo_utc_to_moscow(?string $value): ?DateTimeImmutable
@@ -109,19 +110,8 @@ function trexgo_lead_to_sheet_row(array $lead): array
 /** @param array<string, string> $row */
 function trexgo_insert_manual_lead(PDO $pdo, array $row): string
 {
-    $phone = trexgo_normalize_phone($row['Телефон'] ?? '');
-    $digits = preg_replace('/\D+/', '', $phone) ?? '';
-    if (strlen($digits) < 10 || strlen($digits) > 15) {
-        throw new RuntimeException('Manual XLSX row has invalid phone');
-    }
-    $email = strtolower(trim($row['Email'] ?? ''));
-    if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-        throw new RuntimeException('Manual XLSX row has invalid email');
-    }
-    $status = trim($row['Статус'] ?? '') ?: 'new';
-    if (!in_array($status, TREXGO_LEAD_STATUSES, true)) {
-        throw new RuntimeException('Manual XLSX row has invalid status');
-    }
+    ['phone' => $phone, 'email' => $email, 'status' => $status]
+        = trexgo_validate_manual_row($row, TREXGO_LEAD_STATUSES);
 
     $id = trexgo_uuid_v4();
     $now = trexgo_utc_now();
@@ -161,10 +151,7 @@ function trexgo_insert_manual_lead(PDO $pdo, array $row): string
 /** @param array<string, mixed> $lead @param array<string, string> $row */
 function trexgo_update_work_fields(PDO $pdo, array $lead, array $row): bool
 {
-    $status = trim($row['Статус'] ?? '') ?: (string) $lead['status'];
-    if (!in_array($status, TREXGO_LEAD_STATUSES, true)) {
-        throw new RuntimeException('XLSX row has invalid status');
-    }
+    $status = trexgo_validate_status(trim($row['Статус'] ?? '') ?: (string) $lead['status'], TREXGO_LEAD_STATUSES);
     $values = [
         'status' => $status,
         'note' => trexgo_text($row['Заметка'] ?? null, 10000),
@@ -217,6 +204,8 @@ try {
     $leads = trexgo_fetch_leads($pdo);
     $orderedIds = [];
     $databaseChanged = false;
+    $skippedRowNotes = [];
+    $skippedRowIndexes = [];
 
     foreach ($rows as $index => &$row) {
         $id = trim($row['id'] ?? '');
@@ -226,8 +215,10 @@ try {
             }
             try {
                 $id = trexgo_insert_manual_lead($pdo, $row);
-            } catch (Throwable $error) {
-                throw new RuntimeException('Cannot import manual XLSX row ' . ($index + 2), 0, $error);
+            } catch (TrexgoRowException $error) {
+                $skippedRowNotes[] = 'строка ' . ($index + 2) . ': ' . $error->getMessage();
+                $skippedRowIndexes[$index] = true;
+                continue;
             }
             $row['id'] = $id;
             $databaseChanged = true;
@@ -240,19 +231,43 @@ try {
             throw new RuntimeException('XLSX contains a duplicate lead id at row ' . ($index + 2));
         }
         $orderedIds[$id] = true;
-        $databaseChanged = trexgo_update_work_fields($pdo, $leads[$id], $row) || $databaseChanged;
+        try {
+            $databaseChanged = trexgo_update_work_fields($pdo, $leads[$id], $row) || $databaseChanged;
+        } catch (TrexgoRowException $error) {
+            $skippedRowNotes[] = 'строка ' . ($index + 2) . ': ' . $error->getMessage();
+        }
     }
     unset($row);
 
+    // Собираем вывод в исходном порядке строк файла: пропущенная строка остаётся
+    // на своём месте как есть (без id — подхватится, когда её исправят), а не
+    // прыгает в конец. Иначе файл переписывался бы каждый прогон только из-за
+    // перестановки, даже когда по сути ничего не изменилось.
     $leads = trexgo_fetch_leads($pdo);
     $outputRows = [];
-    foreach (array_keys($orderedIds) as $id) {
-        $outputRows[] = trexgo_lead_to_sheet_row($leads[$id]);
+    foreach ($rows as $index => $row) {
+        if (isset($skippedRowIndexes[$index])) {
+            $outputRows[] = $row;
+            continue;
+        }
+        $id = trim($row['id'] ?? '');
+        if ($id !== '' && isset($orderedIds[$id])) {
+            $outputRows[] = trexgo_lead_to_sheet_row($leads[$id]);
+        }
     }
     foreach ($leads as $id => $lead) {
         if (!isset($orderedIds[$id])) {
             $outputRows[] = trexgo_lead_to_sheet_row($lead);
         }
+    }
+
+    if ($skippedRowNotes !== []) {
+        trexgo_notify_operational(
+            'Синхронизация заявок TrexGo: пропущены строки с ошибками в данных (исправьте и дождитесь следующего прогона):' . PHP_EOL
+                . implode(PHP_EOL, $skippedRowNotes),
+            $config
+        );
+        trexgo_log_event('yandex_sync_rows_skipped', ['rows' => implode('; ', $skippedRowNotes)]);
     }
 
     $fileChanged = $initialMetadata === null || $outputRows !== $rows;
