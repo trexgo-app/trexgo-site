@@ -517,6 +517,7 @@
 .pv-final-pic { margin-bottom: 8px; }
 .pv-final-sub { margin-bottom: 36px; line-height: 1.6; }
 .pv-final .form-row { justify-content: center; }
+.pv-final .form-privacy { font-size: 18px; }
 .pv-final .form-privacy a { color: var(--sand); text-decoration: underline; }
 .pv-final-msngrs {
   display: flex;
@@ -525,7 +526,7 @@
   gap: 12px;
   margin-top: 28px;
 }
-.pv-final-msngrs span { font-size: 12px; color: var(--sand); }
+.pv-final-msngrs span { font-size: 18px; color: var(--sand); }
 
 /* --- Mobile sticky bar --- */
 .pv-sticky-bar {

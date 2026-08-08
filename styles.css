@@ -947,6 +947,11 @@ body {
   color: var(--sand);
 }
 
+/* .lead-form-box p { font-size: 18px } выше по специфичности, чем .form-privacy —
+   без этого правила текст согласия внутри блока рендерится крупным вопреки
+   заданным 12px. Раз так уже видно на всех боевых страницах — закрепляем
+   18px явно, а не боремся со специфичностью. */
+.lead-form-box .form-privacy { font-size: 18px; }
 .lead-form-box .form-privacy a { color: var(--sand); }
 
 .form-success {
