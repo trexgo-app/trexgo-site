@@ -484,27 +484,49 @@
   color: var(--orange);
 }
 
-/* --- Финальный CTA --- */
+/* --- Финальный CTA ---
+   Форма повторяет блок заявки с главной (.lead-form-box в styles.css):
+   светлый блок на тёмной секции, подпись, крупный заголовок, текст под ним.
+   Размеры взяты оттуда же — если правится там, правится и здесь.
+   Своё у ролевых страниц только два: текст в два абзаца вместо одного
+   и ряд мессенджеров под формой. */
 .pv-final { padding: 80px 0; background: var(--black); }
-.pv-final-box { max-width: 640px; margin: 0 auto; text-align: center; }
+.pv-final-box {
+  background: rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 64px;
+  text-align: center;
+}
+.pv-final-box .label-upper { color: var(--sand); }
 .pv-final h2 {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(28px, 3.5vw, 46px);
   font-weight: 900;
   color: var(--cream);
-  line-height: 1.1;
-  letter-spacing: -0.5px;
+  line-height: 0.96;
+  letter-spacing: -2px;
   margin-bottom: 14px;
 }
-.pv-final-pic { font-size: 15px; color: var(--sand); margin-bottom: 8px; }
-.pv-final-sub { font-size: 15px; color: var(--sand); margin-bottom: 36px; line-height: 1.6; }
+.pv-final-pic,
+.pv-final-sub {
+  font-size: 18px;
+  color: var(--sand);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pv-final-pic { margin-bottom: 8px; }
+.pv-final-sub { margin-bottom: 36px; line-height: 1.6; }
 .pv-final .form-row { justify-content: center; }
+.pv-final .form-privacy { font-size: 18px; }
+.pv-final .form-privacy a { color: var(--sand); text-decoration: underline; }
 .pv-final-msngrs {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 22px;
+  margin-top: 28px;
 }
-.pv-final-msngrs span { font-size: 13px; color: var(--sand); align-self: center; }
+.pv-final-msngrs span { font-size: 18px; color: var(--sand); }
 
 /* --- Mobile sticky bar --- */
 .pv-sticky-bar {
@@ -740,6 +762,7 @@
   .pv-sign-grid { grid-template-columns: 1fr; }
   .pv-need-grid { grid-template-columns: 1fr; }
   .pv-steps-grid { grid-template-columns: 1fr; }
+  .pv-final-box { padding: 40px 24px; }
   .pv-timeline-track { flex-direction: column; gap: 24px; padding-top: 0; padding-left: 20px; }
   .pv-timeline-track::before { display: none; }
   .pv-tl-point::before { position: absolute; left: -20px; top: 4px; margin-bottom: 0; }

@@ -23,9 +23,19 @@ const closeNavSubs = () => {
 document.addEventListener('click', closeNavSubs);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
 
-// Lead and subscription forms. Analytics goals live in a separate branch and
-// are intentionally not sent from this transport layer.
+// Lead and subscription forms + их цели в Метрике.
 const LEADS_ENDPOINT = 'api/leads';
+const METRIKA_COUNTER_ID = 111364095;
+const LEAD_SUCCESS_GOALS = {
+  lead: 'lead_submit_success',
+  subscription: 'subscription_submit_success'
+};
+
+const reachMetrikaGoal = (goal, params = {}) => {
+  if (typeof window.ym === 'function') {
+    window.ym(METRIKA_COUNTER_ID, 'reachGoal', goal, params);
+  }
+};
 
 const normalizeLeadPhone = value => {
   let digits = value.replace(/\D/g, '');
@@ -186,6 +196,13 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
         showLeadFormStatus(status, 'Готово. Мы свяжемся с вами.', 'success');
       }
       delete form.dataset.requestId;
+      const successGoal = LEAD_SUCCESS_GOALS[formKind];
+      if (successGoal) {
+        reachMetrikaGoal(successGoal, {
+          page: window.location.pathname,
+          form_kind: formKind
+        });
+      }
     } catch (error) {
       const message = error.name === 'AbortError'
         ? 'Сервер не ответил вовремя. Попробуйте ещё раз — повторная отправка не создаст дубль.'
@@ -200,6 +217,29 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
       form.classList.remove('is-loading');
       if (submitButton) submitButton.disabled = false;
     }
+  });
+});
+
+// Phone clicks are a separate high-intent conversion in Yandex Metrika.
+document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+  link.addEventListener('click', () => {
+    reachMetrikaGoal('phone_click', {
+      page: window.location.pathname,
+      placement: link.className || 'phone-link'
+    });
+  });
+});
+
+// Messenger transitions are useful secondary conversions while the form is
+// disabled, but they stay separate from a successfully delivered lead.
+document.querySelectorAll('a[href^="https://wa.me/"], a[href^="https://max.ru/"]').forEach(link => {
+  link.addEventListener('click', () => {
+    const messenger = link.href.startsWith('https://wa.me/') ? 'whatsapp' : 'max';
+    reachMetrikaGoal('messenger_click', {
+      page: window.location.pathname,
+      messenger,
+      placement: link.getAttribute('aria-label') || link.className || 'messenger-link'
+    });
   });
 });
 
