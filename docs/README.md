@@ -243,9 +243,9 @@ curl -sI https://trexgo.app/waybills.html | head -3
 curl -s --compressed -m 20 -o /dev/null --resolve "trexgo.ru:443:178.208.83.20" \
   -w "%{http_code} %{size_download}\n" https://trexgo.ru/
 
-# Тяжёлая картинка — главный тест на ТСПУ, должна прийти целиком
+# Самая тяжёлая картинка — тест на ТСПУ, должна прийти целиком
 curl -s --compressed -m 40 -o /dev/null --resolve "trexgo.ru:443:178.208.83.20" \
-  -w "got=%{size_download} time=%{time_total}\n" https://trexgo.ru/Stati_image/5.png
+  -w "got=%{size_download} time=%{time_total}\n" https://trexgo.ru/Stati_image/1.webp
 
 # Превью ветки: должно отдавать 200 и заголовок noindex
 curl -sI -m 20 https://trexgo.ru/preview/ИМЯ-ВЕТКИ/ | grep -i "http/\|x-robots"
