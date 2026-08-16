@@ -106,7 +106,29 @@ php ops/cleanup_rate_limit.php
 | `backup_db.php` | ежедневно |
 | `cleanup_rate_limit.php` | ежедневно |
 
-Путь к PHP CLI и `mysqldump` проверить на сервере до сохранения cron. Восстановление
+**Путь к PHP CLI обязателен полным** — на Макхосте `php` без пути резолвится
+в системный `/usr/bin/php` (5.6.37, не понимает `strict_types`/типизацию скрипта).
+Рабочий бинарник — `/home/httpd/fcgi-bin/a250227_trexgo/php-cli` (PHP 8.1.21):
+
+```bash
+/home/httpd/fcgi-bin/a250227_trexgo/php-cli /home/httpd/vhosts/trexgo.ru/httpdocs/ops/sync_yandex_disk.php
+```
+
+**`error_log()` из CLI не попадает в `logs/error_log`.** Тот файл собирает только
+ошибки FastCGI-обработчика веб-запросов; при запуске через `php-cli` PHP пишет
+предупреждения и необработанные исключения в stderr процесса, а cron на Макхосте
+никуда его не перенаправляет по умолчанию — значит фактически такие сообщения
+пропадают. Диагностировано 16.08.2026 при разборе алерта «Синхронизация заявок
+TrexGo не выполнена. Проверьте PHP error_log.»: сам текст алерта вводит в
+заблуждение — `error_log` в этом случае пуст, даже если скрипт правда упал.
+Чтобы видеть причину, добавить перенаправление stderr в отдельный файл прямо
+в команде cron:
+
+```bash
+/home/httpd/fcgi-bin/a250227_trexgo/php-cli /home/httpd/vhosts/trexgo.ru/httpdocs/ops/sync_yandex_disk.php >> /home/httpd/vhosts/trexgo.ru/logs/sync_yandex_disk.log 2>&1
+```
+
+Путь к `mysqldump` тоже проверить на сервере до сохранения cron. Восстановление
 из свежего дампа проверять раз в квартал на отдельной тестовой базе.
 
 ## Таблица на Яндекс Диске
