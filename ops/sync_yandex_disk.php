@@ -315,10 +315,12 @@ try {
     // Транспортные сбои Яндекс.Диска гасятся ретраями внутри YandexDiskClient; то, что
     // долетело сюда, уже пережило их. Всё равно не будим человека на первый же случай —
     // короткие сетевые окна недоступности иногда переживают и три попытки подряд.
+    // Алерт уходит один раз при пересечении порога, а не на каждый сбой после него —
+    // иначе при затяжной недоступности cron засыпает Telegram сообщением каждые 15 минут.
     $consecutiveFailures = ((int) @file_get_contents($failureCountPath)) + 1;
     file_put_contents($failureCountPath, (string) $consecutiveFailures);
 
-    if ($consecutiveFailures >= TREXGO_SYNC_ALERT_THRESHOLD && isset($config) && is_array($config)) {
+    if ($consecutiveFailures === TREXGO_SYNC_ALERT_THRESHOLD && isset($config) && is_array($config)) {
         trexgo_notify_operational('Синхронизация заявок TrexGo не выполнена. Проверьте PHP error_log.', $config);
     }
     trexgo_cli_fail('Yandex Disk synchronization failed. See the PHP error log.');
