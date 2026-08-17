@@ -5,9 +5,31 @@ declare(strict_types=1);
 final class YandexDiskClient
 {
     private const API_BASE = 'https://cloud-api.yandex.net/v1/disk/resources';
+    private const RETRY_ATTEMPTS = 3;
+    private const RETRY_DELAY_SECONDS = 1;
     private ?string $accessToken = null;
     /** @var array<string, mixed> */
     private array $config;
+
+    /**
+     * Сеть до Яндекс.Диска с Макхоста иногда рвётся на уровне TCP (curl отдаёт HTTP 0),
+     * а не отвечает ошибкой API — повтор через секунду в норме решает это без шума в Telegram.
+     */
+    private function withRetry(callable $attempt): mixed
+    {
+        $lastError = null;
+        for ($try = 1; $try <= self::RETRY_ATTEMPTS; $try++) {
+            try {
+                return $attempt();
+            } catch (RuntimeException $error) {
+                $lastError = $error;
+                if ($try < self::RETRY_ATTEMPTS) {
+                    sleep(self::RETRY_DELAY_SECONDS);
+                }
+            }
+        }
+        throw $lastError;
+    }
 
     /** @param array<string, mixed> $config */
     public function __construct(array $config)
@@ -47,25 +69,27 @@ final class YandexDiskClient
             throw new RuntimeException('Yandex Disk did not provide a download link');
         }
 
-        $handle = fopen($destination, 'wb');
-        if ($handle === false) {
-            throw new RuntimeException('Cannot open XLSX destination');
-        }
-        $curl = curl_init($href);
-        curl_setopt_array($curl, [
-            CURLOPT_FILE => $handle,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 30,
-        ]);
-        $ok = curl_exec($curl);
-        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        curl_close($curl);
-        fclose($handle);
-        if ($ok !== true || $status < 200 || $status >= 300) {
-            @unlink($destination);
-            throw new RuntimeException('Yandex Disk download failed');
-        }
+        $this->withRetry(function () use ($href, $destination): void {
+            $handle = fopen($destination, 'wb');
+            if ($handle === false) {
+                throw new RuntimeException('Cannot open XLSX destination');
+            }
+            $curl = curl_init($href);
+            curl_setopt_array($curl, [
+                CURLOPT_FILE => $handle,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_TIMEOUT => 30,
+            ]);
+            $ok = curl_exec($curl);
+            $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+            curl_close($curl);
+            fclose($handle);
+            if ($ok !== true || $status < 200 || $status >= 300) {
+                @unlink($destination);
+                throw new RuntimeException('Yandex Disk download failed');
+            }
+        });
     }
 
     public function upload(string $path, string $source): void
@@ -84,27 +108,29 @@ final class YandexDiskClient
             throw new RuntimeException('Yandex Disk did not provide an upload link');
         }
 
-        $handle = fopen($source, 'rb');
-        if ($handle === false) {
-            throw new RuntimeException('Cannot open XLSX source');
-        }
-        $curl = curl_init($href);
-        curl_setopt_array($curl, [
-            CURLOPT_UPLOAD => true,
-            CURLOPT_INFILE => $handle,
-            CURLOPT_INFILESIZE => filesize($source),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 30,
-        ]);
-        $ok = curl_exec($curl);
-        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        curl_close($curl);
-        fclose($handle);
-        if ($ok === false || $status < 200 || $status >= 300) {
-            throw new RuntimeException('Yandex Disk upload failed');
-        }
+        $this->withRetry(function () use ($href, $source): void {
+            $handle = fopen($source, 'rb');
+            if ($handle === false) {
+                throw new RuntimeException('Cannot open XLSX source');
+            }
+            $curl = curl_init($href);
+            curl_setopt_array($curl, [
+                CURLOPT_UPLOAD => true,
+                CURLOPT_INFILE => $handle,
+                CURLOPT_INFILESIZE => filesize($source),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_TIMEOUT => 30,
+            ]);
+            $ok = curl_exec($curl);
+            $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+            curl_close($curl);
+            fclose($handle);
+            if ($ok === false || $status < 200 || $status >= 300) {
+                throw new RuntimeException('Yandex Disk upload failed');
+            }
+        });
     }
 
     /** @return array{0:int,1:array<string,mixed>} */
@@ -129,20 +155,24 @@ final class YandexDiskClient
         if ($form !== null) {
             $options[CURLOPT_POSTFIELDS] = http_build_query($form);
         }
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        curl_close($curl);
+        try {
+            return $this->withRetry(function () use ($curl, $allowedStatuses): array {
+                $response = curl_exec($curl);
+                $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
 
-        if (!is_string($response) || !in_array($status, $allowedStatuses, true)) {
-            throw new RuntimeException("Yandex API request failed with HTTP {$status}");
-        }
-        $decoded = json_decode($response, true);
-        if (!is_array($decoded)) {
-            throw new RuntimeException('Yandex API returned invalid JSON');
-        }
+                if (!is_string($response) || !in_array($status, $allowedStatuses, true)) {
+                    throw new RuntimeException("Yandex API request failed with HTTP {$status}");
+                }
+                $decoded = json_decode($response, true);
+                if (!is_array($decoded)) {
+                    throw new RuntimeException('Yandex API returned invalid JSON');
+                }
 
-        return [$status, $decoded];
+                return [$status, $decoded];
+            });
+        } finally {
+            curl_close($curl);
+        }
     }
 
     private function token(): string
