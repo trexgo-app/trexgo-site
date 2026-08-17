@@ -155,6 +155,7 @@ final class YandexDiskClient
         if ($form !== null) {
             $options[CURLOPT_POSTFIELDS] = http_build_query($form);
         }
+        curl_setopt_array($curl, $options);
         try {
             return $this->withRetry(function () use ($curl, $allowedStatuses): array {
                 $response = curl_exec($curl);
