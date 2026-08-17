@@ -12,6 +12,7 @@ require_once __DIR__ . '/lib/XlsxLeadSheet.php';
 require_once __DIR__ . '/lib/RowValidation.php';
 
 const TREXGO_LEAD_STATUSES = XlsxLeadSheet::STATUSES;
+const TREXGO_SYNC_ALERT_THRESHOLD = 3;
 
 /** @param array<string, string> $row */
 function trexgo_manual_row_has_data(array $row): bool
@@ -182,6 +183,7 @@ if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
 
 $downloadPath = sys_get_temp_dir() . '/trexgo-leads-' . bin2hex(random_bytes(6)) . '.xlsx';
 $uploadPath = $downloadPath . '.new.xlsx';
+$failureCountPath = sys_get_temp_dir() . '/trexgo-leads-yandex-sync.failures';
 
 try {
     $config = trexgo_config();
@@ -295,6 +297,8 @@ try {
         }
     }
 
+    @unlink($failureCountPath);
+
     fwrite(
         STDOUT,
         ($fileChanged || $databaseChanged)
@@ -302,8 +306,19 @@ try {
             : 'No synchronization changes' . PHP_EOL
     );
 } catch (Throwable $error) {
-    trexgo_log_event('yandex_sync_failed', ['type' => get_class($error), 'code' => (string) $error->getCode()]);
-    if (isset($config) && is_array($config)) {
+    trexgo_log_event('yandex_sync_failed', [
+        'type' => get_class($error),
+        'code' => (string) $error->getCode(),
+        'message' => $error->getMessage(),
+    ]);
+
+    // Транспортные сбои Яндекс.Диска гасятся ретраями внутри YandexDiskClient; то, что
+    // долетело сюда, уже пережило их. Всё равно не будим человека на первый же случай —
+    // короткие сетевые окна недоступности иногда переживают и три попытки подряд.
+    $consecutiveFailures = ((int) @file_get_contents($failureCountPath)) + 1;
+    file_put_contents($failureCountPath, (string) $consecutiveFailures);
+
+    if ($consecutiveFailures >= TREXGO_SYNC_ALERT_THRESHOLD && isset($config) && is_array($config)) {
         trexgo_notify_operational('Синхронизация заявок TrexGo не выполнена. Проверьте PHP error_log.', $config);
     }
     trexgo_cli_fail('Yandex Disk synchronization failed. See the PHP error log.');
