@@ -321,9 +321,13 @@ try {
     file_put_contents($failureCountPath, (string) $consecutiveFailures);
 
     if ($consecutiveFailures === TREXGO_SYNC_ALERT_THRESHOLD && isset($config) && is_array($config)) {
-        trexgo_notify_operational('Синхронизация заявок TrexGo не выполнена. Проверьте PHP error_log.', $config);
+        trexgo_notify_operational(
+            'Синхронизация заявок TrexGo не выполнена после трёх запусков. '
+                . 'Причина записана в logs/sync_yandex_disk.log.',
+            $config
+        );
     }
-    trexgo_cli_fail('Yandex Disk synchronization failed. See the PHP error log.');
+    trexgo_cli_fail('Yandex Disk synchronization failed. See logs/sync_yandex_disk.log.');
 } finally {
     @unlink($downloadPath);
     @unlink($uploadPath);

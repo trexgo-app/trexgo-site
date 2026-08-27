@@ -93,7 +93,7 @@ function trexgo_log_event(string $event, array $context = []): void
 {
     // В context разрешены только технические признаки. ПДн сюда не передавать.
     error_log('[trexgo-leads] ' . json_encode(
-        ['event' => $event, 'context' => $context],
+        ['time' => gmdate('c'), 'event' => $event, 'context' => $context],
         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
     ));
 }

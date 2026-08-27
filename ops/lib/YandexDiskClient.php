@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+final class YandexDiskTransientException extends RuntimeException
+{
+}
+
 final class YandexDiskClient
 {
     private const API_BASE = 'https://cloud-api.yandex.net/v1/disk/resources';
-    private const RETRY_ATTEMPTS = 3;
-    private const RETRY_DELAY_SECONDS = 1;
+    private const RETRY_ATTEMPTS = 5;
     private ?string $accessToken = null;
     /** @var array<string, mixed> */
     private array $config;
@@ -21,10 +24,12 @@ final class YandexDiskClient
         for ($try = 1; $try <= self::RETRY_ATTEMPTS; $try++) {
             try {
                 return $attempt();
-            } catch (RuntimeException $error) {
+            } catch (YandexDiskTransientException $error) {
                 $lastError = $error;
                 if ($try < self::RETRY_ATTEMPTS) {
-                    sleep(self::RETRY_DELAY_SECONDS);
+                    // 1 + 2 + 4 + 8 секунд: переживаем короткие сетевые окна Макхоста,
+                    // но остаёмся далеко внутри пятнадцатиминутного интервала cron.
+                    sleep(2 ** ($try - 1));
                 }
             }
         }
@@ -83,11 +88,22 @@ final class YandexDiskClient
             ]);
             $ok = curl_exec($curl);
             $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+            $curlCode = curl_errno($curl);
+            $curlMessage = curl_error($curl);
             curl_close($curl);
             fclose($handle);
             if ($ok !== true || $status < 200 || $status >= 300) {
                 @unlink($destination);
-                throw new RuntimeException('Yandex Disk download failed');
+                $message = sprintf(
+                    'Yandex Disk download failed with HTTP %d, cURL %d: %s',
+                    $status,
+                    $curlCode,
+                    $curlMessage !== '' ? $curlMessage : 'no transport details'
+                );
+                if ($curlCode !== 0 || $status === 0 || $status === 429 || $status >= 500) {
+                    throw new YandexDiskTransientException($message);
+                }
+                throw new RuntimeException($message);
             }
         });
     }
@@ -125,10 +141,21 @@ final class YandexDiskClient
             ]);
             $ok = curl_exec($curl);
             $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+            $curlCode = curl_errno($curl);
+            $curlMessage = curl_error($curl);
             curl_close($curl);
             fclose($handle);
             if ($ok === false || $status < 200 || $status >= 300) {
-                throw new RuntimeException('Yandex Disk upload failed');
+                $message = sprintf(
+                    'Yandex Disk upload failed with HTTP %d, cURL %d: %s',
+                    $status,
+                    $curlCode,
+                    $curlMessage !== '' ? $curlMessage : 'no transport details'
+                );
+                if ($curlCode !== 0 || $status === 0 || $status === 429 || $status >= 500) {
+                    throw new YandexDiskTransientException($message);
+                }
+                throw new RuntimeException($message);
             }
         });
     }
@@ -162,11 +189,22 @@ final class YandexDiskClient
                 $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
 
                 if (!is_string($response) || !in_array($status, $allowedStatuses, true)) {
-                    throw new RuntimeException("Yandex API request failed with HTTP {$status}");
+                    $curlCode = curl_errno($curl);
+                    $curlMessage = curl_error($curl);
+                    $message = sprintf(
+                        'Yandex API request failed with HTTP %d, cURL %d: %s',
+                        $status,
+                        $curlCode,
+                        $curlMessage !== '' ? $curlMessage : 'no transport details'
+                    );
+                    if ($status === 0 || $status === 429 || $status >= 500) {
+                        throw new YandexDiskTransientException($message);
+                    }
+                    throw new RuntimeException($message);
                 }
                 $decoded = json_decode($response, true);
                 if (!is_array($decoded)) {
-                    throw new RuntimeException('Yandex API returned invalid JSON');
+                    throw new YandexDiskTransientException('Yandex API returned invalid JSON');
                 }
 
                 return [$status, $decoded];
