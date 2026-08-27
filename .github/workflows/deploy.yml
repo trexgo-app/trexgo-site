@@ -25,7 +25,19 @@ jobs:
       # Хостинг не поддерживает шифрование: на AUTH TLS отвечает "500 AUTH not
       # understood", порт 990 закрыт. Поэтому protocol: ftp — пароль идёт по сети
       # открытым текстом. Просить у Макхоста SFTP или включение FTPS.
+      #
+      # FTP хостинга рвёт соединение при заливке подряд без пауз: воспроизведено
+      # 28.08.2026 — 16-й файл в серии получает "426 Transfer aborted.
+      # Interrupted system call", с паузой 0,7 с проходят все 25. Action пауз
+      # не умеет и переподключаться не умеет ("This library does not currently
+      # handle reconnects"), поэтому обрыв оставляет файл усечённым до нуля.
+      # На выкладке кабинета так дважды обнулился .htaccess.
+      #
+      # Отсюда две меры: повтор всей выкладки при обрыве (continue-on-error +
+      # второй заход) и проверка ниже, что критичные файлы доехали целыми.
       - name: Залить по FTP
+        id: ftp
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -50,3 +62,62 @@ jobs:
             vercel.json
             **/.DS_Store
             **/Thumbs.db
+
+      # Второй заход — только если первый оборвался. Action инкрементальный:
+      # он дозальёт то, что не доехало, а не начнёт с нуля.
+      - name: Повторить выкладку после обрыва
+        if: steps.ftp.outcome == 'failure' && inputs.dry-run != true
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          server-dir: httpdocs/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .github/**
+            .claude/**
+            CLAUDE.md
+            README.md
+            docs/**
+            config-snapshots/**
+            temp/**
+            vercel.json
+            **/.DS_Store
+            **/Thumbs.db
+
+      # Зелёный workflow означает «файлы отправлены», а не «сайт цел»
+      # (rules/deploy.md). После обрыва файл остаётся нулевого размера, и
+      # опаснее всех — .htaccess: без него отпадают HTTPS-редирект и запреты
+      # на db/, ops/, tests/, api/lib/. Поэтому смотрим глазами workflow,
+      # а не своими, и роняем сборку, если сайт отвечает не так, как должен.
+      - name: Проверить, что сайт цел
+        if: inputs.dry-run != true
+        run: |
+          set -u
+          fail=0
+          check() { # адрес, ожидаемый код, что это
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$1" || echo 000)
+            if [ "$code" != "$2" ]; then
+              echo "::error::$3 — ожидали HTTP $2, получили $code ($1)"
+              fail=1
+            else
+              echo "ок: $3 — HTTP $code"
+            fi
+          }
+          check "https://trexgo.ru/"                        200 "главная"
+          check "https://trexgo.ru/privacy.html"            200 "политика конфиденциальности"
+          # Ниже — доказательство, что .htaccess доехал непустым.
+          check "http://trexgo.ru/"                         301 "редирект на HTTPS"
+          check "https://www.trexgo.ru/"                    301 "редирект с www"
+          check "https://trexgo.ru/db/"                     403 "миграции закрыты"
+          check "https://trexgo.ru/ops/"                    403 "CLI-скрипты закрыты"
+          check "https://trexgo.ru/api/lib/"                403 "внутренние модули закрыты"
+          check "https://trexgo.ru/.ftp-deploy-sync-state.json" 403 "файл состояния выкладки закрыт"
+          if [ "$fail" = 1 ]; then
+            echo "::error::Выкладка доехала повреждённой. Проверить .htaccess на сервере — после обрыва FTP он мог обнулиться."
+            exit 1
+          fi
