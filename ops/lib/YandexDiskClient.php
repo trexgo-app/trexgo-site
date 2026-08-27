@@ -10,13 +10,15 @@ final class YandexDiskClient
 {
     private const API_BASE = 'https://cloud-api.yandex.net/v1/disk/resources';
     private const RETRY_ATTEMPTS = 5;
+    private const RETRY_BASE_DELAY_SECONDS = 4;
     private ?string $accessToken = null;
     /** @var array<string, mixed> */
     private array $config;
 
     /**
      * Сеть до Яндекс.Диска с Макхоста иногда рвётся на уровне TCP (curl отдаёт HTTP 0),
-     * а не отвечает ошибкой API — повтор через секунду в норме решает это без шума в Telegram.
+     * а не отвечает ошибкой API — повторы с растущей паузой переживают сетевое окно
+     * без частых запросов и лишнего шума в Telegram.
      */
     private function withRetry(callable $attempt): mixed
     {
@@ -27,9 +29,9 @@ final class YandexDiskClient
             } catch (YandexDiskTransientException $error) {
                 $lastError = $error;
                 if ($try < self::RETRY_ATTEMPTS) {
-                    // 1 + 2 + 4 + 8 секунд: переживаем короткие сетевые окна Макхоста,
+                    // 4 + 8 + 16 + 32 секунды: снижаем частоту запросов с Макхоста,
                     // но остаёмся далеко внутри пятнадцатиминутного интервала cron.
-                    sleep(2 ** ($try - 1));
+                    sleep(self::RETRY_BASE_DELAY_SECONDS * (2 ** ($try - 1)));
                 }
             }
         }
