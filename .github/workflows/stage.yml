@@ -103,6 +103,18 @@ jobs:
             echo "::error::api/leads на stage не похож на заглушку: $lead_body"
             fail=1
           fi
+          # Смоук-проверка уже опубликованной страницы: pull-deploy.sh
+          # проверяет отсутствие Метрики ДО rsync в TARGET (gate), эта
+          # проверка — независимая вторая линия ПОСЛЕ публикации, на случай
+          # расхождения между тем, что попало в $FINAL, и тем, что реально
+          # уехало в $TARGET.
+          index_body=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/" || echo "")
+          if printf '%s' "$index_body" | grep -q -e 'mc\.yandex\.ru' -e '111364095'; then
+            echo "::error::на опубликованной странице stage найдена боевая Яндекс.Метрика"
+            fail=1
+          else
+            echo "ок: боевая Метрика на опубликованной странице не найдена"
+          fi
           if [ "$fail" = 1 ]; then
             echo "::error::stage отвечает не так, как должен."
             exit 1
