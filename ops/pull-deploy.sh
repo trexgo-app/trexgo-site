@@ -34,6 +34,13 @@ DEPLOY_ENV="${DEPLOY_ENV:-production}"
 # ждут) делит один WORK — rm -rf при старте или в trap EXIT одного процесса
 # сносит файлы, которые в этот момент читает rsync другого.
 WORK="/home/httpd/vhosts/trexgo.ru/private/deploy-work-site-${DEPLOY_ENV}"
+# Файл-замок на env: подписанный запрос ещё действителен 300 секунд (окно
+# в deployhook.php) и теоретически может быть отправлен повторно. Без замка
+# это запустило бы вторую выкладку того же окружения поверх первой — обе
+# пишут в один WORK и в один TARGET. concurrency в deploy.yml/stage.yml
+# защищает только запросы, прошедшие через сам Actions; замок — от прямого
+# повтора запроса к deployhook.php в обход Actions.
+LOCK="/home/httpd/vhosts/trexgo.ru/private/deploy-lock-${DEPLOY_ENV}"
 TOKEN="${DEPLOY_TOKEN:?нет DEPLOY_TOKEN}"
 
 # Что к сайту не относится и на хостинг не попадает. Список повторяет
@@ -63,6 +70,12 @@ case "$DEPLOY_ENV" in
   production|stage) ;;
   *) log "ОШИБКА: неизвестный DEPLOY_ENV='$DEPLOY_ENV' (ожидались production или stage)"; exit 1 ;;
 esac
+
+exec 9>"$LOCK"
+if ! flock -n 9; then
+  log "ОШИБКА: выкладка $DEPLOY_ENV уже идёт (замок $LOCK занят)"
+  exit 1
+fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK"
@@ -104,48 +117,76 @@ done
 
 args=(-a --no-perms --no-owner --no-group --delay-updates)
 for e in "${EXCLUDE[@]}"; do args+=(--exclude="$e"); done
-# --delete намеренно нет для production: в веб-корне лежит и то, чего
-# в репозитории нет и не должно быть — папка preview/ со сборками веток,
-# файл подтверждения прав на сайт для Яндекса, index.html и mchost.php
-# от хостера. Раньше их берёг список файлов, который вёл FTP-action; теперь
-# бережёт отсутствие --delete. Цена — удалённый из репозитория файл на
-# сервере остаётся: убирать руками.
-#
-# Для stage наоборот: там нет ничего постороннего, кроме заглушки хостера
-# при самой первой выкладке, и содержимое должно как можно точнее совпадать
-# с репозиторием + overlay — поэтому --delete включён.
-[ "$DEPLOY_ENV" = "stage" ] && args+=(--delete)
-[ "${DEPLOY_DRY_RUN:-}" = "1" ] && args+=(--dry-run --itemize-changes)
+dry=()
+[ "${DEPLOY_DRY_RUN:-}" = "1" ] && dry=(--dry-run --itemize-changes)
 
-log "Раскладываю в $TARGET (env=$DEPLOY_ENV)"
-rsync "${args[@]}" "$SRC/" "$TARGET/"
+if [ "$DEPLOY_ENV" = "stage" ]; then
+  # Раньше: rsync клал в TARGET боевое дерево (настоящий api/leads.php,
+  # .htaccess без пароля), и только следующей командой скрипта поверх
+  # накладывался stage-overlay. Между этими двумя шагами — а на реальной
+  # передаче файлов это не мгновение, а секунды — stage.trexgo.ru отдавал
+  # боевой сайт без пароля и с рабочей формой. При обрыве ровно между
+  # шагами это состояние оставалось надолго.
+  #
+  # Чинится не флагом rsync (атомарной подмены каталога средствами панели
+  # хостинга проверить нельзя — неизвестно, переживёт ли TARGET замену на
+  # symlink), а порядком: overlay накладывается на копию ДО того, как
+  # что-либо попадает в TARGET. Единственный rsync, который трогает TARGET,
+  # запускается уже с готовым результатом — .htaccess в нём с первого байта
+  # содержит Basic Auth, api/leads.php с первого байта — заглушка.
+  FINAL="$WORK/final"
+  mkdir -p "$FINAL"
+  log "Собираю stage во временной папке"
+  rsync "${args[@]}" "$SRC/" "$FINAL/"
 
-if [ "$DEPLOY_ENV" = "stage" ] && [ "${DEPLOY_DRY_RUN:-}" != "1" ]; then
   OVERLAY="$SRC/ops/stage-overlay"
-  if [ -d "$OVERLAY" ]; then
-    log "Накладываю stage-overlay"
-    # Порядок важен: сначала полная замена, потом дописывание, потом
-    # заглушка формы — так, чтобы ни один шаг не зависел от результата
-    # предыдущего в файле, который он не трогает.
-    cp "$OVERLAY/robots.txt" "$TARGET/robots.txt"
-    cat "$OVERLAY/htaccess-append" >> "$TARGET/.htaccess"
-    mkdir -p "$TARGET/api"
-    cp "$OVERLAY/api/leads.php" "$TARGET/api/leads.php"
-    cp "$OVERLAY/stage-badge.js" "$TARGET/stage-badge.js"
+  [ -d "$OVERLAY" ] || { log "ОШИБКА: DEPLOY_ENV=stage, но ops/stage-overlay отсутствует в архиве"; exit 1; }
 
-    shortsha=$(basename "$SRC" | sed 's/.*-//' | cut -c1-7)
-    printf '{"ref":"%s","commit":"%s","deployed_at":"%s"}\n' \
-      "$REF" "$shortsha" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$TARGET/stage-meta.json"
+  log "Накладываю stage-overlay на временную копию"
+  cp "$OVERLAY/robots.txt" "$FINAL/robots.txt"
+  cat "$OVERLAY/htaccess-append" >> "$FINAL/.htaccess"
+  mkdir -p "$FINAL/api"
+  cp "$OVERLAY/api/leads.php" "$FINAL/api/leads.php"
+  cp "$OVERLAY/stage-badge.js" "$FINAL/stage-badge.js"
 
-    # sed -i без суффикса бэкапа: GNU и BSD sed расходятся именно в этом
-    # флаге, а перезаписывать *.html на каждой выкладке безопасно — файл
-    # только что пришёл из rsync, второй копии не остаётся.
-    find "$TARGET" -maxdepth 1 -name '*.html' -exec \
-      sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
-  else
-    log "ОШИБКА: DEPLOY_ENV=stage, но ops/stage-overlay отсутствует в архиве"
-    exit 1
-  fi
+  shortsha=$(basename "$SRC" | sed 's/.*-//' | cut -c1-7)
+  printf '{"ref":"%s","commit":"%s","deployed_at":"%s"}\n' \
+    "$REF" "$shortsha" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$FINAL/stage-meta.json"
+
+  # sed -i без суффикса бэкапа: GNU и BSD sed расходятся именно в этом
+  # флаге, а править файлы во временной папке безопасно — второй копии
+  # не остаётся и трогать нечего, кроме них самих.
+  #
+  # Вырезаем блок Яндекс.Метрики целиком (не просто меняем ID на другой
+  # счётчик — заводить второй счётчик ради тестового трафика ни к чему):
+  # без этого на stage работал тот же боевой счётчик, что и на production,
+  # и каждый визит на stage (плюс clickmap/webvisor) писался в боевую
+  # аналитику. Адресный диапазон sed через `\%...%` вместо `/.../` —
+  # в самой метке есть `/`, и с `/`-разделителем её пришлось бы экранировать.
+  find "$FINAL" -maxdepth 1 -name '*.html' -exec \
+    sed -i '\%<!-- Yandex.Metrika counter -->%,\%<!-- /Yandex.Metrika counter -->%d' {} +
+
+  # Без счётчика reachMetrikaGoal() в script.js — единственный оставшийся
+  # источник обращений к боевой Метрике с stage — молча ничего не делает:
+  # window.ym там просто не появится (typeof window.ym === 'function' — false).
+
+  find "$FINAL" -maxdepth 1 -name '*.html' -exec \
+    sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
+
+  log "Раскладываю в $TARGET (env=stage)"
+  rsync "${args[@]}" --delete "${dry[@]}" "$FINAL/" "$TARGET/"
+else
+  # Для production нет overlay и нечего собирать отдельно — раскладываем
+  # прямо из скачанного архива, как раньше.
+  #
+  # --delete намеренно нет: в веб-корне лежит и то, чего в репозитории нет
+  # и не должно быть — папка preview/ со сборками веток, файл подтверждения
+  # прав на сайт для Яндекса, index.html и mchost.php от хостера. Раньше их
+  # берёг список файлов, который вёл FTP-action; теперь бережёт отсутствие
+  # --delete. Цена — удалённый из репозитория файл на сервере остаётся:
+  # убирать руками.
+  log "Раскладываю в $TARGET (env=production)"
+  rsync "${args[@]}" "${dry[@]}" "$SRC/" "$TARGET/"
 fi
 
 # Коммит берём из имени папки архива: .git в tarball не входит.

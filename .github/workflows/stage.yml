@@ -64,23 +64,43 @@ jobs:
         run: |
           set -u
           fail=0
-          check() { # адрес, доп.curl-флаги, ожидаемый код, что это
-            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 $2 "$1" || echo 000)
-            if [ "$code" != "$3" ]; then
-              echo "::error::$4 — ожидали HTTP $3, получили $code ($1)"
+          # Доп. curl-флаги — позиционные аргументы начиная с 4-го, не строка:
+          # раньше это был единственный параметр "$2", подставлявшийся в
+          # команду без кавычек и полагавшийся на word-splitting. Пароль
+          # с пробелом или glob-символом (?, *) молча ломал бы такую проверку.
+          check() { # адрес, ожидаемый код, что это, [доп.curl-флаги...]
+            url="$1"; want="$2"; label="$3"; shift 3
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$@" "$url" || echo 000)
+            if [ "$code" != "$want" ]; then
+              echo "::error::$label — ожидали HTTP $want, получили $code ($url)"
               fail=1
             else
-              echo "ок: $4 — HTTP $code"
+              echo "ок: $label — HTTP $code"
             fi
           }
-          check "https://stage.trexgo.ru/"        ""                                          401 "без пароля закрыт"
-          check "https://stage.trexgo.ru/"        "-u ${AUTH_USER}:${AUTH_PASSWORD}"           200 "с паролем открыт"
-          check "https://stage.trexgo.ru/ops/"    "-u ${AUTH_USER}:${AUTH_PASSWORD}"           403 "CLI-скрипты закрыты и на stage"
+          check "https://stage.trexgo.ru/"        401 "без пароля закрыт"
+          check "https://stage.trexgo.ru/"        200 "с паролем открыт"      -u "${AUTH_USER}:${AUTH_PASSWORD}"
+          check "https://stage.trexgo.ru/ops/"    403 "CLI-скрипты закрыты и на stage" -u "${AUTH_USER}:${AUTH_PASSWORD}"
           robots=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/robots.txt" || echo "")
           if printf '%s' "$robots" | grep -q '^Disallow: /$'; then
             echo "ок: robots.txt запрещает индексацию целиком"
           else
             echo "::error::robots.txt на stage не содержит 'Disallow: /'"
+            fail=1
+          fi
+          # Заглушка формы — не просто «эндпоинт отвечает 200», а именно
+          # stage-заглушка, а не настоящий api/leads.php: тело содержит
+          # stored":"stage-stub" (см. ops/stage-overlay/api/leads.php).
+          # Без этой проверки некорректно наложенный overlay (или ошибка
+          # в порядке сборки в pull-deploy.sh) остался бы незамеченным —
+          # первые четыре проверки его не видят.
+          lead_body=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 \
+            -X POST -H 'Content-Type: application/json' -d '{}' \
+            "https://stage.trexgo.ru/api/leads" || echo "")
+          if printf '%s' "$lead_body" | grep -q '"stage-stub"'; then
+            echo "ок: форма на stage отвечает заглушкой, не боевым обработчиком"
+          else
+            echo "::error::api/leads на stage не похож на заглушку: $lead_body"
             fail=1
           fi
           if [ "$fail" = 1 ]; then

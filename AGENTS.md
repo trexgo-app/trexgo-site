@@ -76,6 +76,8 @@
   (в том числе `stage.trexgo.ru`), второго — нет. Сроки — [config-snapshots/mchost.md](config-snapshots/mchost.md).
 - Форма заявки на stage — заглушка (`ops/stage-overlay/api/leads.php`), на боевом
   сайте работает по-настоящему.
+- Блок Яндекс.Метрики на stage вырезается из HTML при выкладке (`pull-deploy.sh`) —
+  просмотры и тестовые заявки не должны попадать в боевой счётчик `111364095`.
 - **Ссылки в HTML только относительные** (`privacy.html`, не `/privacy.html`) — иначе
   со stage они уводят на боевой сайт.
 - **`stage.trexgo.ru` — рабочий стенд под Basic Auth**, закрыт от поисковиков
