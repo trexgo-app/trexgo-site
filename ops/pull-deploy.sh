@@ -187,10 +187,26 @@ if [ "$DEPLOY_ENV" = "stage" ]; then
   gate_fail=0
   gate() { log "ОШИБКА gate: $*"; gate_fail=1; }
 
-  grep -q 'AuthUserFile' "$FINAL/.htaccess" || gate ".htaccess без AuthUserFile — Basic Auth не наложился"
-  grep -q 'Require valid-user' "$FINAL/.htaccess" || gate ".htaccess без Require valid-user"
+  # Якорные regex на начало строки (после пробелов), а не поиск подстроки
+  # где угодно: закомментированная "# AuthUserFile ..." или "# Require
+  # valid-user" раньше проходила бы gate, хотя Apache её не применяет.
+  grep -qE '^[[:space:]]*AuthUserFile[[:space:]]' "$FINAL/.htaccess" \
+    || gate ".htaccess без активной AuthUserFile — Basic Auth не наложился"
+  grep -qE '^[[:space:]]*Require[[:space:]]+valid-user[[:space:]]*$' "$FINAL/.htaccess" \
+    || gate ".htaccess без активной Require valid-user"
   grep -qx 'Disallow: /' "$FINAL/robots.txt" || gate "robots.txt не запрещает индексацию целиком"
-  grep -q "'stage-stub'" "$FINAL/api/leads.php" || gate "api/leads.php — не похож на stage-заглушку"
+
+  # Сверка по хешу с эталоном заглушки, а не поиск строки внутри файла:
+  # искомая подстрока (даже якорная) всё ещё берётся из того же архива,
+  # что и сам файл — в закомментированном виде она проходила бы проверку,
+  # даже если api/leads.php на самом деле боевой обработчик. Эталон лежит
+  # прямо здесь, в pull-deploy.sh, который сам требует ручной укладки на
+  # сервер при любой правке (см. шапку файла и rules/deploy.md) — то есть
+  # не может быть подменён одной лишь правкой фиче-ветки.
+  STAGE_STUB_SHA256="4e88105b9a5003d482bc85757dff04254a3d93d31dbf048773443eaafb57c42a"
+  actual_sha=$(sha256sum "$FINAL/api/leads.php" | cut -d' ' -f1)
+  [ "$actual_sha" = "$STAGE_STUB_SHA256" ] \
+    || gate "api/leads.php не совпадает по хешу с эталонной stage-заглушкой (получено $actual_sha)"
 
   if find "$FINAL" -maxdepth 1 -name '*.html' -print0 \
        | xargs -0 grep -l -e 'mc\.yandex\.ru' -e '111364095' -e 'Yandex\.Metrika' 2>/dev/null | grep -q .; then
@@ -206,11 +222,14 @@ else
   # прямо из скачанного архива, как раньше.
   #
   # --delete намеренно нет: в веб-корне лежит и то, чего в репозитории нет
-  # и не должно быть — папка preview/ со сборками веток, файл подтверждения
-  # прав на сайт для Яндекса, index.html и mchost.php от хостера. Раньше их
-  # берёг список файлов, который вёл FTP-action; теперь бережёт отсутствие
-  # --delete. Цена — удалённый из репозитория файл на сервере остаётся:
-  # убирать руками.
+  # и не должно быть — файл подтверждения прав на сайт для Яндекса, index.html
+  # и mchost.php от хостера. Раньше их берёг список файлов, который вёл
+  # FTP-action; теперь бережёт отсутствие --delete. Цена — удалённый из
+  # репозитория файл на сервере остаётся: убирать руками.
+  #
+  # Папка preview/ (сборки веток) в этот список раньше тоже входила — с
+  # переходом на stage.trexgo.ru (28.08.2026) она удалена с сервера руками,
+  # /preview/ в выкладке больше не участвует.
   log "Раскладываю в $TARGET (env=production)"
   rsync "${args[@]}" "${dry[@]+"${dry[@]}"}" "$SRC/" "$TARGET/"
 fi

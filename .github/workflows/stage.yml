@@ -38,6 +38,19 @@ jobs:
           echo "длина токена: ${#TOKEN}"
           [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
           [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
+
+          # SHA коммита, который сервер обязан выложить — по нему после
+          # выкладки сверяем stage-meta.json. Без этого зелёный workflow
+          # доказывает только «stage отвечает как положено», а не «выложен
+          # именно этот push» — старый исправный stage прошёл бы те же
+          # проверки без единого нового файла.
+          expected_sha=$(curl -sS -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" --max-time 20 \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${REF}" \
+            | jq -r '.sha // empty')
+          [ -n "$expected_sha" ] || { echo "::error::не удалось получить SHA для ref=$REF"; exit 1; }
+          echo "EXPECTED_SHA=$expected_sha" >> "$GITHUB_ENV"
+
           body=$(jq -nc --arg ref "$REF" --arg token "$TOKEN" --arg env "stage" \
                         --argjson ts "$(date +%s)" \
                         '{ref: $ref, token: $token, env: $env, ts: $ts, dry_run: false}')
@@ -50,7 +63,7 @@ jobs:
           jq -r '.log // .message // "нет вывода"' response.json || cat response.json
           [ "$code" = "200" ] || { echo "::error::Сервер ответил HTTP $code"; exit 1; }
           echo "### Stage выложен" >> "$GITHUB_STEP_SUMMARY"
-          echo "Ветка/коммит: \`$REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Ветка/коммит: \`$REF\` ($expected_sha)" >> "$GITHUB_STEP_SUMMARY"
           echo "Адрес: https://stage.trexgo.ru/ (логин и пароль — в GitHub Secrets STAGE_AUTH_USER/STAGE_AUTH_PASSWORD)" >> "$GITHUB_STEP_SUMMARY"
 
       # always(): проверка обязана отработать и при упавшей выкладке — иначе
@@ -114,6 +127,22 @@ jobs:
             fail=1
           else
             echo "ок: боевая Метрика на опубликованной странице не найдена"
+          fi
+          # stage-meta.json содержит короткий SHA коммита, который
+          # pull-deploy.sh реально разложил в TARGET (см. ops/pull-deploy.sh).
+          # Сверяем с EXPECTED_SHA, полученным ДО вызова deployhook.php:
+          # без этого шага зелёный workflow подтверждает только «stage
+          # отвечает как положено», а не «выложен именно этот push» —
+          # старый исправный stage прошёл бы все проверки выше без единого
+          # нового файла.
+          meta=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/stage-meta.json" || echo "")
+          deployed_commit=$(printf '%s' "$meta" | jq -r '.commit // empty' 2>/dev/null || echo "")
+          expected_short="${EXPECTED_SHA:0:7}"
+          if [ -n "$deployed_commit" ] && [ -n "$expected_short" ] && [ "$deployed_commit" = "$expected_short" ]; then
+            echo "ок: stage-meta.json подтверждает выложенный коммит $deployed_commit"
+          else
+            echo "::error::stage-meta.json не подтверждает коммит: ожидали $expected_short, получили '$deployed_commit' ($meta)"
+            fail=1
           fi
           if [ "$fail" = 1 ]; then
             echo "::error::stage отвечает не так, как должен."
