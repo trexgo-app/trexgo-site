@@ -1,0 +1,13 @@
+
+# --- Дописано оверлеем stage при выкладке, не редактировать в репозитории ---
+# Слоение защиты: заголовок ниже — сигнал для тех поисковиков, что всё же
+# зайдут; Basic Auth — единственный настоящий барьер; Disallow в robots.txt —
+# гигиена. Require valid-user доступен с Apache 2.1, менять под версию не нужно.
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+AuthType Basic
+AuthName "stage.trexgo.ru"
+AuthUserFile /home/httpd/vhosts/trexgo.ru/private/stage.htpasswd
+Require valid-user

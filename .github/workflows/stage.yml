@@ -1,0 +1,89 @@
+name: Выкладка на stage.trexgo.ru
+
+# Любая ветка, кроме main (та выкладывается deploy.yml), плюс кнопка
+# с произвольным ref — для сведения нескольких веток на одну интеграционную
+# ветку и повторного показа без нового push.
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Ветка или коммит для выкладки на stage"
+        type: string
+        default: ""
+
+# Одна ветка — один stage: вторая выкладка, начавшаяся раньше, чем закончилась
+# первая, затопчет её же результат, поэтому ждём, не отменяем на полпути.
+concurrency:
+  group: stage
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Тот же паттерн, что в deploy.yml: раннер не заливает файлы сам,
+      # только просит сервер забрать код — разбор в ops/pull-deploy.sh.
+      - name: Попросить сервер забрать код на stage
+        env:
+          SECRET: ${{ secrets.DEPLOY_SECRET }}
+          TOKEN: ${{ github.token }}
+          REF: ${{ inputs.ref != '' && inputs.ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          echo "длина токена: ${#TOKEN}"
+          [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
+          [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
+          body=$(jq -nc --arg ref "$REF" --arg token "$TOKEN" --arg env "stage" \
+                        --argjson ts "$(date +%s)" \
+                        '{ref: $ref, token: $token, env: $env, ts: $ts, dry_run: false}')
+          sig=$(printf '%s' "$body" | openssl dgst -sha256 -hmac "$SECRET" -r | cut -d' ' -f1)
+          code=$(curl -sS -X POST "https://trexgo.ru/deployhook.php" \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Signature: $sig" \
+            --data-binary "$body" \
+            -o response.json -w '%{http_code}' --max-time 180)
+          jq -r '.log // .message // "нет вывода"' response.json || cat response.json
+          [ "$code" = "200" ] || { echo "::error::Сервер ответил HTTP $code"; exit 1; }
+          echo "### Stage выложен" >> "$GITHUB_STEP_SUMMARY"
+          echo "Ветка/коммит: \`$REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Адрес: https://stage.trexgo.ru/ (логин и пароль — в GitHub Secrets STAGE_AUTH_USER/STAGE_AUTH_PASSWORD)" >> "$GITHUB_STEP_SUMMARY"
+
+      # always(): проверка обязана отработать и при упавшей выкладке — иначе
+      # мы узнаём о сломанном stage только когда кто-то откроет ссылку сам.
+      # Пароль передаём через -u из окружения, в лог не печатаем.
+      - name: Проверить, что stage закрыт и жив
+        if: always()
+        env:
+          AUTH_USER: ${{ secrets.STAGE_AUTH_USER }}
+          AUTH_PASSWORD: ${{ secrets.STAGE_AUTH_PASSWORD }}
+        run: |
+          set -u
+          fail=0
+          check() { # адрес, доп.curl-флаги, ожидаемый код, что это
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 $2 "$1" || echo 000)
+            if [ "$code" != "$3" ]; then
+              echo "::error::$4 — ожидали HTTP $3, получили $code ($1)"
+              fail=1
+            else
+              echo "ок: $4 — HTTP $code"
+            fi
+          }
+          check "https://stage.trexgo.ru/"        ""                                          401 "без пароля закрыт"
+          check "https://stage.trexgo.ru/"        "-u ${AUTH_USER}:${AUTH_PASSWORD}"           200 "с паролем открыт"
+          check "https://stage.trexgo.ru/ops/"    "-u ${AUTH_USER}:${AUTH_PASSWORD}"           403 "CLI-скрипты закрыты и на stage"
+          robots=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/robots.txt" || echo "")
+          if printf '%s' "$robots" | grep -q '^Disallow: /$'; then
+            echo "ок: robots.txt запрещает индексацию целиком"
+          else
+            echo "::error::robots.txt на stage не содержит 'Disallow: /'"
+            fail=1
+          fi
+          if [ "$fail" = 1 ]; then
+            echo "::error::stage отвечает не так, как должен."
+            exit 1
+          fi

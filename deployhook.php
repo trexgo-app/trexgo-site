@@ -95,6 +95,19 @@ if (!is_string($ref) || !preg_match('/\A[A-Za-z0-9._\/-]{1,100}\z/', $ref)) {
     deploy_fail(400, 'Некорректная ветка');
 }
 
+// Whitelist, а не «всё, что не production — считаем stage»: неизвестное
+// значение, как и отсутствующее поле, должно остановить выкладку явной
+// ошибкой, а не тихо попасть в одну из двух веток ops/pull-deploy.sh —
+// каждый вызывающий (deploy.yml, stage.yml) обязан передавать env сам.
+$env = $payload['env'] ?? null;
+if (!is_string($env) || !in_array($env, ['production', 'stage'], true)) {
+    deploy_fail(400, 'Некорректный env');
+}
+$targetsByEnv = [
+    'production' => '/home/httpd/vhosts/trexgo.ru/httpdocs',
+    'stage' => '/home/httpd/vhosts/trexgo.ru/subdomains/stage/httpdocs',
+];
+
 // Формат токенов GitHub со временем менялся (ghp_, ghs_, github_pat_ и дальше),
 // поэтому не пытаемся угадать его целиком: отсекаем только то, что могло бы
 // поломать окружение или уехать в лог — пробелы и управляющие символы.
@@ -114,17 +127,18 @@ if (!is_file($script)) {
     deploy_fail(500, 'Нет ops/pull-deploy.sh на сервере');
 }
 
-$env = [
+$scriptEnv = [
     'DEPLOY_TOKEN' => $token,
     'DEPLOY_REF' => $ref,
     'DEPLOY_REPO' => $config['deploy']['repo'] ?? 'trexgo-app/trexgo-site',
-    'DEPLOY_TARGET' => __DIR__,
+    'DEPLOY_TARGET' => $targetsByEnv[$env],
+    'DEPLOY_ENV' => $env,
     'DEPLOY_DRY_RUN' => $dryRun ? '1' : '',
     'PATH' => '/usr/local/bin:/usr/bin:/bin',
 ];
 
 $descriptors = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-$process = proc_open(['/bin/bash', $script], $descriptors, $pipes, null, $env);
+$process = proc_open(['/bin/bash', $script], $descriptors, $pipes, null, $scriptEnv);
 if (!is_resource($process)) {
     deploy_fail(500, 'Не удалось запустить выкладку');
 }

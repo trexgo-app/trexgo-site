@@ -25,7 +25,15 @@ set -euo pipefail
 REPO="${DEPLOY_REPO:-trexgo-app/trexgo-site}"
 REF="${DEPLOY_REF:-main}"
 TARGET="${DEPLOY_TARGET:-/home/httpd/vhosts/trexgo.ru/httpdocs}"
-WORK="/home/httpd/vhosts/trexgo.ru/private/deploy-work-site"
+# production | stage. Определяет --delete и применение ops/stage-overlay/
+# ниже. Значение приходит из deployhook.php, а не выбирается этим скриптом —
+# он только выполняет то, что подписано и проверено в хуке.
+DEPLOY_ENV="${DEPLOY_ENV:-production}"
+# Отдельная рабочая папка на env: без этого одновременный запуск production
+# и stage (это разные concurrency-группы в GitHub Actions, друг друга не
+# ждут) делит один WORK — rm -rf при старте или в trap EXIT одного процесса
+# сносит файлы, которые в этот момент читает rsync другого.
+WORK="/home/httpd/vhosts/trexgo.ru/private/deploy-work-site-${DEPLOY_ENV}"
 TOKEN="${DEPLOY_TOKEN:?нет DEPLOY_TOKEN}"
 
 # Что к сайту не относится и на хостинг не попадает. Список повторяет
@@ -46,6 +54,15 @@ EXCLUDE=(
 )
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
+# Явный список вместо if/else: любое незнакомое значение (опечатка,
+# будущий третий env) должно остановить выкладку, а не тихо съехать
+# в одну из веток по умолчанию — от этого зависит, что --delete и
+# оверлей никогда не применятся к production по ошибке.
+case "$DEPLOY_ENV" in
+  production|stage) ;;
+  *) log "ОШИБКА: неизвестный DEPLOY_ENV='$DEPLOY_ENV' (ожидались production или stage)"; exit 1 ;;
+esac
 
 rm -rf "$WORK"
 mkdir -p "$WORK"
@@ -87,15 +104,49 @@ done
 
 args=(-a --no-perms --no-owner --no-group --delay-updates)
 for e in "${EXCLUDE[@]}"; do args+=(--exclude="$e"); done
-# --delete намеренно нет: в веб-корне лежит и то, чего в репозитории нет и
-# не должно быть — папка preview/ со сборками веток, файл подтверждения прав
-# на сайт для Яндекса, index.html и mchost.php от хостера. Раньше их берёг
-# список файлов, который вёл FTP-action; теперь бережёт отсутствие --delete.
-# Цена — удалённый из репозитория файл на сервере остаётся: убирать руками.
+# --delete намеренно нет для production: в веб-корне лежит и то, чего
+# в репозитории нет и не должно быть — папка preview/ со сборками веток,
+# файл подтверждения прав на сайт для Яндекса, index.html и mchost.php
+# от хостера. Раньше их берёг список файлов, который вёл FTP-action; теперь
+# бережёт отсутствие --delete. Цена — удалённый из репозитория файл на
+# сервере остаётся: убирать руками.
+#
+# Для stage наоборот: там нет ничего постороннего, кроме заглушки хостера
+# при самой первой выкладке, и содержимое должно как можно точнее совпадать
+# с репозиторием + overlay — поэтому --delete включён.
+[ "$DEPLOY_ENV" = "stage" ] && args+=(--delete)
 [ "${DEPLOY_DRY_RUN:-}" = "1" ] && args+=(--dry-run --itemize-changes)
 
-log "Раскладываю в $TARGET"
+log "Раскладываю в $TARGET (env=$DEPLOY_ENV)"
 rsync "${args[@]}" "$SRC/" "$TARGET/"
+
+if [ "$DEPLOY_ENV" = "stage" ] && [ "${DEPLOY_DRY_RUN:-}" != "1" ]; then
+  OVERLAY="$SRC/ops/stage-overlay"
+  if [ -d "$OVERLAY" ]; then
+    log "Накладываю stage-overlay"
+    # Порядок важен: сначала полная замена, потом дописывание, потом
+    # заглушка формы — так, чтобы ни один шаг не зависел от результата
+    # предыдущего в файле, который он не трогает.
+    cp "$OVERLAY/robots.txt" "$TARGET/robots.txt"
+    cat "$OVERLAY/htaccess-append" >> "$TARGET/.htaccess"
+    mkdir -p "$TARGET/api"
+    cp "$OVERLAY/api/leads.php" "$TARGET/api/leads.php"
+    cp "$OVERLAY/stage-badge.js" "$TARGET/stage-badge.js"
+
+    shortsha=$(basename "$SRC" | sed 's/.*-//' | cut -c1-7)
+    printf '{"ref":"%s","commit":"%s","deployed_at":"%s"}\n' \
+      "$REF" "$shortsha" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$TARGET/stage-meta.json"
+
+    # sed -i без суффикса бэкапа: GNU и BSD sed расходятся именно в этом
+    # флаге, а перезаписывать *.html на каждой выкладке безопасно — файл
+    # только что пришёл из rsync, второй копии не остаётся.
+    find "$TARGET" -maxdepth 1 -name '*.html' -exec \
+      sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
+  else
+    log "ОШИБКА: DEPLOY_ENV=stage, но ops/stage-overlay отсутствует в архиве"
+    exit 1
+  fi
+fi
 
 # Коммит берём из имени папки архива: .git в tarball не входит.
 log "Готово, коммит $(basename "$SRC" | sed 's/.*-//' | cut -c1-7)"
