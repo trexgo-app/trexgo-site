@@ -34,6 +34,13 @@ DEPLOY_ENV="${DEPLOY_ENV:-production}"
 # ждут) делит один WORK — rm -rf при старте или в trap EXIT одного процесса
 # сносит файлы, которые в этот момент читает rsync другого.
 WORK="/home/httpd/vhosts/trexgo.ru/private/deploy-work-site-${DEPLOY_ENV}"
+# Файл-замок на env: подписанный запрос ещё действителен 300 секунд (окно
+# в deployhook.php) и теоретически может быть отправлен повторно. Без замка
+# это запустило бы вторую выкладку того же окружения поверх первой — обе
+# пишут в один WORK и в один TARGET. concurrency в deploy.yml/stage.yml
+# защищает только запросы, прошедшие через сам Actions; замок — от прямого
+# повтора запроса к deployhook.php в обход Actions.
+LOCK="/home/httpd/vhosts/trexgo.ru/private/deploy-lock-${DEPLOY_ENV}"
 TOKEN="${DEPLOY_TOKEN:?нет DEPLOY_TOKEN}"
 
 # Что к сайту не относится и на хостинг не попадает. Список повторяет
@@ -63,6 +70,12 @@ case "$DEPLOY_ENV" in
   production|stage) ;;
   *) log "ОШИБКА: неизвестный DEPLOY_ENV='$DEPLOY_ENV' (ожидались production или stage)"; exit 1 ;;
 esac
+
+exec 9>"$LOCK"
+if ! flock -n 9; then
+  log "ОШИБКА: выкладка $DEPLOY_ENV уже идёт (замок $LOCK занят)"
+  exit 1
+fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK"
@@ -104,48 +117,121 @@ done
 
 args=(-a --no-perms --no-owner --no-group --delay-updates)
 for e in "${EXCLUDE[@]}"; do args+=(--exclude="$e"); done
-# --delete намеренно нет для production: в веб-корне лежит и то, чего
-# в репозитории нет и не должно быть — папка preview/ со сборками веток,
-# файл подтверждения прав на сайт для Яндекса, index.html и mchost.php
-# от хостера. Раньше их берёг список файлов, который вёл FTP-action; теперь
-# бережёт отсутствие --delete. Цена — удалённый из репозитория файл на
-# сервере остаётся: убирать руками.
-#
-# Для stage наоборот: там нет ничего постороннего, кроме заглушки хостера
-# при самой первой выкладке, и содержимое должно как можно точнее совпадать
-# с репозиторием + overlay — поэтому --delete включён.
-[ "$DEPLOY_ENV" = "stage" ] && args+=(--delete)
-[ "${DEPLOY_DRY_RUN:-}" = "1" ] && args+=(--dry-run --itemize-changes)
+dry=()
+[ "${DEPLOY_DRY_RUN:-}" = "1" ] && dry=(--dry-run --itemize-changes)
+# "${dry[@]}" на пустом массиве падает под `set -u` на bash < 4.4 (сервер —
+# 4.1) с «unbound variable»: старый bash не отличает пустой массив от
+# неустановленной переменной при таком раскрытии. Везде ниже используется
+# "${dry[@]+"${dry[@]}"}" — раскрывается в ничто, если dry пуст, и в элементы
+# массива иначе; работает и на старом, и на новом bash.
 
-log "Раскладываю в $TARGET (env=$DEPLOY_ENV)"
-rsync "${args[@]}" "$SRC/" "$TARGET/"
+if [ "$DEPLOY_ENV" = "stage" ]; then
+  # Раньше: rsync клал в TARGET боевое дерево (настоящий api/leads.php,
+  # .htaccess без пароля), и только следующей командой скрипта поверх
+  # накладывался stage-overlay. Между этими двумя шагами — а на реальной
+  # передаче файлов это не мгновение, а секунды — stage.trexgo.ru отдавал
+  # боевой сайт без пароля и с рабочей формой. При обрыве ровно между
+  # шагами это состояние оставалось надолго.
+  #
+  # Чинится не флагом rsync (атомарной подмены каталога средствами панели
+  # хостинга проверить нельзя — неизвестно, переживёт ли TARGET замену на
+  # symlink), а порядком: overlay накладывается на копию ДО того, как
+  # что-либо попадает в TARGET. Единственный rsync, который трогает TARGET,
+  # запускается уже с готовым результатом — .htaccess в нём с первого байта
+  # содержит Basic Auth, api/leads.php с первого байта — заглушка.
+  FINAL="$WORK/final"
+  mkdir -p "$FINAL"
+  log "Собираю stage во временной папке"
+  rsync "${args[@]}" "$SRC/" "$FINAL/"
 
-if [ "$DEPLOY_ENV" = "stage" ] && [ "${DEPLOY_DRY_RUN:-}" != "1" ]; then
   OVERLAY="$SRC/ops/stage-overlay"
-  if [ -d "$OVERLAY" ]; then
-    log "Накладываю stage-overlay"
-    # Порядок важен: сначала полная замена, потом дописывание, потом
-    # заглушка формы — так, чтобы ни один шаг не зависел от результата
-    # предыдущего в файле, который он не трогает.
-    cp "$OVERLAY/robots.txt" "$TARGET/robots.txt"
-    cat "$OVERLAY/htaccess-append" >> "$TARGET/.htaccess"
-    mkdir -p "$TARGET/api"
-    cp "$OVERLAY/api/leads.php" "$TARGET/api/leads.php"
-    cp "$OVERLAY/stage-badge.js" "$TARGET/stage-badge.js"
+  [ -d "$OVERLAY" ] || { log "ОШИБКА: DEPLOY_ENV=stage, но ops/stage-overlay отсутствует в архиве"; exit 1; }
 
-    shortsha=$(basename "$SRC" | sed 's/.*-//' | cut -c1-7)
-    printf '{"ref":"%s","commit":"%s","deployed_at":"%s"}\n' \
-      "$REF" "$shortsha" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$TARGET/stage-meta.json"
+  log "Накладываю stage-overlay на временную копию"
+  cp "$OVERLAY/robots.txt" "$FINAL/robots.txt"
+  cat "$OVERLAY/htaccess-append" >> "$FINAL/.htaccess"
+  mkdir -p "$FINAL/api"
+  cp "$OVERLAY/api/leads.php" "$FINAL/api/leads.php"
+  cp "$OVERLAY/stage-badge.js" "$FINAL/stage-badge.js"
 
-    # sed -i без суффикса бэкапа: GNU и BSD sed расходятся именно в этом
-    # флаге, а перезаписывать *.html на каждой выкладке безопасно — файл
-    # только что пришёл из rsync, второй копии не остаётся.
-    find "$TARGET" -maxdepth 1 -name '*.html' -exec \
-      sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
-  else
-    log "ОШИБКА: DEPLOY_ENV=stage, но ops/stage-overlay отсутствует в архиве"
-    exit 1
+  shortsha=$(basename "$SRC" | sed 's/.*-//' | cut -c1-7)
+  printf '{"ref":"%s","commit":"%s","deployed_at":"%s"}\n' \
+    "$REF" "$shortsha" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$FINAL/stage-meta.json"
+
+  # sed -i без суффикса бэкапа: GNU и BSD sed расходятся именно в этом
+  # флаге, а править файлы во временной папке безопасно — второй копии
+  # не остаётся и трогать нечего, кроме них самих.
+  #
+  # Вырезаем блок Яндекс.Метрики целиком (не просто меняем ID на другой
+  # счётчик — заводить второй счётчик ради тестового трафика ни к чему):
+  # без этого на stage работал тот же боевой счётчик, что и на production,
+  # и каждый визит на stage (плюс clickmap/webvisor) писался в боевую
+  # аналитику. Адресный диапазон sed через `\%...%` вместо `/.../` —
+  # в самой метке есть `/`, и с `/`-разделителем её пришлось бы экранировать.
+  find "$FINAL" -maxdepth 1 -name '*.html' -exec \
+    sed -i '\%<!-- Yandex.Metrika counter -->%,\%<!-- /Yandex.Metrika counter -->%d' {} +
+
+  # Без счётчика reachMetrikaGoal() в script.js — единственный оставшийся
+  # источник обращений к боевой Метрике с stage — молча ничего не делает:
+  # window.ym там просто не появится (typeof window.ym === 'function' — false).
+
+  find "$FINAL" -maxdepth 1 -name '*.html' -exec \
+    sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
+
+  # Fail-closed gate: overlay приходит из выкладываемой фиче-ветки, а не
+  # из доверенного места — пустой htaccess-append, откатанная заглушка
+  # api/leads.php или переименованные маркеры Метрики (sed выше отработает
+  # "успешно" и на них, просто ничего не вырежет) ушли бы в TARGET
+  # незамеченными. Проверки stage.yml увидят проблему только ПОСЛЕ
+  # публикации и ничего не откатят — здесь же TARGET ещё не тронут.
+  gate_fail=0
+  gate() { log "ОШИБКА gate: $*"; gate_fail=1; }
+
+  # Якорные regex на начало строки (после пробелов), а не поиск подстроки
+  # где угодно: закомментированная "# AuthUserFile ..." или "# Require
+  # valid-user" раньше проходила бы gate, хотя Apache её не применяет.
+  grep -qE '^[[:space:]]*AuthUserFile[[:space:]]' "$FINAL/.htaccess" \
+    || gate ".htaccess без активной AuthUserFile — Basic Auth не наложился"
+  grep -qE '^[[:space:]]*Require[[:space:]]+valid-user[[:space:]]*$' "$FINAL/.htaccess" \
+    || gate ".htaccess без активной Require valid-user"
+  grep -qx 'Disallow: /' "$FINAL/robots.txt" || gate "robots.txt не запрещает индексацию целиком"
+
+  # Сверка по хешу с эталоном заглушки, а не поиск строки внутри файла:
+  # искомая подстрока (даже якорная) всё ещё берётся из того же архива,
+  # что и сам файл — в закомментированном виде она проходила бы проверку,
+  # даже если api/leads.php на самом деле боевой обработчик. Эталон лежит
+  # прямо здесь, в pull-deploy.sh, который сам требует ручной укладки на
+  # сервер при любой правке (см. шапку файла и rules/deploy.md) — то есть
+  # не может быть подменён одной лишь правкой фиче-ветки.
+  STAGE_STUB_SHA256="4e88105b9a5003d482bc85757dff04254a3d93d31dbf048773443eaafb57c42a"
+  actual_sha=$(sha256sum "$FINAL/api/leads.php" | cut -d' ' -f1)
+  [ "$actual_sha" = "$STAGE_STUB_SHA256" ] \
+    || gate "api/leads.php не совпадает по хешу с эталонной stage-заглушкой (получено $actual_sha)"
+
+  if find "$FINAL" -maxdepth 1 -name '*.html' -print0 \
+       | xargs -0 grep -l -e 'mc\.yandex\.ru' -e '111364095' -e 'Yandex\.Metrika' 2>/dev/null | grep -q .; then
+    gate "боевая Яндекс.Метрика осталась в HTML после вырезания"
   fi
+
+  [ "$gate_fail" = 0 ] || { log "ОШИБКА: инварианты stage не выполнены, TARGET не тронут"; exit 1; }
+
+  log "Раскладываю в $TARGET (env=stage)"
+  rsync "${args[@]}" --delete "${dry[@]+"${dry[@]}"}" "$FINAL/" "$TARGET/"
+else
+  # Для production нет overlay и нечего собирать отдельно — раскладываем
+  # прямо из скачанного архива, как раньше.
+  #
+  # --delete намеренно нет: в веб-корне лежит и то, чего в репозитории нет
+  # и не должно быть — файл подтверждения прав на сайт для Яндекса, index.html
+  # и mchost.php от хостера. Раньше их берёг список файлов, который вёл
+  # FTP-action; теперь бережёт отсутствие --delete. Цена — удалённый из
+  # репозитория файл на сервере остаётся: убирать руками.
+  #
+  # Папка preview/ (сборки веток) в этот список раньше тоже входила — с
+  # переходом на stage.trexgo.ru (28.08.2026) она удалена с сервера руками,
+  # /preview/ в выкладке больше не участвует.
+  log "Раскладываю в $TARGET (env=production)"
+  rsync "${args[@]}" "${dry[@]+"${dry[@]}"}" "$SRC/" "$TARGET/"
 fi
 
 # Коммит берём из имени папки архива: .git в tarball не входит.

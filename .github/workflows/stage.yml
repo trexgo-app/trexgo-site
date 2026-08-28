@@ -38,6 +38,19 @@ jobs:
           echo "длина токена: ${#TOKEN}"
           [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
           [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
+
+          # SHA коммита, который сервер обязан выложить — по нему после
+          # выкладки сверяем stage-meta.json. Без этого зелёный workflow
+          # доказывает только «stage отвечает как положено», а не «выложен
+          # именно этот push» — старый исправный stage прошёл бы те же
+          # проверки без единого нового файла.
+          expected_sha=$(curl -sS -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" --max-time 20 \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${REF}" \
+            | jq -r '.sha // empty')
+          [ -n "$expected_sha" ] || { echo "::error::не удалось получить SHA для ref=$REF"; exit 1; }
+          echo "EXPECTED_SHA=$expected_sha" >> "$GITHUB_ENV"
+
           body=$(jq -nc --arg ref "$REF" --arg token "$TOKEN" --arg env "stage" \
                         --argjson ts "$(date +%s)" \
                         '{ref: $ref, token: $token, env: $env, ts: $ts, dry_run: false}')
@@ -50,7 +63,7 @@ jobs:
           jq -r '.log // .message // "нет вывода"' response.json || cat response.json
           [ "$code" = "200" ] || { echo "::error::Сервер ответил HTTP $code"; exit 1; }
           echo "### Stage выложен" >> "$GITHUB_STEP_SUMMARY"
-          echo "Ветка/коммит: \`$REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Ветка/коммит: \`$REF\` ($expected_sha)" >> "$GITHUB_STEP_SUMMARY"
           echo "Адрес: https://stage.trexgo.ru/ (логин и пароль — в GitHub Secrets STAGE_AUTH_USER/STAGE_AUTH_PASSWORD)" >> "$GITHUB_STEP_SUMMARY"
 
       # always(): проверка обязана отработать и при упавшей выкладке — иначе
@@ -64,23 +77,71 @@ jobs:
         run: |
           set -u
           fail=0
-          check() { # адрес, доп.curl-флаги, ожидаемый код, что это
-            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 $2 "$1" || echo 000)
-            if [ "$code" != "$3" ]; then
-              echo "::error::$4 — ожидали HTTP $3, получили $code ($1)"
+          # Доп. curl-флаги — позиционные аргументы начиная с 4-го, не строка:
+          # раньше это был единственный параметр "$2", подставлявшийся в
+          # команду без кавычек и полагавшийся на word-splitting. Пароль
+          # с пробелом или glob-символом (?, *) молча ломал бы такую проверку.
+          check() { # адрес, ожидаемый код, что это, [доп.curl-флаги...]
+            url="$1"; want="$2"; label="$3"; shift 3
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$@" "$url" || echo 000)
+            if [ "$code" != "$want" ]; then
+              echo "::error::$label — ожидали HTTP $want, получили $code ($url)"
               fail=1
             else
-              echo "ок: $4 — HTTP $code"
+              echo "ок: $label — HTTP $code"
             fi
           }
-          check "https://stage.trexgo.ru/"        ""                                          401 "без пароля закрыт"
-          check "https://stage.trexgo.ru/"        "-u ${AUTH_USER}:${AUTH_PASSWORD}"           200 "с паролем открыт"
-          check "https://stage.trexgo.ru/ops/"    "-u ${AUTH_USER}:${AUTH_PASSWORD}"           403 "CLI-скрипты закрыты и на stage"
+          check "https://stage.trexgo.ru/"        401 "без пароля закрыт"
+          check "https://stage.trexgo.ru/"        200 "с паролем открыт"      -u "${AUTH_USER}:${AUTH_PASSWORD}"
+          check "https://stage.trexgo.ru/ops/"    403 "CLI-скрипты закрыты и на stage" -u "${AUTH_USER}:${AUTH_PASSWORD}"
           robots=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/robots.txt" || echo "")
           if printf '%s' "$robots" | grep -q '^Disallow: /$'; then
             echo "ок: robots.txt запрещает индексацию целиком"
           else
             echo "::error::robots.txt на stage не содержит 'Disallow: /'"
+            fail=1
+          fi
+          # Заглушка формы — не просто «эндпоинт отвечает 200», а именно
+          # stage-заглушка, а не настоящий api/leads.php: тело содержит
+          # stored":"stage-stub" (см. ops/stage-overlay/api/leads.php).
+          # Без этой проверки некорректно наложенный overlay (или ошибка
+          # в порядке сборки в pull-deploy.sh) остался бы незамеченным —
+          # первые четыре проверки его не видят.
+          lead_body=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 \
+            -X POST -H 'Content-Type: application/json' -d '{}' \
+            "https://stage.trexgo.ru/api/leads" || echo "")
+          if printf '%s' "$lead_body" | grep -q '"stage-stub"'; then
+            echo "ок: форма на stage отвечает заглушкой, не боевым обработчиком"
+          else
+            echo "::error::api/leads на stage не похож на заглушку: $lead_body"
+            fail=1
+          fi
+          # Смоук-проверка уже опубликованной страницы: pull-deploy.sh
+          # проверяет отсутствие Метрики ДО rsync в TARGET (gate), эта
+          # проверка — независимая вторая линия ПОСЛЕ публикации, на случай
+          # расхождения между тем, что попало в $FINAL, и тем, что реально
+          # уехало в $TARGET.
+          index_body=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/" || echo "")
+          if printf '%s' "$index_body" | grep -q -e 'mc\.yandex\.ru' -e '111364095'; then
+            echo "::error::на опубликованной странице stage найдена боевая Яндекс.Метрика"
+            fail=1
+          else
+            echo "ок: боевая Метрика на опубликованной странице не найдена"
+          fi
+          # stage-meta.json содержит короткий SHA коммита, который
+          # pull-deploy.sh реально разложил в TARGET (см. ops/pull-deploy.sh).
+          # Сверяем с EXPECTED_SHA, полученным ДО вызова deployhook.php:
+          # без этого шага зелёный workflow подтверждает только «stage
+          # отвечает как положено», а не «выложен именно этот push» —
+          # старый исправный stage прошёл бы все проверки выше без единого
+          # нового файла.
+          meta=$(curl -sS -u "${AUTH_USER}:${AUTH_PASSWORD}" --max-time 20 "https://stage.trexgo.ru/stage-meta.json" || echo "")
+          deployed_commit=$(printf '%s' "$meta" | jq -r '.commit // empty' 2>/dev/null || echo "")
+          expected_short="${EXPECTED_SHA:0:7}"
+          if [ -n "$deployed_commit" ] && [ -n "$expected_short" ] && [ "$deployed_commit" = "$expected_short" ]; then
+            echo "ок: stage-meta.json подтверждает выложенный коммит $deployed_commit"
+          else
+            echo "::error::stage-meta.json не подтверждает коммит: ожидали $expected_short, получили '$deployed_commit' ($meta)"
             fail=1
           fi
           if [ "$fail" = 1 ]; then
