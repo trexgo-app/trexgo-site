@@ -16,86 +16,60 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      # Хостинг не поддерживает шифрование: на AUTH TLS отвечает "500 AUTH not
-      # understood", порт 990 закрыт. Поэтому protocol: ftp — пароль идёт по сети
-      # открытым текстом. Просить у Макхоста SFTP или включение FTPS.
+      # Файлы отсюда не заливаются — код с GitHub забирает сам сервер.
+      # Причина (замерено 28.08.2026): канал «раннер → Макхост» не работает
+      # ни по FTP, ни по SSH. FTP рвёт почти каждую передачу («426 Transfer
+      # aborted. Interrupted system call»), а оборванный файл оставался
+      # нулевым — так дважды обнулился .htaccess кабинета и открыл наружу
+      # документы пользователей. SSH с раннера замирает на обмене ключами,
+      # хотя с нашей машины тот же ключ работает. Обратное направление
+      # свободно: сервер тянет весь репозиторий одним запросом за 0,7 с.
+      # Разбор целиком — в ops/pull-deploy.sh.
       #
-      # FTP хостинга рвёт соединение при заливке подряд без пауз: воспроизведено
-      # 28.08.2026 — 16-й файл в серии получает "426 Transfer aborted.
-      # Interrupted system call", с паузой 0,7 с проходят все 25. Action пауз
-      # не умеет и переподключаться не умеет ("This library does not currently
-      # handle reconnects"), поэтому обрыв оставляет файл усечённым до нуля.
-      # На выкладке кабинета так дважды обнулился .htaccess.
-      #
-      # Отсюда две меры: повтор всей выкладки при обрыве (continue-on-error +
-      # второй заход) и проверка ниже, что критичные файлы доехали целыми.
-      - name: Залить по FTP
-        id: ftp
-        continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          server-dir: httpdocs/
-          dry-run: ${{ inputs.dry-run == true }}
-          # Что не относится к сайту — на хостинг не попадает.
-          # Всё, чего нет в репозитории, с хостинга удаляется: репозиторий — источник правды.
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            .github/**
-            .claude/**
-            CLAUDE.md
-            README.md
-            docs/**
-            config-snapshots/**
-            temp/**
-            vercel.json
-            **/.DS_Store
-            **/Thumbs.db
-
-      # Второй заход — только если первый оборвался. Action инкрементальный:
-      # он дозальёт то, что не доехало, а не начнёт с нуля.
-      - name: Повторить выкладку после обрыва
-        if: steps.ftp.outcome == 'failure' && inputs.dry-run != true
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          server-dir: httpdocs/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            .github/**
-            .claude/**
-            CLAUDE.md
-            README.md
-            docs/**
-            config-snapshots/**
-            temp/**
-            vercel.json
-            **/.DS_Store
-            **/Thumbs.db
+      # Побочный выигрыш: FTP_SERVER/FTP_USERNAME/FTP_PASSWORD больше не нужны,
+      # и пароль перестаёт ходить по сети открытым текстом на каждой выкладке.
+      - name: Попросить сервер забрать код
+        env:
+          SECRET: ${{ secrets.DEPLOY_SECRET }}
+          # Живёт минуты и действует только на этот репозиторий: долгоживущего
+          # доступа к GitHub на сервере не появляется.
+          TOKEN: ${{ github.token }}
+          DRY: ${{ inputs.dry-run == true && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          # Пустой токен сервер отверг бы как «некорректный», и разбираться
+          # пришлось бы на той стороне. Проверяем здесь; печатаем длину,
+          # не значение.
+          echo "длина токена: ${#TOKEN}"
+          [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
+          [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
+          body=$(jq -nc --arg ref "${{ github.ref_name }}" --arg token "$TOKEN" \
+                        --argjson ts "$(date +%s)" --argjson dry "$DRY" \
+                        '{ref: $ref, token: $token, ts: $ts, dry_run: $dry}')
+          sig=$(printf '%s' "$body" | openssl dgst -sha256 -hmac "$SECRET" -r | cut -d' ' -f1)
+          code=$(curl -sS -X POST "https://trexgo.ru/deployhook.php" \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Signature: $sig" \
+            --data-binary "$body" \
+            -o response.json -w '%{http_code}' --max-time 180)
+          jq -r '.log // .message // "нет вывода"' response.json || cat response.json
+          [ "$code" = "200" ] || { echo "::error::Сервер ответил HTTP $code"; exit 1; }
 
       # Зелёный workflow означает «файлы отправлены», а не «сайт цел»
-      # (rules/deploy.md). После обрыва файл остаётся нулевого размера, и
-      # опаснее всех — .htaccess: без него отпадают HTTPS-редирект и запреты
-      # на db/, ops/, tests/, api/lib/. Поэтому смотрим глазами workflow,
-      # а не своими, и роняем сборку, если сайт отвечает не так, как должен.
+      # (rules/deploy.md). always() здесь обязателен: без него у шага остаётся
+      # неявное требование success(), и проверка пропускается ровно тогда,
+      # когда выкладка упала — то есть когда она нужнее всего. На этом мы уже
+      # обожглись 28.08.2026 на кабинете: выкладка упала, проверка
+      # пропустилась, обнулённый .htaccess открыл документы наружу.
       - name: Проверить, что сайт цел
-        if: inputs.dry-run != true
+        if: always() && inputs.dry-run != true
         run: |
           set -u
           fail=0
@@ -115,9 +89,13 @@ jobs:
           check "https://www.trexgo.ru/"                    301 "редирект с www"
           check "https://trexgo.ru/db/"                     403 "миграции закрыты"
           check "https://trexgo.ru/ops/"                    403 "CLI-скрипты закрыты"
+          check "https://trexgo.ru/ops/pull-deploy.sh"      403 "скрипт выкладки закрыт"
           check "https://trexgo.ru/api/lib/"                403 "внутренние модули закрыты"
-          check "https://trexgo.ru/.ftp-deploy-sync-state.json" 403 "файл состояния выкладки закрыт"
+          check "https://trexgo.ru/tests/"                  403 "тесты закрыты"
+          # Хук отвечает 405 на GET: значит файл на месте и рабочий, но
+          # выложить что-либо простым обращением из браузера нельзя.
+          check "https://trexgo.ru/deployhook.php"          405 "хук выкладки принимает только POST"
           if [ "$fail" = 1 ]; then
-            echo "::error::Выкладка доехала повреждённой. Проверить .htaccess на сервере — после обрыва FTP он мог обнулиться."
+            echo "::error::Сайт отвечает не так, как должен. Смотреть .htaccess и права на сервере."
             exit 1
           fi
