@@ -2,6 +2,18 @@
 
 Только заметные вехи и решения. Построчную историю смотреть в `git log`.
 
+## 2026-08-28
+
+**`/preview/` заменён на `stage.trexgo.ru`.** Wildcard-сертификат снял
+ограничение, из-за которого поддомен отложили 31.07.2026. Один общий
+деплой-скрипт (`ops/pull-deploy.sh`) ветвится по `DEPLOY_ENV`; отличия stage
+от production — в оверлее `ops/stage-overlay/` (свой `robots.txt`, Basic Auth
+через дописанный `.htaccess`, заглушка `api/leads.php`, плашка `stage-badge.js`).
+`deployhook.php` принимает поле `env`, второго хука не заводится. `preview.yml`
+и `preview-cleanup.yml` удалены, взамен — `stage.yml`. Разбор вариантов —
+[archive/proposals/stage-varianty.md](proposals/stage-varianty.md), исход
+старого решения — [archive/proposals/preview-varianty.md](proposals/preview-varianty.md).
+
 ## 2026-08-01
 
 **Картинки переведены в WebP: 7,91 МБ → 0,28 МБ.** Дело было не только в формате —

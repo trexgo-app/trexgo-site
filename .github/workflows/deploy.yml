@@ -50,9 +50,9 @@ jobs:
           echo "длина токена: ${#TOKEN}"
           [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
           [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
-          body=$(jq -nc --arg ref "${{ github.ref_name }}" --arg token "$TOKEN" \
+          body=$(jq -nc --arg ref "${{ github.ref_name }}" --arg token "$TOKEN" --arg env "production" \
                         --argjson ts "$(date +%s)" --argjson dry "$DRY" \
-                        '{ref: $ref, token: $token, ts: $ts, dry_run: $dry}')
+                        '{ref: $ref, token: $token, env: $env, ts: $ts, dry_run: $dry}')
           sig=$(printf '%s' "$body" | openssl dgst -sha256 -hmac "$SECRET" -r | cut -d' ' -f1)
           code=$(curl -sS -X POST "https://trexgo.ru/deployhook.php" \
             -H "Content-Type: application/json" \
