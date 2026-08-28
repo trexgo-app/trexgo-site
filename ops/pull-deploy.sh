@@ -31,11 +31,18 @@ TOKEN="${DEPLOY_TOKEN:?нет DEPLOY_TOKEN}"
 # Что к сайту не относится и на хостинг не попадает. Список повторяет
 # бывший exclude из deploy.yml — при правке менять оба места незачем,
 # теперь он живёт только здесь.
+#
+# Ведущая косая черта обязательна: без неё rsync применяет шаблон на любой
+# глубине, и правило "README.md" молча съело ops/vendor/README.md при первой
+# же выкладке. То же ждало бы любую вложенную папку docs/ или temp/.
+# Исключения по имени без пути — только для мусора, который вычищаем везде
+# (.DS_Store, Thumbs.db, node_modules).
 EXCLUDE=(
-  ".git" ".gitignore" ".gitattributes" ".github" ".claude"
-  "CLAUDE.md" "README.md" "AGENTS.md"
-  "docs" "config-snapshots" "temp" "node_modules"
-  "vercel.json" ".DS_Store" "Thumbs.db"
+  "/.git" "/.gitignore" "/.gitattributes" "/.github" "/.claude"
+  "/CLAUDE.md" "/README.md" "/AGENTS.md"
+  "/docs" "/config-snapshots" "/temp"
+  "/vercel.json"
+  "node_modules" ".DS_Store" "Thumbs.db"
 )
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
