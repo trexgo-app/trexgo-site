@@ -119,6 +119,11 @@ args=(-a --no-perms --no-owner --no-group --delay-updates)
 for e in "${EXCLUDE[@]}"; do args+=(--exclude="$e"); done
 dry=()
 [ "${DEPLOY_DRY_RUN:-}" = "1" ] && dry=(--dry-run --itemize-changes)
+# "${dry[@]}" на пустом массиве падает под `set -u` на bash < 4.4 (сервер —
+# 4.1) с «unbound variable»: старый bash не отличает пустой массив от
+# неустановленной переменной при таком раскрытии. Везде ниже используется
+# "${dry[@]+"${dry[@]}"}" — раскрывается в ничто, если dry пуст, и в элементы
+# массива иначе; работает и на старом, и на новом bash.
 
 if [ "$DEPLOY_ENV" = "stage" ]; then
   # Раньше: rsync клал в TARGET боевое дерево (настоящий api/leads.php,
@@ -174,7 +179,7 @@ if [ "$DEPLOY_ENV" = "stage" ]; then
     sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
 
   log "Раскладываю в $TARGET (env=stage)"
-  rsync "${args[@]}" --delete "${dry[@]}" "$FINAL/" "$TARGET/"
+  rsync "${args[@]}" --delete "${dry[@]+"${dry[@]}"}" "$FINAL/" "$TARGET/"
 else
   # Для production нет overlay и нечего собирать отдельно — раскладываем
   # прямо из скачанного архива, как раньше.
@@ -186,7 +191,7 @@ else
   # --delete. Цена — удалённый из репозитория файл на сервере остаётся:
   # убирать руками.
   log "Раскладываю в $TARGET (env=production)"
-  rsync "${args[@]}" "${dry[@]}" "$SRC/" "$TARGET/"
+  rsync "${args[@]}" "${dry[@]+"${dry[@]}"}" "$SRC/" "$TARGET/"
 fi
 
 # Коммит берём из имени папки архива: .git в tarball не входит.
