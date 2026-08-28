@@ -16,37 +16,86 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Файлы отсюда не заливаются — код с GitHub забирает сам сервер.
+      # Причина (замерено 28.08.2026): канал «раннер → Макхост» не работает
+      # ни по FTP, ни по SSH. FTP рвёт почти каждую передачу («426 Transfer
+      # aborted. Interrupted system call»), а оборванный файл оставался
+      # нулевым — так дважды обнулился .htaccess кабинета и открыл наружу
+      # документы пользователей. SSH с раннера замирает на обмене ключами,
+      # хотя с нашей машины тот же ключ работает. Обратное направление
+      # свободно: сервер тянет весь репозиторий одним запросом за 0,7 с.
+      # Разбор целиком — в ops/pull-deploy.sh.
+      #
+      # Побочный выигрыш: FTP_SERVER/FTP_USERNAME/FTP_PASSWORD больше не нужны,
+      # и пароль перестаёт ходить по сети открытым текстом на каждой выкладке.
+      - name: Попросить сервер забрать код
+        env:
+          SECRET: ${{ secrets.DEPLOY_SECRET }}
+          # Живёт минуты и действует только на этот репозиторий: долгоживущего
+          # доступа к GitHub на сервере не появляется.
+          TOKEN: ${{ github.token }}
+          DRY: ${{ inputs.dry-run == true && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          # Пустой токен сервер отверг бы как «некорректный», и разбираться
+          # пришлось бы на той стороне. Проверяем здесь; печатаем длину,
+          # не значение.
+          echo "длина токена: ${#TOKEN}"
+          [ -n "$TOKEN" ] || { echo "::error::GITHUB_TOKEN пуст"; exit 1; }
+          [ -n "$SECRET" ] || { echo "::error::DEPLOY_SECRET не задан в секретах репозитория"; exit 1; }
+          body=$(jq -nc --arg ref "${{ github.ref_name }}" --arg token "$TOKEN" \
+                        --argjson ts "$(date +%s)" --argjson dry "$DRY" \
+                        '{ref: $ref, token: $token, ts: $ts, dry_run: $dry}')
+          sig=$(printf '%s' "$body" | openssl dgst -sha256 -hmac "$SECRET" -r | cut -d' ' -f1)
+          code=$(curl -sS -X POST "https://trexgo.ru/deployhook.php" \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Signature: $sig" \
+            --data-binary "$body" \
+            -o response.json -w '%{http_code}' --max-time 180)
+          jq -r '.log // .message // "нет вывода"' response.json || cat response.json
+          [ "$code" = "200" ] || { echo "::error::Сервер ответил HTTP $code"; exit 1; }
 
-      # Хостинг не поддерживает шифрование: на AUTH TLS отвечает "500 AUTH not
-      # understood", порт 990 закрыт. Поэтому protocol: ftp — пароль идёт по сети
-      # открытым текстом. Просить у Макхоста SFTP или включение FTPS.
-      - name: Залить по FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          server-dir: httpdocs/
-          dry-run: ${{ inputs.dry-run == true }}
-          # Что не относится к сайту — на хостинг не попадает.
-          # Всё, чего нет в репозитории, с хостинга удаляется: репозиторий — источник правды.
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            .github/**
-            .claude/**
-            CLAUDE.md
-            README.md
-            docs/**
-            config-snapshots/**
-            temp/**
-            vercel.json
-            **/.DS_Store
-            **/Thumbs.db
+      # Зелёный workflow означает «файлы отправлены», а не «сайт цел»
+      # (rules/deploy.md). always() здесь обязателен: без него у шага остаётся
+      # неявное требование success(), и проверка пропускается ровно тогда,
+      # когда выкладка упала — то есть когда она нужнее всего. На этом мы уже
+      # обожглись 28.08.2026 на кабинете: выкладка упала, проверка
+      # пропустилась, обнулённый .htaccess открыл документы наружу.
+      - name: Проверить, что сайт цел
+        if: always() && inputs.dry-run != true
+        run: |
+          set -u
+          fail=0
+          check() { # адрес, ожидаемый код, что это
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$1" || echo 000)
+            if [ "$code" != "$2" ]; then
+              echo "::error::$3 — ожидали HTTP $2, получили $code ($1)"
+              fail=1
+            else
+              echo "ок: $3 — HTTP $code"
+            fi
+          }
+          check "https://trexgo.ru/"                        200 "главная"
+          check "https://trexgo.ru/privacy.html"            200 "политика конфиденциальности"
+          # Ниже — доказательство, что .htaccess доехал непустым.
+          check "http://trexgo.ru/"                         301 "редирект на HTTPS"
+          check "https://www.trexgo.ru/"                    301 "редирект с www"
+          check "https://trexgo.ru/db/"                     403 "миграции закрыты"
+          check "https://trexgo.ru/ops/"                    403 "CLI-скрипты закрыты"
+          check "https://trexgo.ru/ops/pull-deploy.sh"      403 "скрипт выкладки закрыт"
+          check "https://trexgo.ru/api/lib/"                403 "внутренние модули закрыты"
+          check "https://trexgo.ru/tests/"                  403 "тесты закрыты"
+          # Хук отвечает 405 на GET: значит файл на месте и рабочий, но
+          # выложить что-либо простым обращением из браузера нельзя.
+          check "https://trexgo.ru/deployhook.php"          405 "хук выкладки принимает только POST"
+          if [ "$fail" = 1 ]; then
+            echo "::error::Сайт отвечает не так, как должен. Смотреть .htaccess и права на сервере."
+            exit 1
+          fi

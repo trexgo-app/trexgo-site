@@ -44,4 +44,12 @@ return [
         'backups' => '/home/httpd/vhosts/trexgo.ru/private/backups',
     ],
     'mysqldump_path' => '/usr/bin/mysqldump',
+    'deploy' => [
+        // Общий секрет выкладки: тем же значением заводится DEPLOY_SECRET
+        // в секретах репозитория. Им подписывается тело запроса к
+        // deployhook.php, поэтому короткое значение здесь не принимается.
+        // Сгенерировать: php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+        'secret' => 'CHANGE_ME_TO_64_RANDOM_HEX_CHARACTERS',
+        'repo' => 'trexgo-app/trexgo-site',
+    ],
 ];
