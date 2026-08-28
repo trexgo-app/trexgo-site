@@ -190,7 +190,7 @@ if [ "$DEPLOY_ENV" = "stage" ]; then
   grep -q 'AuthUserFile' "$FINAL/.htaccess" || gate ".htaccess без AuthUserFile — Basic Auth не наложился"
   grep -q 'Require valid-user' "$FINAL/.htaccess" || gate ".htaccess без Require valid-user"
   grep -qx 'Disallow: /' "$FINAL/robots.txt" || gate "robots.txt не запрещает индексацию целиком"
-  grep -q '"stored":"stage-stub"' "$FINAL/api/leads.php" || gate "api/leads.php — не похож на stage-заглушку"
+  grep -q "'stage-stub'" "$FINAL/api/leads.php" || gate "api/leads.php — не похож на stage-заглушку"
 
   if find "$FINAL" -maxdepth 1 -name '*.html' -print0 \
        | xargs -0 grep -l -e 'mc\.yandex\.ru' -e '111364095' -e 'Yandex\.Metrika' 2>/dev/null | grep -q .; then
