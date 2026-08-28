@@ -178,6 +178,27 @@ if [ "$DEPLOY_ENV" = "stage" ]; then
   find "$FINAL" -maxdepth 1 -name '*.html' -exec \
     sed -i 's#</body>#<script src="/stage-badge.js" defer></script></body>#' {} +
 
+  # Fail-closed gate: overlay приходит из выкладываемой фиче-ветки, а не
+  # из доверенного места — пустой htaccess-append, откатанная заглушка
+  # api/leads.php или переименованные маркеры Метрики (sed выше отработает
+  # "успешно" и на них, просто ничего не вырежет) ушли бы в TARGET
+  # незамеченными. Проверки stage.yml увидят проблему только ПОСЛЕ
+  # публикации и ничего не откатят — здесь же TARGET ещё не тронут.
+  gate_fail=0
+  gate() { log "ОШИБКА gate: $*"; gate_fail=1; }
+
+  grep -q 'AuthUserFile' "$FINAL/.htaccess" || gate ".htaccess без AuthUserFile — Basic Auth не наложился"
+  grep -q 'Require valid-user' "$FINAL/.htaccess" || gate ".htaccess без Require valid-user"
+  grep -qx 'Disallow: /' "$FINAL/robots.txt" || gate "robots.txt не запрещает индексацию целиком"
+  grep -q '"stored":"stage-stub"' "$FINAL/api/leads.php" || gate "api/leads.php — не похож на stage-заглушку"
+
+  if find "$FINAL" -maxdepth 1 -name '*.html' -print0 \
+       | xargs -0 grep -l -e 'mc\.yandex\.ru' -e '111364095' -e 'Yandex\.Metrika' 2>/dev/null | grep -q .; then
+    gate "боевая Яндекс.Метрика осталась в HTML после вырезания"
+  fi
+
+  [ "$gate_fail" = 0 ] || { log "ОШИБКА: инварианты stage не выполнены, TARGET не тронут"; exit 1; }
+
   log "Раскладываю в $TARGET (env=stage)"
   rsync "${args[@]}" --delete "${dry[@]+"${dry[@]}"}" "$FINAL/" "$TARGET/"
 else
