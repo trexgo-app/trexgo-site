@@ -1637,3 +1637,37 @@ footer {
 @media (max-width: 480px) {
   .modal-box { padding: 32px 22px 26px; }
 }
+
+/* Кнопка отправки и мессенджер — всегда в одном ряду */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  /* Мобильная раскладка: поле на всю ширину, ниже кнопка + мессенджер справа */
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .form-row .form-input { width: 100%; }
+  .form-actions { width: 100%; }
+  .form-actions .btn { flex: 1; }
+  .form-actions .btn-max { margin-left: auto; }
+
+  /* Модалка прижата к низу — ближе к клавиатуре */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-box {
+    max-width: none;
+    border-radius: 16px 16px 0 0;
+    padding: 28px 20px calc(20px + env(safe-area-inset-bottom));
+    transform: translateY(100%);
+  }
+  .modal-overlay.is-open .modal-box { transform: translateY(0); }
+}

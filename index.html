@@ -46,7 +46,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="styles.css?v=20260906" />
+  <link rel="stylesheet" href="styles.css?v=20260907" />
 
   <style>
     /* Page-specific: Установка под ключ */
@@ -287,9 +287,18 @@
     }
     @media (max-width: 640px) {
       .kk-do-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .kk-do-card { padding: 18px 14px; font-size: 13px; gap: 12px; }
-      .kk-do-icon { width: 40px; height: 40px; }
-      .kk-do-icon svg { width: 20px; height: 20px; }
+      .kk-do-card {
+        padding: 16px 12px;
+        font-size: 12px;
+        line-height: 1.35;
+        gap: 10px;
+        hyphens: auto;
+      }
+      .kk-do-icon { width: 36px; height: 36px; border-radius: 10px; }
+      .kk-do-icon svg { width: 18px; height: 18px; }
+      /* Кнопки «Связаться» — на всю ширину карточки */
+      .kk-prov-btn { width: 100%; }
+      .kk-prov-card { padding: 24px 20px; }
     }
     .kk-need-list {
       max-width: 760px;
@@ -632,15 +641,15 @@
           <form class="lead-form hero-lead-form" data-redirect="spasibo.html" novalidate>
             <div class="form-row">
               <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
-              <button class="btn btn-orange" type="submit">Отправить</button>
+              <div class="form-actions">
+                <button class="btn btn-orange" type="submit">Отправить</button>
+                <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+                  <img src="maxicon.webp" alt="Max" />
+                </a>
+              </div>
             </div>
           </form>
           <div class="form-success">✓ Заявка принята! Перезвоним в течение 15 минут в рабочее время.</div>
-        </div>
-        <div class="hero-msngrs">
-        <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
-          <img src="maxicon.webp" alt="Max" />
-        </a>
         </div>
       </div>
       <p class="pv-microtrust" style="font-size:13px;color:var(--gray);margin-top:14px">Перезвоним за 15 минут · Без обязательств</p>
@@ -666,15 +675,15 @@
             <form class="lead-form hero-lead-form" data-redirect="spasibo.html" novalidate>
               <div class="form-row">
                 <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
+                <div class="form-actions">
                 <button class="btn btn-orange" type="submit">Отправить</button>
+                <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
+                  <img src="maxicon.webp" alt="Max" />
+                </a>
+              </div>
               </div>
             </form>
             <div class="form-success">✓ Заявка принята! Перезвоним в течение 15 минут в рабочее время.</div>
-          </div>
-          <div class="hero-msngrs">
-          <a href="https://max.ru/79850757675" target="_blank" rel="noopener" class="btn-max" aria-label="Max">
-            <img src="maxicon.webp" alt="Max" />
-          </a>
           </div>
         </div>
         <p class="kk-consult-micro">Перезвоним за 15 минут · Без обязательств</p>
@@ -1014,7 +1023,7 @@
   </div>
 </div>
 
-<script src="script.js?v=20260906"></script>
+<script src="script.js?v=20260907"></script>
 <a href="tel:+79850757675" class="fab-call" aria-label="Позвонить">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/></svg>
 </a>
