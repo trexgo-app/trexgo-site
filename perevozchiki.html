@@ -90,7 +90,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="styles.css?v=20260904" />
+  <link rel="stylesheet" href="styles.css?v=20260905" />
 
   <style>
     /* ===== Page-specific: /perevozchiki ===== */
@@ -1422,18 +1422,15 @@
 <!-- Модальное окно заявки -->
 <div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
   <div class="modal-box">
-    <button class="modal-close" type="button" aria-label="Закрыть">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
     <span class="modal-logo">Trex<span>Go</span></span>
     <h3 id="leadModalTitle">Оставьте заявку</h3>
-    <p class="modal-sub">Перезвоним за 15 минут · Без обязательств</p>
     <div class="form-wrap">
       <form class="lead-form" data-redirect="spasibo.html" novalidate>
         <div class="form-row">
           <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
           <button class="btn btn-orange" type="submit">Отправить</button>
         </div>
+        <button class="btn modal-cancel" type="button">Закрыть</button>
         <p class="form-privacy">Нажимая кнопку, вы соглашаетесь на обработку персональных данных и принимаете <a href="privacy.html">политику конфиденциальности</a>.</p>
       </form>
       <div class="form-success">✓ Заявка принята! Перезвоним в течение 15 минут.</div>
@@ -1441,7 +1438,7 @@
   </div>
 </div>
 
-<script src="script.js?v=20260904"></script>
+<script src="script.js?v=20260905"></script>
 <script>
 // Deadline badge: days until 01.09.2026
 (function () {

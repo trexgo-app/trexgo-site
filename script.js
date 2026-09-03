@@ -37,6 +37,51 @@ const reachMetrikaGoal = (goal, params = {}) => {
   }
 };
 
+
+// Маска российского номера: +7 (999) 123-45-67. Ввод только цифр,
+// префикс +7 не стирается — пользователь набирает 10 цифр после него.
+const RU_PHONE_DIGITS = 10;
+
+const formatRuPhone = digits => {
+  const d = digits.slice(0, RU_PHONE_DIGITS);
+  let out = '+7';
+  if (d.length) out += ' (' + d.slice(0, 3);
+  if (d.length >= 3) out += ')';
+  if (d.length > 3) out += ' ' + d.slice(3, 6);
+  if (d.length > 6) out += '-' + d.slice(6, 8);
+  if (d.length > 8) out += '-' + d.slice(8, 10);
+  return out;
+};
+
+// Из произвольного ввода достаём именно «хвост» из 10 цифр:
+// ведущие 7 или 8 — это код страны, а не часть номера.
+const extractRuDigits = value => {
+  let d = value.replace(/\D/g, '');
+  if (d.startsWith('7') || d.startsWith('8')) d = d.slice(1);
+  return d.slice(0, RU_PHONE_DIGITS);
+};
+
+const attachRuPhoneMask = field => {
+  if (!field || field.dataset.maskAttached) return;
+  field.dataset.maskAttached = '1';
+  field.setAttribute('inputmode', 'tel');
+  field.setAttribute('maxlength', '18');
+
+  const apply = () => {
+    const digits = extractRuDigits(field.value);
+    field.value = digits ? formatRuPhone(digits) : '';
+  };
+
+  field.addEventListener('focus', () => {
+    if (!field.value) field.value = '+7 ';
+  });
+  field.addEventListener('input', apply);
+  field.addEventListener('blur', () => {
+    if (field.value.replace(/\D/g, '').length <= 1) field.value = '';
+  });
+  field.addEventListener('paste', () => setTimeout(apply, 0));
+};
+
 const normalizeLeadPhone = value => {
   let digits = value.replace(/\D/g, '');
   if (digits.length === 10) digits = `7${digits}`;
@@ -119,6 +164,7 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
     });
   });
   phoneField?.setAttribute('autocomplete', 'tel');
+  attachRuPhoneMask(phoneField);
   emailField?.setAttribute('autocomplete', 'email');
 
   form.addEventListener('submit', async event => {
@@ -131,11 +177,12 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
     const phoneDigits = normalizedPhone.replace(/\D/g, '');
     const email = emailField?.value.trim() || '';
 
-    if (normalizedPhone && (phoneDigits.length < 10 || phoneDigits.length > 15)) {
-      phoneField?.classList.add('is-invalid');
-      phoneField?.setAttribute('aria-invalid', 'true');
-      showLeadFormStatus(status, 'Проверьте номер телефона: нужно указать от 10 до 15 цифр.', 'error');
-      phoneField?.focus();
+    const ruDigits = extractRuDigits(phoneField?.value || '');
+    if (phoneField && ruDigits.length !== RU_PHONE_DIGITS) {
+      phoneField.classList.add('is-invalid');
+      phoneField.setAttribute('aria-invalid', 'true');
+      showLeadFormStatus(status, 'Введите номер полностью: +7 и 10 цифр.', 'error');
+      phoneField.focus();
       return;
     }
     if (formKind === 'lead' && !normalizedPhone) {
