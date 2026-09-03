@@ -1648,6 +1648,9 @@ footer {
 
 @media (max-width: 640px) {
   /* Мобильная раскладка: поле на всю ширину, ниже кнопка + мессенджер справа */
+  .hero-form-row { flex-wrap: wrap; }
+  .hero-form-wrap { width: 100%; flex: 1 1 100%; }
+  .hero-lead-form .form-input { min-width: 0; }
   .form-row {
     flex-direction: column;
     align-items: stretch;
@@ -1666,7 +1669,8 @@ footer {
   .modal-box {
     max-width: none;
     border-radius: 16px 16px 0 0;
-    padding: 28px 20px calc(20px + env(safe-area-inset-bottom));
+    padding: 28px 20px 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     transform: translateY(100%);
   }
   .modal-overlay.is-open .modal-box { transform: translateY(0); }
