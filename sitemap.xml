@@ -6,7 +6,7 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://trexgo.ru/waybills.html</loc>
+    <loc>https://trexgo.ru/etrn.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -24,11 +24,6 @@
     <loc>https://trexgo.ru/gruzopoluchatelyam.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://trexgo.ru/ai-analytics.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://trexgo.ru/blog.html</loc>

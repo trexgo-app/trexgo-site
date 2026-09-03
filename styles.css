@@ -81,7 +81,6 @@ body {
 .nav-links a:hover { background: var(--light-sand); }
 .nav-links a.active { font-weight: 700; }
 
-/* Пункт «Кому подходит» — страницы под роли участников перевозки */
 .nav-has-sub { position: relative; }
 
 .nav-sub-toggle {
@@ -154,14 +153,71 @@ body {
   flex-shrink: 0;
 }
 
+.nav-meta {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  margin-right: 18px;
+}
+
+.nav-meta-label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.3;
+}
+
+.nav-meta-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  white-space: nowrap;
+}
+
+.nav-meta .stars { color: #d8d4ca; letter-spacing: 1px; }
+.nav-meta .stars em { color: #FFC53D; font-style: normal; }
+
+@media (max-width: 1120px) {
+  .nav-meta { display: none; }
+}
+
 .nav-phone {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--charcoal);
-  text-decoration: none;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--black);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
 .nav-phone:hover { color: var(--orange); }
+
+.nav-phone-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.nav-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2ecc5e;
+  animation: pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
 
 .btn-nav-cta {
   display: inline-flex;
@@ -173,7 +229,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   padding: 9px 18px;
-  border-radius: 4px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   text-decoration: none;
@@ -205,17 +261,6 @@ body {
 
 .section {
   padding: 80px 0;
-}
-
-/* Две равные колонки, схлопывающиеся в одну на узком экране.
-   Через класс с медиа-запросом, а не `auto-fit`: у `auto-fit` при двух детях
-   на широком экране появляются пустые треки, и колонки не добирают ширину
-   контейнера. Раньше такие сетки стояли инлайном жёсткими `1fr 1fr` и на
-   узких экранах давали горизонтальный скролл. */
-.split-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
 }
 
 .section-head {
@@ -283,6 +328,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 46px;
   gap: 8px;
   font-family: var(--font);
   font-size: 16px;
@@ -298,8 +344,8 @@ body {
 .btn-orange {
   background: var(--orange);
   color: var(--cream);
-  padding: 16px 28px;
-  border-radius: 4px;
+  padding: 0 28px;
+  border-radius: 999px;
   font-size: 16px;
 }
 
@@ -308,8 +354,8 @@ body {
 .btn-dark {
   background: var(--black);
   color: var(--cream);
-  padding: 16px 28px;
-  border-radius: 8px;
+  padding: 0 28px;
+  border-radius: 999px;
 }
 
 .btn-dark:hover { background: var(--charcoal); }
@@ -317,25 +363,25 @@ body {
 .btn-light {
   background: var(--light-sand);
   color: var(--charcoal);
-  padding: 16px 28px;
-  border-radius: 8px;
+  padding: 0 28px;
+  border-radius: 999px;
   font-size: 15px;
 }
 
 .btn-light:hover { background: var(--sand); color: var(--black); }
 
 .btn-lg {
-  padding: 16px 36px;
+  padding: 0 36px;
   font-size: 16px;
-  border-radius: 8px;
+  border-radius: 999px;
 }
 
 .btn-whatsapp {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: #25D366;
   color: #fff;
@@ -350,8 +396,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -367,6 +413,66 @@ body {
 }
 
 .btn-max:hover { opacity: 0.85; }
+
+.btn-telegram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #229ED9;
+  color: #fff;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.btn-telegram:hover { background: #1b86b8; }
+
+.btn-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.btn-call:hover { background: #d94200; }
+
+.hero-form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+@media (max-width: 640px) {
+  .hero-form-row { flex-wrap: wrap; }
+}
+
+.hero-form-wrap { flex: 0 1 auto; }
+
+.hero-msngrs { display: flex; gap: 12px; flex-shrink: 0; }
+
+.hero-lead-form .form-row { margin-bottom: 0; }
+
+.hero-lead-form .form-input {
+  height: 46px;
+  background: #fff;
+  border: 1px solid var(--sand);
+  color: var(--black);
+  min-width: 170px;
+  flex: 1;
+}
+.hero-lead-form .btn-orange { padding: 16px 20px; }
+
+.hero-lead-form .form-input::placeholder { color: var(--gray); }
 
 /* ===== HERO ===== */
 .hero {
@@ -582,12 +688,9 @@ body {
 }
 
 /* ===== PRICING ===== */
-/* auto-fit, а не жёсткие три колонки: на промежуточных ширинах (около 800px)
-   карточка с padding 32px в треть экрана уже не помещается и вылезала за край,
-   давая горизонтальный скролл. Здесь колонки схлопываются сами. */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   align-items: stretch;
 }
@@ -709,12 +812,8 @@ body {
   gap: 48px;
 }
 
-/* Отступ слева — декоративный, отодвигает текст от картинки с подарком.
-   На узких экранах он обязан обнуляться (см. Responsive): иначе текст и кнопка
-   уезжают за правый край и появляется горизонтальный скролл. */
 .promo-text {
   flex: 1;
-  min-width: 0;
   padding-left: 180px;
 }
 
@@ -874,6 +973,7 @@ body {
 }
 
 .form-input {
+  height: 46px;
   flex: 1;
   font-family: var(--font);
   font-size: 16px;
@@ -882,7 +982,7 @@ body {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(197,192,177,0.25);
   border-radius: 5px;
-  padding: 14px 18px;
+  padding: 0 18px;
   outline: none;
   transition: border-color 0.15s;
   min-width: 0;
@@ -890,68 +990,12 @@ body {
 
 .form-input:focus { border-color: var(--orange); }
 .form-input::placeholder { color: rgba(197,192,177,0.5); }
-.form-input.is-invalid {
-  border-color: #ff7052;
-  box-shadow: 0 0 0 2px rgba(255,112,82,0.14);
-}
-
-.lead-form.is-loading { opacity: 0.72; }
-.lead-form button:disabled { cursor: wait; }
-
-.form-honeypot {
-  position: absolute !important;
-  left: -10000px !important;
-  width: 1px !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.form-status {
-  display: none;
-  max-width: 460px;
-  margin: 10px auto 0;
-  padding: 10px 14px;
-  border: 1px solid rgba(197,192,177,0.28);
-  border-radius: 8px;
-  background: rgba(255,255,255,0.08);
-  color: var(--sand);
-  font-size: 13px;
-  line-height: 1.45;
-  text-align: center;
-}
-
-.form-status.is-visible { display: block; }
-.form-status[data-state="error"] {
-  border-color: rgba(255,112,82,0.65);
-  color: var(--cream);
-}
-.form-status[data-state="success"] { color: #067647; }
-
-.lead-form-box .form-status {
-  margin: 10px auto 0;
-  font-size: 13px;
-}
-.lead-form-box .form-status[data-state="info"] { color: var(--sand); }
-.lead-form-box .form-status[data-state="error"] { color: #ffb4ab; }
-
-.inline-subscribe-form { flex-wrap: wrap; }
-.inline-subscribe-form .form-status {
-  flex-basis: 100%;
-  margin: 0;
-}
 
 .form-privacy {
   font-size: 12px;
   color: var(--sand);
 }
 
-/* .lead-form-box p { font-size: 18px } выше по специфичности, чем .form-privacy —
-   без этого правила текст согласия внутри блока рендерится крупным вопреки
-   заданным 12px. Раз так уже видно на всех боевых страницах — закрепляем
-   18px явно, а не боремся со специфичностью. */
-.lead-form-box .form-privacy { font-size: 18px; }
 .lead-form-box .form-privacy a { color: var(--sand); }
 
 .form-success {
@@ -965,12 +1009,6 @@ body {
   font-size: 16px;
   max-width: 460px;
   margin: 0 auto;
-}
-
-.inline-subscribe .form-status {
-  background: var(--light-sand);
-  border-color: var(--sand);
-  color: var(--black);
 }
 
 /* ===== INLINE SUBSCRIPTION BLOCK ===== */
@@ -1219,8 +1257,8 @@ footer {
 
 .footer-top {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
   margin-bottom: 48px;
   padding-bottom: 48px;
   border-bottom: 1px solid rgba(197,192,177,0.18);
@@ -1343,28 +1381,81 @@ footer {
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 0; }
   .stat-item { padding: 0 24px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
-  .promo-inner { padding: 40px 36px; gap: 32px; }
-  .promo-text { padding-left: 40px; }
 }
 
-/* Шапка уходит в бургер целиком и на одной ширине.
-   960px — предел, на котором ряд из пяти пунктов, телефон и кнопка ещё влезают
-   в 1200px-контейнер; ниже они наезжают друг на друга. Раньше кнопка и телефон
-   прятались на 800px, а сам список — только на 768, и в промежутке на экране
-   оказывались сразу и меню, и бургер. */
-@media (max-width: 960px) {
+@media (max-width: 800px) {
+  .btn-nav-cta { display: none; }
+  .nav-toggle { display: block; }
+  .nav-meta {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  margin-right: 18px;
+}
+
+.nav-meta-label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.3;
+}
+
+.nav-meta-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  white-space: nowrap;
+}
+
+.nav-meta .stars { color: #d8d4ca; letter-spacing: 1px; }
+.nav-meta .stars em { color: #FFC53D; font-style: normal; }
+
+@media (max-width: 1120px) {
+  .nav-meta { display: none; }
+}
+
+.nav-phone { display: none; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  .nav-inner { padding: 0 20px; }
+  .footer-inner { padding: 0 20px; }
+
   .nav-links { display: none; }
   .nav-toggle { display: block; }
-  .nav-phone { display: none; }
-  .btn-nav-cta { display: none; }
+  .nav-meta {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  margin-right: 18px;
+}
 
+.nav-meta-label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.3;
+}
+
+.nav-meta-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  white-space: nowrap;
+}
+
+.nav-meta .stars { color: #d8d4ca; letter-spacing: 1px; }
+.nav-meta .stars em { color: #FFC53D; font-style: normal; }
+
+@media (max-width: 1120px) {
+  .nav-meta { display: none; }
+}
+
+.nav-phone { display: none; }
   .nav-links.open {
     display: flex;
     flex-direction: column;
-    /* Перебивает align-items: center из базового правила: в колонке оно
-       центрировало пункты по горизонтали, и у каждого получался свой отступ
-       от края — ряд выглядел рваным. */
-    align-items: stretch;
     position: fixed;
     top: 64px;
     left: 0;
@@ -1375,45 +1466,12 @@ footer {
     gap: 2px;
     z-index: 99;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    max-height: calc(100vh - 64px);
-    overflow-y: auto;
   }
   .nav-links.open a { padding: 12px 16px; border-radius: 5px; }
 
-  /* В бургере — один плоский список: продуктовые пункты и ролевые страницы
-     подряд, одинаковым кеглем и отступом. Заголовок «Кому подходит» здесь не
-     нужен: на узкой колонке он не группировал пункты, а рвал ряд лишним
-     стилем. Раскрывать нечего — кнопку-переключатель прячем совсем, а её
-     подсписок раскладываем в тот же столбец с тем же отступом. */
-  .nav-links.open .nav-sub-toggle { display: none; }
-  .nav-links.open .nav-sub {
-    position: static;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    background: none;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    transition: none;
-  }
-  .nav-links.open .nav-sub::before { display: none; }
-}
-
-@media (max-width: 768px) {
-  .container { padding: 0 20px; }
-  .nav-inner { padding: 0 20px; }
-  .footer-inner { padding: 0 20px; }
-
   .display-hero { font-size: 36px; letter-spacing: -1.5px; }
   .section-heading { font-size: 26px; }
-  .split-2 { grid-template-columns: 1fr; gap: 32px; }
-  .promo-inner { flex-direction: column; text-align: center; padding: 36px 24px; gap: 28px; }
-  .promo-text { padding-left: 0; }
+  .promo-inner { flex-direction: column; text-align: center; padding: 36px 24px; }
   .promo-image img { max-width: 260px; height: auto; margin: 0 auto; }
   .hero { padding: 48px 0 0; }
   .hero-inner { grid-template-columns: 1fr; gap: 32px; padding: 0 20px; }
@@ -1458,4 +1516,30 @@ footer {
   .stats-grid { grid-template-columns: 1fr; }
   .stat-item { border-left: none !important; padding-left: 0 !important; }
   .trust-bar { grid-template-columns: 1fr; }
+}
+
+
+/* ===== FLOATING CALL BUTTON ===== */
+.fab-call {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 200;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(255, 79, 0, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.fab-call:hover { background: #d94200; transform: scale(1.06); }
+
+@media (max-width: 768px) {
+  .fab-call { right: 16px; bottom: 16px; width: 56px; height: 56px; }
 }
