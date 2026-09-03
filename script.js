@@ -25,7 +25,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs
 
 // Lead and subscription forms + их цели в Метрике.
 const LEADS_ENDPOINT = 'api/leads';
-const METRIKA_COUNTER_ID = 111364095;
+const METRIKA_COUNTER_ID = 112278172;
 const LEAD_SUCCESS_GOALS = {
   lead: 'lead_submit_success',
   subscription: 'subscription_submit_success'
