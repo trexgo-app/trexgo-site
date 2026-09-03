@@ -186,6 +186,14 @@ document.querySelectorAll('.lead-form').forEach((form, index) => {
         throw new Error('Не удалось отправить заявку.');
       }
 
+      const redirectTo = form.dataset.redirect;
+      if (redirectTo) {
+        const successGoalEarly = LEAD_SUCCESS_GOALS[formKind];
+        if (successGoalEarly) reachMetrikaGoal(successGoalEarly, { form_kind: formKind });
+        window.location.assign(redirectTo);
+        return;
+      }
+
       const successEl = form.closest('.form-wrap')?.querySelector('.form-success')
         || form.parentElement.querySelector('.form-success');
       if (successEl) {
@@ -270,3 +278,38 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     }
   });
 });
+
+
+// Модальное окно заявки: открывают элементы с data-modal="lead".
+const leadModal = document.getElementById('leadModal');
+if (leadModal) {
+  let lastFocused = null;
+
+  const openLeadModal = () => {
+    lastFocused = document.activeElement;
+    leadModal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    leadModal.querySelector('input')?.focus();
+  };
+
+  const closeLeadModal = () => {
+    leadModal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    lastFocused?.focus();
+  };
+
+  document.querySelectorAll('[data-modal="lead"]').forEach(trigger => {
+    trigger.addEventListener('click', event => {
+      event.preventDefault();
+      openLeadModal();
+    });
+  });
+
+  leadModal.querySelector('.modal-close')?.addEventListener('click', closeLeadModal);
+  leadModal.addEventListener('click', event => {
+    if (event.target === leadModal) closeLeadModal();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && leadModal.classList.contains('is-open')) closeLeadModal();
+  });
+}
