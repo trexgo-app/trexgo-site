@@ -465,6 +465,8 @@ body {
 
 .hero-lead-form .form-input {
   height: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
   background: #fff;
   border: 1px solid var(--sand);
   color: var(--black);
@@ -975,6 +977,8 @@ body {
 
 .form-input {
   height: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
   flex: 1;
   font-family: var(--font);
   font-size: 16px;
