@@ -352,7 +352,9 @@ if (leadModal) {
     });
   });
 
-  leadModal.querySelector('.modal-close')?.addEventListener('click', closeLeadModal);
+  // Кнопка закрытия — `.modal-cancel`: крестик из модалки убран, осталась
+  // только текстовая «Закрыть» внизу формы.
+  leadModal.querySelector('.modal-cancel')?.addEventListener('click', closeLeadModal);
   leadModal.addEventListener('click', event => {
     if (event.target === leadModal) closeLeadModal();
   });
