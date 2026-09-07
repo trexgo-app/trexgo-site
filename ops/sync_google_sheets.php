@@ -153,6 +153,7 @@ function trexgo_update_work_fields(PDO $pdo, array $lead, array $row): bool
 {
     $status = trexgo_validate_status(trim($row['Статус'] ?? '') ?: (string) $lead['status'], TREXGO_LEAD_STATUSES);
     $values = [
+        'name' => trexgo_text($row['Имя'] ?? null, 200),
         'status' => $status,
         'note' => trexgo_text($row['Заметка'] ?? null, 10000),
         'next_step' => trexgo_text($row['Следующий шаг'] ?? null, 500),
@@ -163,7 +164,7 @@ function trexgo_update_work_fields(PDO $pdo, array $lead, array $row): bool
         if (($lead[$field] ?? null) !== $value) {
             $statement = $pdo->prepare(<<<'SQL'
                 UPDATE leads
-                SET status = :status, note = :note, next_step = :next_step,
+                SET name = :name, status = :status, note = :note, next_step = :next_step,
                     contacted_at = :contacted_at, owner = :owner, updated_at = :updated_at
                 WHERE id = :id
                 SQL);
