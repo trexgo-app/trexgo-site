@@ -33,11 +33,11 @@ return [
         'phone' => '+7 985 075-76-75',
         'whatsapp_url' => 'https://wa.me/79850757675',
     ],
-    'yandex_disk' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'refresh_token' => '',
-        'path' => 'app:/TrexGo — заявки.xlsx',
+    'google_sheets' => [
+        'service_account_key_path' => '/home/httpd/vhosts/trexgo.ru/httpdocs/ops/config/google-service-account-leads.json',
+        'spreadsheet_id' => '1jVrbfhOzKlVqTITEWf26NaNlsL4H75SpeU7Km552HT4',
+        // Используется только setup_google_sheet.php при первом заполнении таблицы.
+        'editors' => ['vanss13@gmail.com', 'soloviandesign@gmail.com'],
     ],
     'paths' => [
         'exports' => '/home/httpd/vhosts/trexgo.ru/private/exports',

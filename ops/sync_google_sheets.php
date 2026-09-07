@@ -5,13 +5,12 @@ declare(strict_types=1);
 require_once __DIR__ . '/_cli.php';
 require_once dirname(__DIR__) . '/api/lib/validation.php';
 require_once dirname(__DIR__) . '/api/lib/notifications.php';
-require_once __DIR__ . '/vendor/shuchkin/simplexlsx/src/SimpleXLSX.php';
-require_once __DIR__ . '/vendor/shuchkin/simplexlsxgen/src/SimpleXLSXGen.php';
-require_once __DIR__ . '/lib/YandexDiskClient.php';
-require_once __DIR__ . '/lib/XlsxLeadSheet.php';
+require_once __DIR__ . '/lib/GoogleServiceAccountAuth.php';
+require_once __DIR__ . '/lib/GoogleSheetsClient.php';
+require_once __DIR__ . '/lib/SheetLeadRows.php';
 require_once __DIR__ . '/lib/RowValidation.php';
 
-const TREXGO_LEAD_STATUSES = XlsxLeadSheet::STATUSES;
+const TREXGO_LEAD_STATUSES = SheetLeadRows::STATUSES;
 const TREXGO_SYNC_ALERT_THRESHOLD = 3;
 
 /** @param array<string, string> $row */
@@ -42,7 +41,7 @@ function trexgo_sheet_to_utc(?string $value): ?string
             }
         }
     }
-    throw new TrexgoRowException('Invalid contact date in XLSX');
+    throw new TrexgoRowException('Invalid contact date in Google Sheet');
 }
 
 function trexgo_utc_to_moscow(?string $value): ?DateTimeImmutable
@@ -175,32 +174,30 @@ function trexgo_update_work_fields(PDO $pdo, array $lead, array $row): bool
     return false;
 }
 
-$lockPath = sys_get_temp_dir() . '/trexgo-leads-yandex-sync.lock';
+$lockPath = sys_get_temp_dir() . '/trexgo-leads-google-sync.lock';
 $lock = fopen($lockPath, 'c');
 if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
     trexgo_cli_fail('Another sync process is already running.', 3);
 }
 
-$downloadPath = sys_get_temp_dir() . '/trexgo-leads-' . bin2hex(random_bytes(6)) . '.xlsx';
-$uploadPath = $downloadPath . '.new.xlsx';
-$failureCountPath = sys_get_temp_dir() . '/trexgo-leads-yandex-sync.failures';
+$failureCountPath = sys_get_temp_dir() . '/trexgo-leads-google-sync.failures';
 
 try {
     $config = trexgo_config();
-    $diskConfig = is_array($config['yandex_disk'] ?? null) ? $config['yandex_disk'] : [];
-    $diskPath = (string) ($diskConfig['path'] ?? '');
-    if ($diskPath === '') {
-        throw new RuntimeException('Yandex Disk path is not configured');
+    $googleConfig = is_array($config['google_sheets'] ?? null) ? $config['google_sheets'] : [];
+    $spreadsheetId = (string) ($googleConfig['spreadsheet_id'] ?? '');
+    $keyPath = (string) ($googleConfig['service_account_key_path'] ?? '');
+    if ($spreadsheetId === '' || $keyPath === '') {
+        throw new RuntimeException('Google Sheets sync is not configured');
     }
 
-    $disk = new YandexDiskClient($diskConfig);
-    $sheet = new XlsxLeadSheet();
-    $initialMetadata = $disk->metadata($diskPath);
-    $rows = [];
-    if ($initialMetadata !== null) {
-        $disk->download($diskPath, $downloadPath);
-        $rows = $sheet->read($downloadPath);
-    }
+    $auth = new GoogleServiceAccountAuth($keyPath, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly']);
+    $sheets = new GoogleSheetsClient($auth);
+    $sheet = new SheetLeadRows();
+
+    $initialModified = $sheets->fileModifiedTime($spreadsheetId);
+    $sheetRows = $sheets->readRange($spreadsheetId, SheetLeadRows::SHEET_NAME);
+    $rows = $sheet->read($sheetRows);
 
     $pdo = trexgo_db();
     $leads = trexgo_fetch_leads($pdo);
@@ -227,10 +224,10 @@ try {
             $leads = trexgo_fetch_leads($pdo);
         }
         if (!trexgo_is_uuid($id) || !isset($leads[$id])) {
-            throw new RuntimeException('XLSX contains an unknown lead id at row ' . ($index + 2));
+            throw new RuntimeException('Google Sheet contains an unknown lead id at row ' . ($index + 2));
         }
         if (isset($orderedIds[$id])) {
-            throw new RuntimeException('XLSX contains a duplicate lead id at row ' . ($index + 2));
+            throw new RuntimeException('Google Sheet contains a duplicate lead id at row ' . ($index + 2));
         }
         $orderedIds[$id] = true;
         try {
@@ -241,9 +238,9 @@ try {
     }
     unset($row);
 
-    // Собираем вывод в исходном порядке строк файла: пропущенная строка остаётся
+    // Собираем вывод в исходном порядке строк листа: пропущенная строка остаётся
     // на своём месте как есть (без id — подхватится, когда её исправят), а не
-    // прыгает в конец. Иначе файл переписывался бы каждый прогон только из-за
+    // прыгает в конец. Иначе лист переписывался бы каждый прогон только из-за
     // перестановки, даже когда по сути ничего не изменилось.
     $leads = trexgo_fetch_leads($pdo);
     $outputRows = [];
@@ -269,23 +266,20 @@ try {
                 . implode(PHP_EOL, $skippedRowNotes),
             $config
         );
-        trexgo_log_event('yandex_sync_rows_skipped', ['rows' => implode('; ', $skippedRowNotes)]);
+        trexgo_log_event('google_sync_rows_skipped', ['rows' => implode('; ', $skippedRowNotes)]);
     }
 
-    $fileChanged = $initialMetadata === null || $outputRows !== $rows;
+    $fileChanged = $outputRows !== $rows;
     if ($fileChanged) {
-        $sheet->write($uploadPath, $outputRows);
-        $currentMetadata = $disk->metadata($diskPath);
-        $initialModified = $initialMetadata['modified'] ?? null;
-        $currentModified = $currentMetadata['modified'] ?? null;
+        $currentModified = $sheets->fileModifiedTime($spreadsheetId);
         if ($initialModified !== $currentModified) {
             trexgo_notify_operational(
-                'Конфликт синхронизации TrexGo: файл менялся во время прогона, загрузка пропущена.',
+                'Конфликт синхронизации TrexGo: таблица менялась во время прогона, загрузка пропущена.',
                 $config
             );
-            trexgo_cli_fail('Sync conflict: remote workbook changed during the run.', 4);
+            trexgo_cli_fail('Sync conflict: Google Sheet changed during the run.', 4);
         }
-        $disk->upload($diskPath, $uploadPath);
+        $sheets->writeRange($spreadsheetId, SheetLeadRows::SHEET_NAME . '!A1', $sheet->toSheetRows($outputRows));
     }
 
     if ($fileChanged || $databaseChanged) {
@@ -306,15 +300,15 @@ try {
             : 'No synchronization changes' . PHP_EOL
     );
 } catch (Throwable $error) {
-    trexgo_log_event('yandex_sync_failed', [
+    trexgo_log_event('google_sync_failed', [
         'type' => get_class($error),
         'code' => (string) $error->getCode(),
         'message' => $error->getMessage(),
     ]);
 
-    // Транспортные сбои Яндекс.Диска гасятся ретраями внутри YandexDiskClient; то, что
+    // Транспортные сбои Google API гасятся ретраями внутри GoogleSheetsClient; то, что
     // долетело сюда, уже пережило их. Всё равно не будим человека на первый же случай —
-    // короткие сетевые окна недоступности иногда переживают и три попытки подряд.
+    // короткие сетевые окна недоступности иногда переживают и несколько попыток подряд.
     // Алерт уходит один раз при пересечении порога, а не на каждый сбой после него —
     // иначе при затяжной недоступности cron засыпает Telegram сообщением каждые 15 минут.
     $consecutiveFailures = ((int) @file_get_contents($failureCountPath)) + 1;
@@ -323,14 +317,12 @@ try {
     if ($consecutiveFailures === TREXGO_SYNC_ALERT_THRESHOLD && isset($config) && is_array($config)) {
         trexgo_notify_operational(
             'Синхронизация заявок TrexGo не выполнена после трёх запусков. '
-                . 'Причина записана в logs/sync_yandex_disk.log.',
+                . 'Причина записана в logs/sync_google_sheets.log.',
             $config
         );
     }
-    trexgo_cli_fail('Yandex Disk synchronization failed. See logs/sync_yandex_disk.log.');
+    trexgo_cli_fail('Google Sheets synchronization failed. See logs/sync_google_sheets.log.');
 } finally {
-    @unlink($downloadPath);
-    @unlink($uploadPath);
     if (is_resource($lock)) {
         flock($lock, LOCK_UN);
         fclose($lock);
