@@ -186,7 +186,9 @@
     .k-for-img img { width: 100%; height: 100%; object-fit: cover; }
     .k-for-body { padding: 22px 24px 26px; }
     .k-for-body b { display: block; font-size: 20px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
-    .k-for-body span { font-size: 15px; color: #555; line-height: 1.5; }
+    .k-for-body span { font-size: 15px; color: #555; line-height: 1.5; display: block; }
+    .k-for-body { display: flex; flex-direction: column; flex: 1; }
+    .k-for-btn { margin-top: 20px; width: 100%; }
 
     /* ===== 4. Что сделаем ===== */
     .k-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -492,15 +494,21 @@
     <ul class="k-for">
       <li>
         <div class="k-for-img"><img src="../img/kontur-type-1.webp" alt="" loading="lazy" /></div>
-        <div class="k-for-body"><b>Перевозчик или транспортная компания</b><span>От одной машины до автопарка: кабинет, подписи, водители с приложением.</span></div>
+        <div class="k-for-body"><b>Перевозчик или транспортная компания</b><span>От одной машины до автопарка: кабинет, подписи, водители с приложением.</span>
+          <a href="#lead" data-modal="lead" class="k-btn k-btn-teal k-for-btn">Настроить ЭТрН</a>
+        </div>
       </li>
       <li>
         <div class="k-for-img"><img src="../img/kontur-type-2.webp" alt="" loading="lazy" /></div>
-        <div class="k-for-body"><b>Экспедитор</b><span>ЭТрН, заказ-заявки и поручения экспедитору — в одном кабинете.</span></div>
+        <div class="k-for-body"><b>Экспедитор</b><span>ЭТрН, заказ-заявки и поручения экспедитору — в одном кабинете.</span>
+          <a href="#lead" data-modal="lead" class="k-btn k-btn-teal k-for-btn">Настроить ЭТрН</a>
+        </div>
       </li>
       <li>
         <div class="k-for-img"><img src="../img/kontur-type-3.webp" alt="" loading="lazy" /></div>
-        <div class="k-for-body"><b>Грузоотправитель</b><span>Выпускаете накладные на свои отгрузки и видите статусы по каждой машине.</span></div>
+        <div class="k-for-body"><b>Грузоотправитель</b><span>Выпускаете накладные на свои отгрузки и видите статусы по каждой машине.</span>
+          <a href="#lead" data-modal="lead" class="k-btn k-btn-teal k-for-btn">Настроить ЭТрН</a>
+        </div>
       </li>
     </ul>
   </div>
