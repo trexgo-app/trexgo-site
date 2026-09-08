@@ -145,15 +145,14 @@
     .k-quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .k-quiz-opt { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 14px 18px; border-radius: 14px; border: 1.5px solid #dcdcdc; background: #fff; text-align: left; font-size: 16px; font-weight: 500; line-height: 1.3; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
     .k-quiz-opt:hover { border-color: var(--k-teal); }
-    .k-quiz-opt::before { content: ''; width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; border: 2px solid #cfcfcf; transition: all .15s ease; }
+    .k-quiz-ic { width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: var(--k-card); color: var(--k-teal-dark); display: flex; align-items: center; justify-content: center; transition: background .15s ease, color .15s ease; }
+    .k-quiz-ic svg { width: 22px; height: 22px; }
     .k-quiz-opt.is-selected { border-color: var(--k-teal); background: rgba(0,190,162,.06); }
-    .k-quiz-opt.is-selected::before { border-color: var(--k-teal); background: var(--k-teal); box-shadow: inset 0 0 0 3px #fff; }
+    .k-quiz-opt.is-selected .k-quiz-ic { background: var(--k-teal); color: #fff; }
     .k-quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 24px; }
     .k-quiz-back { background: none; border: 0; color: var(--k-muted); font-size: 15px; cursor: pointer; padding: 8px 0; }
     .k-quiz-back:hover { color: var(--k-text); }
     .k-quiz-back[hidden] { visibility: hidden; display: block; }
-    .k-quiz-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
-    .k-quiz-summary span { font-size: 13px; font-weight: 600; color: var(--k-teal-dark); background: rgba(0,190,162,.1); border-radius: 100px; padding: 6px 12px; }
     .k-quiz-final .form-row { flex-direction: column; }
     .k-quiz-final .form-note { margin-top: 12px; }
 
@@ -396,7 +395,7 @@
   <div class="k-container">
     <div class="k-quiz">
       <div class="k-quiz-intro">
-        <h2 class="k-h2">Ответьте на 4 вопроса — скажем, что нужно именно вам</h2>
+        <h2 class="k-h2">Ответьте на 3 вопроса — скажем, что нужно именно вам</h2>
         <p>Полминуты. В конце — срок и стоимость подключения под вашу ситуацию.</p>
         <ul>
           <li>Какие документы и титулы понадобятся</li>
@@ -405,52 +404,40 @@
         </ul>
       </div>
       <div class="k-quiz-box" id="quizBox">
-        <div class="k-quiz-top"><span id="quizCounter">Вопрос 1 из 4</span><span>≈ 30 секунд</span></div>
+        <div class="k-quiz-top"><span id="quizCounter">Вопрос 1 из 3</span><span>≈ 30 секунд</span></div>
         <div class="k-quiz-bar"><i id="quizBar"></i></div>
 
         <div class="k-quiz-step is-active" data-step="1" data-key="Роль">
           <div class="k-quiz-q">Кто вы в перевозке?</div>
           <div class="k-quiz-opts">
-            <button type="button" class="k-quiz-opt">Перевозчик, транспортная компания</button>
-            <button type="button" class="k-quiz-opt">Экспедитор</button>
-            <button type="button" class="k-quiz-opt">Грузоотправитель</button>
-            <button type="button" class="k-quiz-opt">Пока не понимаю, кто мы по ЭТрН</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Перевозчик</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg></span>Экспедитор</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>Грузоотправитель</button>
           </div>
         </div>
 
-        <div class="k-quiz-step" data-step="2" data-key="Кабинет">
-          <div class="k-quiz-q">Есть ли уже кабинет в Контуре?</div>
-          <div class="k-quiz-opts">
-            <button type="button" class="k-quiz-opt">Да, Контур.Логистика</button>
-            <button type="button" class="k-quiz-opt">Есть Диадок, Логистики нет</button>
-            <button type="button" class="k-quiz-opt">Другой оператор — СБИС, Такском, 1С</button>
-            <button type="button" class="k-quiz-opt">Ничего нет, всё на бумаге</button>
-          </div>
-        </div>
-
-        <div class="k-quiz-step" data-step="3" data-key="Машин">
+        <div class="k-quiz-step" data-step="2" data-key="Машин">
           <div class="k-quiz-q">Сколько машин и водителей подключать?</div>
           <div class="k-quiz-opts">
-            <button type="button" class="k-quiz-opt">1–3</button>
-            <button type="button" class="k-quiz-opt">4–10</button>
-            <button type="button" class="k-quiz-opt">11–30</button>
-            <button type="button" class="k-quiz-opt">Больше 30 или не свои — наёмный транспорт</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>1–3</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="3"/><path d="M15.5 14.5A5.5 5.5 0 0 1 22 20"/></svg></span>4–10</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h11v10H2zM13 11h4l3 3v3h-7z"/><circle cx="6" cy="19" r="2"/><circle cx="16" cy="19" r="2"/><path d="M17 4h5"/><path d="M19 2v4"/></svg></span>11–30</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Больше 30</button>
           </div>
         </div>
 
-        <div class="k-quiz-step" data-step="4" data-key="Мешает">
-          <div class="k-quiz-q">Что сейчас мешает больше всего?</div>
+        <div class="k-quiz-step" data-step="3" data-key="Задача">
+          <div class="k-quiz-q">Что нужно сделать?</div>
           <div class="k-quiz-opts">
-            <button type="button" class="k-quiz-opt">Не понимаем, обязаны ли мы вообще</button>
-            <button type="button" class="k-quiz-opt">Кабинет есть, накладная не выпускается</button>
-            <button type="button" class="k-quiz-opt">Водители не могут подписать</button>
-            <button type="button" class="k-quiz-opt">Некогда разбираться — нужно под ключ</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 9-9M15 6l3 3M18 3l3 3"/></svg></span>Нужна настройка под ключ</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01M9 10c1.5-2 3-2 4 0s2.5 2 4 0"/></svg></span>Водители не могут подписать</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9.5 12.5l5 5M14.5 12.5l-5 5"/></svg></span>Накладная не выпускается</button>
+            <button type="button" class="k-quiz-opt"><span class="k-quiz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5M22 9v6"/></svg></span>Требуется обучение</button>
           </div>
         </div>
 
-        <div class="k-quiz-step k-quiz-final" data-step="5">
+        <div class="k-quiz-step k-quiz-final" data-step="4">
           <div class="k-quiz-q">Готово. Куда прислать срок и стоимость?</div>
-          <div class="k-quiz-summary" id="quizSummary"></div>
           <div class="form-wrap">
             <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-quiz" novalidate>
               <input type="hidden" name="comment" id="quizComment" value="" />
@@ -458,7 +445,7 @@
                 <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Телефон" />
                 <button class="k-btn k-btn-teal" type="submit">Получить срок и стоимость</button>
               </div>
-              <p class="form-note">Перезвоним с готовым ответом по вашим четырём пунктам. Без предоплаты.</p>
+              <p class="form-note">Перезвоним с готовым ответом по вашей ситуации. Без предоплаты.</p>
               <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a></p>
             </form>
             <div class="form-success">✓ Заявка принята. Перезвоним в ближайшее время.</div>
@@ -736,7 +723,6 @@
   const counter = document.getElementById('quizCounter');
   const bar = document.getElementById('quizBar');
   const back = document.getElementById('quizBack');
-  const summary = document.getElementById('quizSummary');
   const comment = document.getElementById('quizComment');
   const answers = {};
   let current = 1;
@@ -750,10 +736,6 @@
     bar.style.width = `${Math.min(current - 1, total) / total * 100}%`;
     back.hidden = current === 1;
     if (done) {
-      summary.innerHTML = '';
-      Object.entries(answers).forEach(([k, v]) => {
-        const chip = document.createElement('span'); chip.textContent = `${k}: ${v}`; summary.appendChild(chip);
-      });
       comment.value = 'Квиз: ' + Object.entries(answers).map(([k, v]) => `${k} — ${v}`).join('; ');
       goal('quiz_finish');
       setTimeout(() => box.querySelector('.k-quiz-final input[type="tel"]')?.focus(), 200);
