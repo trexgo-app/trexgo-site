@@ -218,7 +218,10 @@
     /* ===== 7. Сроки и стоимость ===== */
     .k-price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .k-price { background: var(--k-card); border-radius: 20px; padding: 36px 32px; display: flex; flex-direction: column; border: 2px solid transparent; }
-    .k-price.is-featured { border-color: var(--k-teal); background: #fff; }
+    .k-price.is-featured { background: var(--k-navy); color: #fff; }
+    .k-price.is-featured .k-price-role, .k-price.is-featured .k-price-per { color: rgba(255,255,255,.65); }
+    .k-price.is-featured .k-price-sum { color: #fff; }
+    .k-price.is-featured li { color: rgba(255,255,255,.88); }
     .k-price-role { font-size: 15px; color: var(--k-muted); font-weight: 500; margin-bottom: 8px; }
     .k-price-sum { font-size: 40px; font-weight: 700; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
     .k-price-per { font-size: 14px; color: var(--k-muted); margin: 8px 0 24px; }
