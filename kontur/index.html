@@ -105,8 +105,10 @@
     .k-hero { padding: 16px 0 96px; }
     .k-hero-card {
       background: var(--k-navy); color: #fff; border-radius: 24px;
-      padding: 56px 64px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start;
+      padding: 56px 64px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px 56px; align-items: center;
     }
+    .k-hero-img { border-radius: 20px; overflow: hidden; aspect-ratio: 1 / 1; background: rgba(255,255,255,.06); }
+    .k-hero-img img { width: 100%; height: 100%; object-fit: cover; }
     .k-hero-card .k-h1 { color: #fff; margin-bottom: 20px; }
     .k-hero-trust {
       display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px;
@@ -115,8 +117,10 @@
     }
     .k-hero-trust img { width: 24px; height: 24px; border-radius: 6px; }
     .k-hero-text { font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.86); max-width: 520px; }
-    .k-hero-form-box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px; margin-top: 8px; }
-    .k-hero-form-box .k-h3 { color: #fff; margin-bottom: 18px; }
+    .k-hero-form-box { grid-column: 1 / -1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px 32px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px 40px; align-items: center; }
+    .k-hero-form-box .k-h3 { color: #fff; margin-bottom: 6px; }
+    .k-hero-form-box .k-hero-form-lead { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.5; }
+    .k-hero-form-box .form-note { display: none; }
     .k-hero-form-box .form-input { border-color: transparent; }
     .k-hero-form-box .form-note { color: rgba(255,255,255,.78); }
     .k-hero-form-box .form-privacy { color: rgba(255,255,255,.5); }
@@ -229,6 +233,7 @@
       .k-h1 { font-size: 44px; }
       .k-h2 { font-size: 36px; }
       .k-hero-card, .k-final, .k-diadok { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
+      .k-hero-img { max-width: 480px; }
       .k-pain-grid, .k-price-grid { grid-template-columns: 1fr 1fr; }
       .k-for { grid-template-columns: 1fr 1fr; }
       .k-split { grid-template-columns: 1fr; gap: 40px; }
@@ -246,6 +251,9 @@
       .k-nav-hours, .k-nav-right .k-btn { display: none; }
       .k-hero { padding: 8px 0 48px; }
       .k-hero-card, .k-final, .k-diadok { padding: 28px 20px; border-radius: 20px; }
+      .k-hero-card { gap: 24px; }
+      .k-hero-img { order: 3; }
+      .k-hero-form-box { grid-template-columns: 1fr; gap: 14px; }
       .k-hero-text { font-size: 16px; }
       .k-hero-form-box, .k-final-form { padding: 20px; }
       .form-row { flex-direction: column; }
@@ -325,8 +333,12 @@
           <span>Удалённо по всей России</span>
         </div>
       </div>
+      <div class="k-hero-img"><img src="../img/kontur-hero.webp" alt="Водитель у фуры и электронная транспортная накладная" width="1024" height="1024" /></div>
       <div class="k-hero-form-box">
-        <h3 class="k-h3">Оставьте номер</h3>
+        <div>
+          <h3 class="k-h3">Оставьте номер</h3>
+          <p class="k-hero-form-lead">Перезвоним, уточним, что у вас уже есть — кабинет, подпись, водители, — и назовём срок и стоимость.</p>
+        </div>
         <div class="form-wrap">
           <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-hero" novalidate>
             <div class="form-row">
