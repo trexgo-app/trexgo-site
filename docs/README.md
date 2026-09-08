@@ -179,6 +179,24 @@ stage-заглушкой (хеш захардкожен в самом `pull-depl
 (`*.trexgo.ru`), прежнее ограничение снято; исход решения — в
 [archive/proposals/preview-varianty.md](archive/proposals/preview-varianty.md).
 
+## Лендинг под Контур: `kontur.trexgo.ru`
+
+Страница `kontur/index.html` — отдельный лендинг под рекламу в стиле kontur.ru, с болями
+из Wordstat. Живёт по двум адресам:
+
+| Адрес | Откуда берётся |
+|---|---|
+| https://trexgo.ru/kontur/ | обычная выкладка, папка `kontur/` |
+| https://kontur.trexgo.ru/ | `ops/pull-deploy.sh` при production-выкладке кладёт ту же страницу в `subdomains/kontur/httpdocs`, переписав ссылки `../` на `https://trexgo.ru/` |
+
+Скрипт, картинки, `spasibo.html`, `privacy.html` на поддомене не дублируются — берутся
+с основного домена. Заявка с поддомена уходит на `trexgo.ru/api/leads` с чужого origin:
+`api/leads.php` разрешает CORS хостам из `allowed_hosts` и их поддоменам первого уровня.
+Canonical у обеих копий — `https://trexgo.ru/kontur/`, в `sitemap.xml` только он.
+
+Поддомен заведён в панели Макхоста руками (wildcard-сертификат его покрывает). Если
+папки поддомена нет, шаг выкладки пропускается, основной сайт от этого не зависит.
+
 ## Старый адрес `trexgo.app`
 
 Vercel остался подключённым к этому репозиторию через GitHub App организации —

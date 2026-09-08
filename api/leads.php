@@ -7,9 +7,55 @@ require_once __DIR__ . '/lib/validation.php';
 require_once __DIR__ . '/lib/repository.php';
 require_once __DIR__ . '/lib/notifications.php';
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    header('Allow: POST');
+$method = (string) ($_SERVER['REQUEST_METHOD'] ?? '');
+if ($method !== 'POST' && $method !== 'OPTIONS') {
+    header('Allow: POST, OPTIONS');
     trexgo_json_response(405, ['ok' => false, 'error' => 'method_not_allowed']);
+}
+
+try {
+    $config = trexgo_config();
+} catch (Throwable $error) {
+    trexgo_log_event('config_unavailable', ['type' => get_class($error)]);
+    trexgo_json_response(503, ['ok' => false, 'error' => 'service_unavailable']);
+}
+
+// Лендинги под рекламу живут на своих поддоменах (kontur.trexgo.ru) и шлют
+// заявку сюда, на trexgo.ru/api/leads, — для браузера это другой origin, и без
+// CORS-ответа он запрос не пропустит. Разрешены хосты из конфига и их поддомены
+// первого уровня: чужой сайт на *.trexgo.ru разместиться не может. Всем прочим
+// origin по-прежнему 403. Preflight (OPTIONS) отвечаем здесь же, до проверок
+// тела — у него тела нет.
+$origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
+if ($origin !== '') {
+    $originHost = strtolower((string) parse_url($origin, PHP_URL_HOST));
+    $allowedHosts = is_array($config['security']['allowed_hosts'] ?? null)
+        ? $config['security']['allowed_hosts']
+        : [];
+    $originAllowed = false;
+    foreach ($allowedHosts as $allowedHost) {
+        $allowedHost = strtolower((string) $allowedHost);
+        if ($allowedHost === '') {
+            continue;
+        }
+        if ($originHost === $allowedHost || str_ends_with($originHost, '.' . $allowedHost)) {
+            $originAllowed = true;
+            break;
+        }
+    }
+    if (!$originAllowed) {
+        trexgo_json_response(403, ['ok' => false, 'error' => 'origin_not_allowed']);
+    }
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+}
+
+if ($method === 'OPTIONS') {
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Max-Age: 86400');
+    http_response_code(204);
+    exit;
 }
 
 $contentType = strtolower((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
@@ -22,23 +68,6 @@ if ($contentLength > 32768) {
     trexgo_json_response(413, ['ok' => false, 'error' => 'payload_too_large']);
 }
 
-try {
-    $config = trexgo_config();
-} catch (Throwable $error) {
-    trexgo_log_event('config_unavailable', ['type' => get_class($error)]);
-    trexgo_json_response(503, ['ok' => false, 'error' => 'service_unavailable']);
-}
-
-$origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
-if ($origin !== '') {
-    $originHost = strtolower((string) parse_url($origin, PHP_URL_HOST));
-    $allowedHosts = is_array($config['security']['allowed_hosts'] ?? null)
-        ? $config['security']['allowed_hosts']
-        : [];
-    if (!in_array($originHost, $allowedHosts, true)) {
-        trexgo_json_response(403, ['ok' => false, 'error' => 'origin_not_allowed']);
-    }
-}
 
 $raw = file_get_contents('php://input');
 $payload = is_string($raw) ? json_decode($raw, true) : null;

@@ -232,6 +232,45 @@ else
   # /preview/ в выкладке больше не участвует.
   log "Раскладываю в $TARGET (env=production)"
   rsync "${args[@]}" "${dry[@]+"${dry[@]}"}" "$SRC/" "$TARGET/"
+
+  # Лендинг под Контур живёт дважды: как trexgo.ru/kontur/ (обычная папка
+  # выкладки выше) и как kontur.trexgo.ru — отдельный поддомен под рекламу.
+  # Корень поддомена лежит вне httpdocs, в subdomains/kontur/httpdocs, и
+  # rsync выше туда не заглядывает. Источник один — kontur/index.html из
+  # репозитория; для поддомена в нём переписываются относительные ссылки
+  # вида "../" на https://trexgo.ru/: скрипт, картинки, политика, страница
+  # «спасибо» лежат только на основном домене. Заявка при этом уходит с
+  # другого origin — CORS для своих поддоменов разрешён в api/leads.php.
+  #
+  # Поддомен заводится руками в панели Макхоста. Пока его нет — шаг просто
+  # пропускается, выкладка основного сайта от него не зависит.
+  KONTUR_TARGET="/home/httpd/vhosts/trexgo.ru/subdomains/kontur/httpdocs"
+  if [ -d "$KONTUR_TARGET" ] && [ -s "$SRC/kontur/index.html" ]; then
+    KONTUR_BUILD="$WORK/kontur-subdomain"
+    mkdir -p "$KONTUR_BUILD"
+    sed 's#"\.\./#"https://trexgo.ru/#g' "$SRC/kontur/index.html" > "$KONTUR_BUILD/index.html"
+    cat > "$KONTUR_BUILD/.htaccess" <<'HT'
+# Поддомен kontur.trexgo.ru: генерируется ops/pull-deploy.sh из репозитория
+# сайта при каждой выкладке, править руками бессмысленно.
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+AddDefaultCharset UTF-8
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+HT
+    if grep -q '"\.\./' "$KONTUR_BUILD/index.html"; then
+      log "ОШИБКА: в kontur/index.html для поддомена остались относительные ссылки ../ — поддомен не тронут"
+    else
+      log "Раскладываю kontur/ в $KONTUR_TARGET (поддомен kontur.trexgo.ru)"
+      rsync "${args[@]}" --delete "${dry[@]+"${dry[@]}"}" "$KONTUR_BUILD/" "$KONTUR_TARGET/"
+    fi
+  else
+    log "Поддомен kontur.trexgo.ru не заведён ($KONTUR_TARGET) — пропускаю"
+  fi
 fi
 
 # Коммит берём из имени папки архива: .git в tarball не входит.
