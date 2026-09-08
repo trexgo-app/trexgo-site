@@ -137,10 +137,13 @@
     .k-pain p b { color: var(--k-teal-dark); font-weight: 600; }
 
     /* ===== 3. Для кого ===== */
-    .k-for { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 24px; }
-    .k-for li { list-style: none; display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-top: 1px solid var(--k-line); font-size: 18px; font-weight: 500; }
-    .k-for li::before { content: '✓'; color: var(--k-teal); font-weight: 700; flex-shrink: 0; }
-    .k-for li span { display: block; font-size: 15px; font-weight: 400; color: var(--k-muted); margin-top: 2px; }
+    .k-for { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; list-style: none; }
+    .k-for li { background: var(--k-card); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
+    .k-for-img { aspect-ratio: 16 / 10; overflow: hidden; background: #e9e9e9; }
+    .k-for-img img { width: 100%; height: 100%; object-fit: cover; }
+    .k-for-body { padding: 22px 24px 26px; }
+    .k-for-body b { display: block; font-size: 20px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+    .k-for-body span { font-size: 15px; color: #555; line-height: 1.5; }
 
     /* ===== 4. Что сделаем ===== */
     .k-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
@@ -235,7 +238,7 @@
       .k-hero-card, .k-final, .k-diadok { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
       .k-hero-img { max-width: 480px; }
       .k-pain-grid, .k-price-grid { grid-template-columns: 1fr 1fr; }
-      .k-for { grid-template-columns: 1fr 1fr; }
+      .k-for { grid-template-columns: 1fr; }
       .k-split { grid-template-columns: 1fr; gap: 40px; }
       .k-steps { grid-template-columns: 1fr; }
     }
@@ -259,8 +262,8 @@
       .form-row { flex-direction: column; }
       .form-row .k-btn { width: 100%; }
       .k-pain-grid, .k-price-grid, .k-for { grid-template-columns: 1fr; gap: 12px; }
-      .k-for { gap: 0; }
-      .k-for li { padding: 12px 0; font-size: 16px; }
+      .k-for-body { padding: 18px 20px 22px; }
+      .k-for-body b { font-size: 18px; }
       .k-pain { padding: 22px 20px; }
       .k-pain q { font-size: 18px; }
       .k-step { padding: 16px 0; gap: 14px; }
@@ -382,12 +385,18 @@
   <div class="k-container">
     <h2 class="k-h2">Подойдёт, если вы</h2>
     <ul class="k-for">
-      <li>Перевозчик или транспортная компания<span>от одной машины до автопарка</span></li>
-      <li>Экспедитор<span>ЭТрН, заказ-заявки, поручения</span></li>
-      <li>Грузоотправитель<span>выпускаете накладные на свои отгрузки</span></li>
-      <li>Уже работаете в Диадоке<span>ЭТрН добавим рядом с обычными документами</span></li>
-      <li>Впервые сталкиваетесь с ЭТрН<span>пройдём весь путь с вами</span></li>
-      <li>Хотите быстро настроить людей<span>сотрудников, подписантов и водителей</span></li>
+      <li>
+        <div class="k-for-img"><img src="../Stati_image/5.webp" alt="" loading="lazy" /></div>
+        <div class="k-for-body"><b>Перевозчик или транспортная компания</b><span>От одной машины до автопарка: кабинет, подписи, водители с приложением.</span></div>
+      </li>
+      <li>
+        <div class="k-for-img"><img src="../Stati_image/1.webp" alt="" loading="lazy" /></div>
+        <div class="k-for-body"><b>Экспедитор</b><span>ЭТрН, заказ-заявки и поручения экспедитору — в одном кабинете.</span></div>
+      </li>
+      <li>
+        <div class="k-for-img"><img src="../Stati_image/6.webp" alt="" loading="lazy" /></div>
+        <div class="k-for-body"><b>Грузоотправитель</b><span>Выпускаете накладные на свои отгрузки и видите статусы по каждой машине.</span></div>
+      </li>
     </ul>
   </div>
 </section>
