@@ -441,7 +441,6 @@
         </div>
 
         <div class="k-quiz-step k-quiz-final" data-step="4">
-          <div class="k-quiz-q">Готово. Куда прислать срок и стоимость?</div>
           <div class="form-wrap">
             <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-quiz" novalidate>
               <input type="hidden" name="comment" id="quizComment" value="" />
@@ -737,7 +736,6 @@
     next.hidden = done;
     if (!done) {
       next.disabled = !answers[stepEl(current).dataset.key];
-      next.textContent = current === total ? 'Получить расчёт →' : 'Далее →';
     } else {
       comment.value = 'Квиз: ' + Object.entries(answers).map(([k, v]) => `${k} — ${v}`).join('; ');
       goal('quiz_finish');
