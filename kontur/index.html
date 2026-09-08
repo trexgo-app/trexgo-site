@@ -5,14 +5,14 @@
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>ЭТрН в Контуре под ключ — подключим за 1–2 дня | TrexGo</title>
-  <meta name="description" content="Настроим Контур.Логистику под вашу компанию: КЭП и МЧД, водители с приложением, роуминг с СБИС, обмен с 1С. Первую ЭТрН выпустим вместе в день подключения. Без предоплаты." />
+  <title>Подключение и настройка ЭТрН в Контуре | TrexGo</title>
+  <meta name="description" content="Подключим и настроим ЭТрН в Контур.Логистике: личный кабинет, подписи и МЧД, сотрудники, водители с приложением, роуминг. Первую накладную выпустим вместе. Без предоплаты." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://trexgo.ru/kontur/" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ЭТрН в Контуре под ключ | TrexGo" />
-  <meta property="og:description" content="Подключим Контур.Логистику за 1–2 дня: КЭП, водители, роуминг, 1С. Первую накладную выпустим вместе." />
+  <meta property="og:title" content="Подключим и настроим ЭТрН в Контуре | TrexGo" />
+  <meta property="og:description" content="Кабинет Контур.Логистики, подписи, сотрудники и водители — настроим за вас. Первую ЭТрН выпустим вместе." />
   <meta property="og:url" content="https://trexgo.ru/kontur/" />
   <meta property="og:locale" content="ru_RU" />
 
@@ -48,12 +48,11 @@
     button, input { font: inherit; color: inherit; }
 
     .k-container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
-    .k-section { padding: 96px 0; }
-    .k-h1 { font-size: 56px; font-weight: 700; line-height: 1.14; letter-spacing: -0.5px; }
-    .k-h2 { font-size: 48px; font-weight: 700; line-height: 1.13; letter-spacing: -0.5px; margin-bottom: 48px; }
+    .k-section { padding: 0 0 96px; }
+    .k-h1 { font-size: 56px; font-weight: 700; line-height: 1.14; letter-spacing: -0.5px; text-wrap: balance; }
+    .k-h2 { font-size: 44px; font-weight: 700; line-height: 1.13; letter-spacing: -0.5px; margin-bottom: 40px; text-wrap: balance; }
     .k-h3 { font-size: 22px; font-weight: 700; line-height: 1.3; }
-    .k-lead { font-size: 18px; color: var(--k-text); line-height: 1.5; }
-    .k-muted { color: var(--k-muted); }
+    .k-sub-h { font-size: 18px; color: #555; line-height: 1.55; margin: -24px 0 40px; max-width: 680px; }
 
     /* Кнопки — pill 100px, как у Контура */
     .k-btn {
@@ -64,11 +63,10 @@
     }
     .k-btn-teal { background: var(--k-teal); color: #fff; }
     .k-btn-teal:hover { background: var(--k-teal-dark); }
-    .k-btn-white { background: #fff; color: var(--k-text); }
-    .k-btn-white:hover { background: #ededed; }
     .k-btn-ghost { background: transparent; color: var(--k-text); border: 1px solid #d5d5d5; }
     .k-btn-ghost:hover { background: var(--k-card); }
     .k-btn-sm { height: 40px; padding: 0 18px; font-size: 16px; }
+    .k-btn:focus-visible, .form-input:focus-visible, .k-faq summary:focus-visible { outline: 2px solid var(--k-teal); outline-offset: 2px; }
 
     /* Поля */
     .form-input {
@@ -87,7 +85,8 @@
     .form-status[data-state="error"] { color: #fe4c4c; }
     .form-status[data-state="success"] { color: var(--k-teal-dark); }
     .form-success { display: none; font-size: 18px; font-weight: 600; }
-    .form-privacy { font-size: 13px; color: var(--k-muted); margin-top: 12px; line-height: 1.5; }
+    .form-note { font-size: 15px; line-height: 1.5; margin-top: 14px; color: #555; }
+    .form-privacy { font-size: 13px; color: var(--k-muted); margin-top: 10px; line-height: 1.5; }
     .form-privacy a { text-decoration: underline; }
 
     /* ===== Шапка ===== */
@@ -109,64 +108,65 @@
       padding: 56px 64px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start;
     }
     .k-hero-card .k-h1 { color: #fff; margin-bottom: 20px; }
-    .k-hero-alert {
-      display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;
-      background: rgba(252,118,48,.16); color: #ffb48a; font-size: 14px; font-weight: 600;
-      padding: 8px 14px; border-radius: 100px;
+    .k-hero-trust {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px;
+      background: rgba(255,255,255,.08); color: #fff; font-size: 14px; font-weight: 600;
+      padding: 8px 14px 8px 8px; border-radius: 100px;
     }
-    .k-hero-alert::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--k-orange); }
-    .k-hero-text { font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.86); }
-    .k-hero-text a { color: var(--k-teal); }
+    .k-hero-trust img { width: 24px; height: 24px; border-radius: 6px; }
+    .k-hero-text { font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.86); max-width: 520px; }
     .k-hero-form-box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px; margin-top: 8px; }
-    .k-hero-form-box .k-h3 { color: #fff; margin-bottom: 6px; }
-    .k-hero-form-box .k-sub { color: rgba(255,255,255,.7); font-size: 15px; margin-bottom: 20px; }
+    .k-hero-form-box .k-h3 { color: #fff; margin-bottom: 18px; }
     .k-hero-form-box .form-input { border-color: transparent; }
-    .k-hero-form-box .form-privacy { color: rgba(255,255,255,.55); }
+    .k-hero-form-box .form-note { color: rgba(255,255,255,.78); }
+    .k-hero-form-box .form-privacy { color: rgba(255,255,255,.5); }
     .k-hero-form-box .form-success { color: #fff; }
     .k-hero-form-box .form-status[data-state="error"] { color: #ffb0b0; }
     .k-hero-facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 24px; font-size: 15px; color: rgba(255,255,255,.75); }
     .k-hero-facts span::before { content: '✓'; color: var(--k-teal); margin-right: 8px; font-weight: 700; }
 
-    /* ===== 2. Боли ===== */
-    .k-section-sub { font-size: 18px; color: var(--k-muted); margin: -32px 0 48px; max-width: 640px; }
+    /* ===== 2. Боль ===== */
     .k-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .k-pain {
-      background: var(--k-card); border-radius: 20px; padding: 32px 28px;
-      display: flex; flex-direction: column; gap: 14px; min-height: 240px;
-    }
-    .k-pain q { font-size: 21px; font-weight: 700; line-height: 1.3; quotes: "«" "»"; }
-    .k-pain p { font-size: 16px; line-height: 1.5; color: #444; flex: 1; }
-    .k-pain-stat { font-size: 13px; color: var(--k-muted); display: flex; align-items: center; gap: 6px; }
-    .k-pain-stat b { color: var(--k-orange); font-weight: 600; }
+    .k-pain { background: var(--k-card); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .k-pain q { font-size: 20px; font-weight: 700; line-height: 1.3; quotes: "«" "»"; }
+    .k-pain p { font-size: 16px; line-height: 1.5; color: #444; }
+    .k-pain p b { color: var(--k-teal-dark); font-weight: 600; }
 
-    /* ===== 3. Что сделаем ===== */
+    /* ===== 3. Для кого ===== */
+    .k-for { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 24px; }
+    .k-for li { list-style: none; display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-top: 1px solid var(--k-line); font-size: 18px; font-weight: 500; }
+    .k-for li::before { content: '✓'; color: var(--k-teal); font-weight: 700; flex-shrink: 0; }
+    .k-for li span { display: block; font-size: 15px; font-weight: 400; color: var(--k-muted); margin-top: 2px; }
+
+    /* ===== 4. Что сделаем ===== */
     .k-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
-    .k-step { display: flex; gap: 20px; padding: 26px 0; border-top: 1px solid var(--k-line); }
-    .k-step-num { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--k-teal); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; }
+    .k-step { display: flex; gap: 20px; padding: 22px 0; border-top: 1px solid var(--k-line); }
+    .k-step-num { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--k-teal); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
     .k-step b { display: block; font-size: 19px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
     .k-step span { font-size: 16px; color: #555; line-height: 1.5; }
+    .k-step.is-you .k-step-num { background: var(--k-navy); }
 
-    /* ===== 4. Цифры ===== */
-    .k-numbers { background: var(--k-card); border-radius: 24px; padding: 56px 64px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-    .k-num b { display: block; font-size: 48px; font-weight: 700; line-height: 1; letter-spacing: -1px; color: var(--k-text); margin-bottom: 10px; }
-    .k-num b small { font-size: 26px; font-weight: 700; }
-    .k-num span { font-size: 16px; color: #555; line-height: 1.4; }
-
-    /* ===== 5. 1С и роуминг ===== */
+    /* ===== 5. Контур ===== */
     .k-split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
-    .k-split .k-h2 { margin-bottom: 32px; }
+    .k-split .k-h2 { margin-bottom: 28px; }
     .k-rows > div { padding: 18px 0; border-top: 1px solid var(--k-line); font-size: 17px; line-height: 1.5; color: #444; }
     .k-rows > div:last-child { border-bottom: 1px solid var(--k-line); }
     .k-rows b { color: var(--k-text); font-weight: 700; }
     .k-split-img { border-radius: 24px; overflow: hidden; aspect-ratio: 1 / 1; background: var(--k-card); }
     .k-split-img img { width: 100%; height: 100%; object-fit: cover; }
+    .k-legal-note { font-size: 13px; color: var(--k-muted); margin-top: 16px; line-height: 1.5; }
 
-    /* ===== 6. Цены ===== */
+    /* ===== 6. Диадок ===== */
+    .k-diadok { background: var(--k-card); border-radius: 24px; padding: 48px 56px; display: grid; grid-template-columns: 1.3fr auto; gap: 40px; align-items: center; }
+    .k-diadok .k-h2 { margin-bottom: 14px; font-size: 36px; }
+    .k-diadok p { font-size: 18px; color: #444; line-height: 1.55; max-width: 620px; }
+
+    /* ===== 7. Сроки и стоимость ===== */
     .k-price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .k-price { background: var(--k-card); border-radius: 20px; padding: 36px 32px; display: flex; flex-direction: column; border: 2px solid transparent; }
     .k-price.is-featured { border-color: var(--k-teal); background: #fff; }
     .k-price-role { font-size: 15px; color: var(--k-muted); font-weight: 500; margin-bottom: 8px; }
-    .k-price-sum { font-size: 40px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+    .k-price-sum { font-size: 40px; font-weight: 700; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
     .k-price-per { font-size: 14px; color: var(--k-muted); margin: 8px 0 24px; }
     .k-price ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; flex: 1; }
     .k-price li { font-size: 16px; line-height: 1.45; color: #444; padding-left: 26px; position: relative; }
@@ -174,16 +174,27 @@
     .k-price .k-btn { width: 100%; }
     .k-price-note { font-size: 15px; color: var(--k-muted); margin-top: 20px; }
 
-    /* ===== 7. Финальная форма ===== */
+    /* ===== 8. FAQ ===== */
+    .k-faq { max-width: 820px; }
+    .k-faq details { border-top: 1px solid var(--k-line); }
+    .k-faq details:last-child { border-bottom: 1px solid var(--k-line); }
+    .k-faq summary { list-style: none; cursor: pointer; padding: 20px 40px 20px 0; font-size: 19px; font-weight: 600; position: relative; line-height: 1.35; }
+    .k-faq summary::-webkit-details-marker { display: none; }
+    .k-faq summary::after { content: ''; position: absolute; right: 6px; top: 26px; width: 10px; height: 10px; border-right: 2px solid var(--k-teal); border-bottom: 2px solid var(--k-teal); transform: rotate(45deg); transition: transform .15s ease; }
+    .k-faq details[open] summary::after { transform: rotate(225deg); top: 30px; }
+    .k-faq details p { padding: 0 0 22px; font-size: 16px; line-height: 1.55; color: #444; max-width: 700px; }
+
+    /* ===== 9. Финал ===== */
     .k-final { background: var(--k-navy); border-radius: 24px; padding: 64px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; color: #fff; }
-    .k-final .k-h2 { color: #fff; margin-bottom: 16px; }
+    .k-final .k-h2 { color: #fff; margin-bottom: 16px; font-size: 40px; }
     .k-final p { color: rgba(255,255,255,.78); font-size: 18px; line-height: 1.55; }
     .k-final-phone { display: block; font-size: 32px; font-weight: 700; margin-top: 28px; color: #fff; }
     .k-final-phone small { display: block; font-size: 15px; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 4px; }
     .k-final .form-input { border-color: transparent; }
-    .k-final p.form-privacy { color: rgba(255,255,255,.55); font-size: 13px; line-height: 1.5; }
-    .k-final .form-success { color: #fff; }
+    .k-final p.form-note { color: rgba(255,255,255,.78); font-size: 15px; }
+    .k-final p.form-privacy { color: rgba(255,255,255,.5); font-size: 13px; line-height: 1.5; }
     .k-final p.form-status { font-size: 15px; }
+    .k-final .form-success { color: #fff; }
     .k-final .form-status[data-state="error"] { color: #ffb0b0; }
     .k-final-form { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px; }
     .k-final-form .k-h3 { color: #fff; margin-bottom: 18px; }
@@ -202,52 +213,65 @@
     .modal-logo { display: block; font-size: 22px; font-weight: 700; margin-bottom: 20px; }
     .modal-logo span { color: var(--k-teal); }
     .modal-box h3 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-    .modal-box .modal-sub { font-size: 15px; color: var(--k-muted); margin-bottom: 20px; }
+    .modal-box .modal-sub { font-size: 15px; color: #555; margin-bottom: 20px; line-height: 1.5; }
     .modal-box .form-row { flex-direction: column; }
     .modal-cancel { width: 100%; margin-top: 10px; }
 
-    /* ===== Плавающий звонок ===== */
+    /* ===== Плавающий звонок (десктоп) и sticky-CTA (мобиль) ===== */
     .k-fab { position: fixed; right: 20px; bottom: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--k-teal); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,190,162,.4); z-index: 60; }
     .k-fab svg { width: 24px; height: 24px; }
+    .k-sticky { display: none; }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .modal-overlay, .modal-box, .k-btn { transition: none; } }
 
     /* ===== Адаптив ===== */
     @media (max-width: 1024px) {
       .k-h1 { font-size: 44px; }
-      .k-h2 { font-size: 38px; }
-      .k-hero-card, .k-final { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
+      .k-h2 { font-size: 36px; }
+      .k-hero-card, .k-final, .k-diadok { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
       .k-pain-grid, .k-price-grid { grid-template-columns: 1fr 1fr; }
-      .k-numbers { grid-template-columns: 1fr 1fr; padding: 40px; }
+      .k-for { grid-template-columns: 1fr 1fr; }
       .k-split { grid-template-columns: 1fr; gap: 40px; }
       .k-steps { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-      body { font-size: 16px; }
+      body { font-size: 16px; padding-bottom: 76px; }
       .k-container { padding: 0 16px; }
-      .k-section { padding: 64px 0; }
+      .k-section { padding: 0 0 56px; }
       .k-h1 { font-size: 32px; letter-spacing: -0.3px; }
-      .k-h2 { font-size: 28px; margin-bottom: 28px; }
-      .k-section-sub { margin: -12px 0 28px; font-size: 16px; }
+      .k-h2 { font-size: 27px; margin-bottom: 24px; }
+      .k-sub-h { margin: -8px 0 24px; font-size: 16px; }
       .k-nav-inner { height: 64px; }
       .k-brand .k-partner { display: none; }
       .k-nav-hours, .k-nav-right .k-btn { display: none; }
-      .k-hero { padding: 8px 0 64px; }
-      .k-hero-card, .k-final { padding: 28px 20px; border-radius: 20px; }
+      .k-hero { padding: 8px 0 48px; }
+      .k-hero-card, .k-final, .k-diadok { padding: 28px 20px; border-radius: 20px; }
       .k-hero-text { font-size: 16px; }
       .k-hero-form-box, .k-final-form { padding: 20px; }
       .form-row { flex-direction: column; }
       .form-row .k-btn { width: 100%; }
-      .k-pain-grid, .k-price-grid { grid-template-columns: 1fr; gap: 12px; }
-      .k-pain { min-height: 0; padding: 24px 20px; }
+      .k-pain-grid, .k-price-grid, .k-for { grid-template-columns: 1fr; gap: 12px; }
+      .k-for { gap: 0; }
+      .k-for li { padding: 12px 0; font-size: 16px; }
+      .k-pain { padding: 22px 20px; }
       .k-pain q { font-size: 18px; }
-      .k-step { padding: 18px 0; gap: 14px; }
+      .k-step { padding: 16px 0; gap: 14px; }
       .k-step-num { width: 36px; height: 36px; font-size: 15px; }
       .k-step b { font-size: 17px; }
-      .k-numbers { grid-template-columns: 1fr 1fr; padding: 28px 20px; gap: 24px 16px; border-radius: 20px; }
-      .k-num b { font-size: 34px; }
-      .k-num b small { font-size: 20px; }
       .k-split-img { border-radius: 20px; }
+      .k-diadok .k-h2 { font-size: 26px; }
+      .k-diadok .k-btn { width: 100%; }
+      .k-final .k-h2 { font-size: 27px; }
       .k-final-phone { font-size: 26px; }
-      .k-fab { width: 52px; height: 52px; right: 16px; bottom: 16px; }
+      .k-faq summary { font-size: 17px; padding: 16px 32px 16px 0; }
+      .k-faq summary::after { top: 22px; }
+      .k-faq details[open] summary::after { top: 26px; }
+      .k-fab { display: none; }
+      /* Sticky-панель: CTA всегда под большим пальцем, сколько бы ни листали */
+      .k-sticky { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--k-line); }
+      .k-sticky .k-btn { flex: 1; }
+      .k-sticky-call { width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; background: var(--k-navy); color: #fff; display: flex; align-items: center; justify-content: center; }
+      .k-sticky-call svg { width: 22px; height: 22px; }
       .modal-overlay { align-items: flex-end; padding: 0; }
       .modal-box { max-width: none; border-radius: 20px 20px 0 0; padding: 28px 20px 24px; transform: translateY(100%); }
       .modal-overlay.is-open .modal-box { transform: translateY(0); }
@@ -275,14 +299,14 @@
   <div class="k-container k-nav-inner">
     <a href="./" class="k-brand">
       <span class="k-logo">Trex<span>Go</span></span>
-      <span class="k-partner"><img src="../logo-provayder/kontur.webp" alt="" />Подключаем Контур.Логистику</span>
+      <span class="k-partner"><img src="../logo-provayder/kontur.webp" alt="" />Настройка ЭТрН в Контуре</span>
     </a>
     <div class="k-nav-right">
       <div>
         <a href="tel:+79850757675" class="k-nav-phone">+7 985 075-76-75</a>
         <span class="k-nav-hours">Ежедневно с 08:00 до 23:00</span>
       </div>
-      <a href="#lead" data-modal="lead" class="k-btn k-btn-teal k-btn-sm">Подключить</a>
+      <a href="#lead" data-modal="lead" class="k-btn k-btn-teal k-btn-sm">Настроить ЭТрН</a>
     </div>
   </div>
 </header>
@@ -292,9 +316,9 @@
   <div class="k-container">
     <div class="k-hero-card">
       <div>
-        <span class="k-hero-alert">С 1 сентября 2026 ЭТрН обязательна</span>
-        <h1 class="k-h1">Настроим ЭТрН в&nbsp;Контуре <span style="white-space:nowrap">за 1–2 дня</span></h1>
-        <p class="k-hero-text">Перевозчики, экспедиторы и грузоотправители обязаны оформлять накладные электронно — по 140‑ФЗ. Если у вас до сих пор бумага или кабинет заведён, но не работает — сделаем всё сами: подпись, водители, роуминг, 1С. Первую накладную выпустим вместе.</p>
+        <span class="k-hero-trust"><img src="../logo-provayder/kontur.webp" alt="" />Работаем с Контур.Логистикой и Диадоком</span>
+        <h1 class="k-h1">Подключим и&nbsp;настроим ЭТрН в&nbsp;Контуре</h1>
+        <p class="k-hero-text">Личный кабинет Контур.Логистики, подписи и МЧД, сотрудники и водители — настроим за вас. Первую электронную транспортную накладную выпустим вместе, обычно на 1–2‑й день.</p>
         <div class="k-hero-facts">
           <span>Без предоплаты</span>
           <span>Работа по договору</span>
@@ -303,13 +327,13 @@
       </div>
       <div class="k-hero-form-box">
         <h3 class="k-h3">Оставьте номер</h3>
-        <p class="k-sub">Перезвоним, скажем, что нужно от вас для запуска, и назовём срок</p>
         <div class="form-wrap">
           <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-hero" novalidate>
             <div class="form-row">
-              <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
-              <button class="k-btn k-btn-teal" type="submit">Подключить</button>
+              <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Телефон" />
+              <button class="k-btn k-btn-teal" type="submit">Настроить ЭТрН</button>
             </div>
+            <p class="form-note">Перезвоним, уточним, что у вас уже есть — кабинет, подпись, водители, — и назовём срок и стоимость.</p>
             <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a></p>
           </form>
           <div class="form-success">✓ Заявка принята. Перезвоним в ближайшее время.</div>
@@ -319,92 +343,93 @@
   </div>
 </section>
 
-<!-- 2. Боли -->
-<section class="k-section" id="pains" style="padding-top:0">
+<!-- 2. Боль -->
+<section class="k-section" id="pains">
   <div class="k-container">
-    <h2 class="k-h2">Узнаёте себя?</h2>
-    <p class="k-section-sub">Это самые частые вопросы про ЭТрН в Яндексе — больше миллиона запросов в месяц. Каждый из них мы закрываем.</p>
+    <h2 class="k-h2">Нужно работать с ЭТрН, а разбираться в системе некогда?</h2>
+    <p class="k-sub-h">С 1 сентября 2026 транспортная накладная оформляется только электронно — по 140‑ФЗ. Мы подключим и настроим всё за вас.</p>
     <div class="k-pain-grid">
       <div class="k-pain">
-        <q>А нам вообще нужна ЭТрН?</q>
-        <p>Нужна. Всем, кто возит грузы по договору: перевозчикам, экспедиторам, отправителям и получателям. Бумажная накладная больше не работает.</p>
-        <span class="k-pain-stat"><b>446 655</b> запросов в месяц</span>
+        <q>Не понимаем, обязаны ли мы и с чего начать</q>
+        <p><b>Разберём вашу схему перевозок</b> и скажем, какие документы нужны, кто и что подписывает.</p>
       </div>
       <div class="k-pain">
-        <q>Кабинет в Контуре есть, а накладную выпустить не можем</q>
-        <p>Титулы, статусы, кто и что подписывает — разберём и покажем прямо на вашей первой перевозке. Дальше вы делаете это сами.</p>
-        <span class="k-pain-stat"><b>346 032</b> запросов в месяц</span>
+        <q>Кабинет в Контуре есть, а накладная не выпускается</q>
+        <p><b>Найдём, что мешает</b> — подпись, доверенность, роли, контрагент — и доведём до первой подписанной ЭТрН.</p>
       </div>
       <div class="k-pain">
-        <q>Бухгалтер боится, что сломается 1С</q>
-        <p>Не сломается. Настроим обмен Контур ↔ 1С без переделки учёта: накладные уходят из 1С, статусы возвращаются.</p>
-        <span class="k-pain-stat"><b>168 271</b> запрос в месяц</span>
-      </div>
-      <div class="k-pain">
-        <q>Водители не ставят приложение</q>
-        <p>Поставим и обучим каждого — по телефону или у вас на базе. Водитель подписывает с телефона — без бумаги и сканов.</p>
-        <span class="k-pain-stat"><b>97 743</b> запроса в месяц</span>
-      </div>
-      <div class="k-pain">
-        <q>Подпись отклоняется: МЧД, УКЭП…</q>
-        <p>Оформим КЭП и машиночитаемые доверенности на всех, кто подписывает. Документы перестанут возвращаться.</p>
-        <span class="k-pain-stat"><b>35 869</b> запросов в месяц</span>
-      </div>
-      <div class="k-pain">
-        <q>Контрагент в СБИС, а мы в Контуре</q>
-        <p>Настроим роуминг. Накладные ходят между операторами по технологии ФНС — без доплат и без «пришлите на почту».</p>
-        <span class="k-pain-stat">Роуминг с СБИС, Такском, 1С‑ЭДО</span>
+        <q>Водители не могут подписать</q>
+        <p><b>Поставим приложение каждому</b> и покажем, как принять и сдать груз с телефона.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 3. Что сделаем -->
-<section class="k-section" id="steps" style="padding-top:0">
+<!-- 3. Для кого -->
+<section class="k-section" id="for">
   <div class="k-container">
-    <h2 class="k-h2">Что сделаем в вашем Контуре</h2>
+    <h2 class="k-h2">Подойдёт, если вы</h2>
+    <ul class="k-for">
+      <li>Перевозчик или транспортная компания<span>от одной машины до автопарка</span></li>
+      <li>Экспедитор<span>ЭТрН, заказ-заявки, поручения</span></li>
+      <li>Грузоотправитель<span>выпускаете накладные на свои отгрузки</span></li>
+      <li>Уже работаете в Диадоке<span>ЭТрН добавим рядом с обычными документами</span></li>
+      <li>Впервые сталкиваетесь с ЭТрН<span>пройдём весь путь с вами</span></li>
+      <li>Хотите быстро настроить людей<span>сотрудников, подписантов и водителей</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4. Что сделаем -->
+<section class="k-section" id="steps">
+  <div class="k-container">
+    <h2 class="k-h2">От заявки до первой ЭТрН</h2>
     <div class="k-steps">
-      <div class="k-step"><span class="k-step-num">1</span><div><b>Настроим Контур.Логистику под ваши рейсы</b><span>Заведём организацию, склады, маршруты и типовые перевозки — чтобы накладная собиралась в два клика.</span></div></div>
-      <div class="k-step"><span class="k-step-num">2</span><div><b>Оформим КЭП и МЧД подписантам</b><span>Директору, логисту, бухгалтеру — каждому свою подпись и доверенность.</span></div></div>
-      <div class="k-step"><span class="k-step-num">3</span><div><b>Подключим водителей и машины</b><span>Установим мобильное приложение, покажем, как принимать и сдавать груз.</span></div></div>
-      <div class="k-step"><span class="k-step-num">4</span><div><b>Настроим роуминг с контрагентами</b><span>СБИС, Такском, 1С‑ЭДО, Платформа ОФД — документы ходят, куда нужно.</span></div></div>
-      <div class="k-step"><span class="k-step-num">5</span><div><b>Выпустим первую ЭТрН вместе с вами</b><span>В день подключения. Проверим все подписи и статусы до отправки машины.</span></div></div>
-      <div class="k-step"><span class="k-step-num">6</span><div><b>Обучим диспетчера и бухгалтера</b><span>И останемся на связи ежедневно с 08:00 до 23:00 — на случай любых вопросов.</span></div></div>
+      <div class="k-step"><span class="k-step-num">1</span><div><b>Созваниваемся</b><span>Уточняем, что уже есть: кабинет, подпись, водители, контрагенты.</span></div></div>
+      <div class="k-step"><span class="k-step-num">2</span><div><b>Определяем, что подключить</b><span>Роли, титулы, кто подписывает — под вашу схему перевозок.</span></div></div>
+      <div class="k-step"><span class="k-step-num">3</span><div><b>Настраиваем кабинет Контур.Логистики</b><span>Организация, склады, маршруты, типовые перевозки.</span></div></div>
+      <div class="k-step"><span class="k-step-num">4</span><div><b>Заводим сотрудников</b><span>Оформляем КЭП и МЧД тем, кто подписывает за компанию.</span></div></div>
+      <div class="k-step"><span class="k-step-num">5</span><div><b>Подключаем водителей</b><span>Ставим мобильное приложение, показываем приёмку и сдачу груза.</span></div></div>
+      <div class="k-step"><span class="k-step-num">6</span><div><b>Выпускаем первую ЭТрН вместе</b><span>Проверяем подписи и статусы до отправки машины.</span></div></div>
+      <div class="k-step is-you"><span class="k-step-num">7</span><div><b>Вы работаете сами</b><span>Мы на связи ежедневно с 08:00 до 23:00, если возникнут вопросы.</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- 4. Цифры -->
-<section class="k-section" id="numbers" style="padding-top:0">
-  <div class="k-container">
-    <div class="k-numbers">
-      <div class="k-num"><b>1–2 <small>дня</small></b><span>от заявки до первой подписанной ЭТрН</span></div>
-      <div class="k-num"><b>0 ₽</b><span>предоплаты — работаем по договору</span></div>
-      <div class="k-num"><b>08–23</b><span>на связи ежедневно, без выходных</span></div>
-      <div class="k-num"><b>4.8</b><span>рейтинг по отзывам клиентов</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- 5. 1С и роуминг -->
-<section class="k-section" id="integration" style="padding-top:0">
+<!-- 5. Контур -->
+<section class="k-section" id="kontur">
   <div class="k-container k-split">
     <div>
-      <h2 class="k-h2">Работает с вашей 1С и с контрагентами в СБИС</h2>
+      <h2 class="k-h2">Работаем в Контур.Логистике</h2>
       <div class="k-rows">
-        <div><b>1С.</b> Обмен настроим без переделки учёта — накладные уходят из привычной программы, статусы подписания возвращаются обратно.</div>
-        <div><b>Роуминг.</b> С СБИС, Такском, 1С‑ЭДО и другими операторами — по технологии ФНС, без доплат. Запустим обмен с вашим контрагентом за пару дней.</div>
-        <div><b>Водители.</b> Мобильное приложение Контура: водитель принимает и сдаёт груз с телефона, вам приходит подписанный документ.</div>
+        <div><b>Знакомый сервис.</b> Тот же Контур, что и Диадок: привычный вход, интерфейс и поддержка. Не самописная система, в которой придётся разбираться заново.</div>
+        <div><b>Роуминг.</b> Накладные ходят к контрагентам в СБИС, Такском, 1С‑ЭДО и другим операторам — по технологии ФНС, без доплат.</div>
+        <div><b>Приложение водителя.</b> Водитель принимает и сдаёт груз с телефона, вам приходит подписанный документ.</div>
       </div>
+      <p class="k-legal-note">TrexGo — независимый интегратор: мы настраиваем и сопровождаем работу в сервисе, но не являемся Контуром.</p>
     </div>
     <div class="k-split-img"><img src="../glavniy-banner.png" alt="ЭТрН в Контуре: фура TrexGo и логотипы операторов" loading="lazy" /></div>
   </div>
 </section>
 
-<!-- 6. Цены -->
-<section class="k-section" id="pricing" style="padding-top:0">
+<!-- 6. Диадок -->
+<section class="k-section" id="diadok">
   <div class="k-container">
-    <h2 class="k-h2">Сколько стоит подключение</h2>
+    <div class="k-diadok">
+      <div>
+        <h2 class="k-h2">Уже используете Контур.Диадок?</h2>
+        <p>Тогда с нуля начинать не придётся: подпись, контрагенты и привычный интерфейс у вас уже есть. Настроим ЭТрН рядом с обычными документами и покажем, что делать дальше. Менять оператора ЭДО не нужно.</p>
+      </div>
+      <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Настроить ЭТрН</a>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Сроки и стоимость -->
+<section class="k-section" id="pricing">
+  <div class="k-container">
+    <h2 class="k-h2">Сроки и стоимость</h2>
+    <p class="k-sub-h">Обычно 1–2 рабочих дня после того, как получим данные. Цена зависит от вашей роли и объёма настройки:</p>
     <div class="k-price-grid">
       <div class="k-price">
         <span class="k-price-role">Грузоперевозчик</span>
@@ -416,7 +441,7 @@
           <li>Мобильное приложение водителям</li>
           <li>Роуминг с контрагентами</li>
         </ul>
-        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Подключить</a>
+        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Настроить ЭТрН</a>
       </div>
       <div class="k-price is-featured">
         <span class="k-price-role">Экспедитор</span>
@@ -428,7 +453,7 @@
           <li>Роуминг с контрагентами</li>
           <li>Регистрация в ГосЛог — 15 000 ₽</li>
         </ul>
-        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Подключить</a>
+        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Настроить ЭТрН</a>
       </div>
       <div class="k-price">
         <span class="k-price-role">Грузоотправитель</span>
@@ -440,20 +465,69 @@
           <li>Настройка рабочего процесса</li>
           <li>Роуминг с контрагентами</li>
         </ul>
-        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Подключить</a>
+        <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Настроить ЭТрН</a>
       </div>
     </div>
-    <p class="k-price-note">Тариф самого Контура оплачивается отдельно — поможем выбрать подходящий под ваш объём перевозок.</p>
+    <p class="k-price-note">Без предоплаты, работа по договору. Тариф самого Контура оплачивается отдельно — поможем выбрать подходящий под ваш объём перевозок.</p>
   </div>
 </section>
 
-<!-- 7. Финальная форма -->
-<section class="k-section" id="start" style="padding-top:0">
+<!-- 8. FAQ -->
+<section class="k-section" id="faq">
+  <div class="k-container">
+    <h2 class="k-h2">Частые вопросы</h2>
+    <div class="k-faq">
+      <details>
+        <summary>Кому обязательно работать с ЭТрН?</summary>
+        <p>С 1 сентября 2026 электронная транспортная накладная обязательна при перевозке грузов по договору — для перевозчиков, экспедиторов, грузоотправителей и грузополучателей (140‑ФЗ). Если сомневаетесь, касается ли это вашей схемы, — разберём на созвоне.</p>
+      </details>
+      <details>
+        <summary>Нужно ли менять Диадок?</summary>
+        <p>Нет. Контур.Логистика работает в той же экосистеме: обычные документы остаются в Диадоке, транспортные добавляются рядом. Оператора ЭДО менять не нужно.</p>
+      </details>
+      <details>
+        <summary>Можно подключить только ЭТрН, не трогая остальное?</summary>
+        <p>Да. Настроим только транспортные документы — ЭТрН, при необходимости заказ-заявки и поручения экспедитору. Ваш текущий документооборот не затрагиваем.</p>
+      </details>
+      <details>
+        <summary>Что такое Контур.Логистика?</summary>
+        <p>Сервис Контура для перевозочных документов в электронном виде. Мы его настраиваем и сопровождаем; сами сервисом или его представителем не являемся.</p>
+      </details>
+      <details>
+        <summary>Сколько занимает настройка?</summary>
+        <p>Обычно 1–2 рабочих дня после того, как получим данные организации и список подписантов и водителей. Первую накладную выпускаем вместе с вами.</p>
+      </details>
+      <details>
+        <summary>Что нужно предоставить для подключения?</summary>
+        <p>Реквизиты организации, кто будет подписывать документы, список водителей и автомобилей, основные контрагенты. Всё остальное уточним на первом созвоне.</p>
+      </details>
+      <details>
+        <summary>Нужно ли подключать водителей?</summary>
+        <p>Да: водитель подтверждает приёмку и сдачу груза в своём титуле накладной. Ставим ему приложение и показываем, как подписывать, — по телефону или у вас на базе.</p>
+      </details>
+      <details>
+        <summary>Что с электронной подписью?</summary>
+        <p>Оформим квалифицированную подпись (КЭП) сотрудникам и машиночитаемые доверенности (МЧД) тем, кто подписывает за компанию. Если подпись уже есть — используем её.</p>
+      </details>
+      <details>
+        <summary>Сколько стоит подключение?</summary>
+        <p>От 8 000 ₽ за настройку под ключ, точная сумма зависит от роли и объёма — см. блок выше. Без предоплаты, по договору. Тариф Контура оплачивается отдельно.</p>
+      </details>
+      <details>
+        <summary>Кто будет помогать сотрудникам после запуска?</summary>
+        <p>Мы. Ежедневно с 08:00 до 23:00 — по телефону и в мессенджерах. Обучим диспетчера и бухгалтера, ответим на вопросы водителей.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Финал -->
+<section class="k-section" id="start">
   <div class="k-container">
     <div class="k-final">
       <div>
-        <h2 class="k-h2">Бесплатная консультация</h2>
-        <p>Расскажите, кто вы — перевозчик, экспедитор или отправитель — и есть ли уже кабинет в Контуре. Скажем, что нужно, и назовём срок запуска.</p>
+        <h2 class="k-h2">Нужно настроить ЭТрН? Подключим всё необходимое</h2>
+        <p>Расскажите, кто вы — перевозчик, экспедитор или отправитель — и есть ли уже кабинет в Контуре. Остальное сделаем сами.</p>
         <a href="tel:+79850757675" class="k-final-phone">+7 985 075-76-75<small>Ежедневно с 08:00 до 23:00 · 2 менеджера онлайн</small></a>
       </div>
       <div class="k-final-form">
@@ -461,9 +535,10 @@
         <div class="form-wrap">
           <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-final" novalidate>
             <div class="form-row">
-              <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
-              <button class="k-btn k-btn-teal" type="submit">Отправить</button>
+              <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Телефон" />
+              <button class="k-btn k-btn-teal" type="submit">Настроить ЭТрН</button>
             </div>
+            <p class="form-note">Перезвоним, уточним, что уже есть, и назовём срок и стоимость. Без предоплаты.</p>
             <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a></p>
           </form>
           <div class="form-success">✓ Заявка принята. Перезвоним в ближайшее время.</div>
@@ -476,10 +551,10 @@
 <footer class="k-footer">
   <div class="k-container">
     <div class="k-footer-row">
-      <span><b style="color:#222">TrexGo</b> · ЭТрН под ключ</span>
+      <span><b style="color:#222">TrexGo</b> · настройка и сопровождение ЭТрН</span>
       <span><a href="tel:+79850757675">+7 985 075-76-75</a> · <a href="../privacy.html">Политика конфиденциальности</a> · <a href="../">trexgo.ru</a></span>
     </div>
-    <p class="k-footer-disclaimer">TrexGo — независимый интегратор. Мы настраиваем и сопровождаем работу в Контур.Логистике, но не являемся частью Контура. «Контур», «Контур.Логистика», «Диадок» — товарные знаки их правообладателя. Это не официальный сайт Контура.</p>
+    <p class="k-footer-disclaimer">TrexGo — независимый интегратор. Мы настраиваем и сопровождаем работу в Контур.Логистике, но не являемся частью Контура и его официальным представителем. «Контур», «Контур.Логистика», «Диадок» — товарные знаки их правообладателя.</p>
   </div>
 </footer>
 
@@ -487,17 +562,25 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 </a>
 
+<!-- Sticky-CTA для мобильных -->
+<div class="k-sticky">
+  <a href="#lead" data-modal="lead" class="k-btn k-btn-teal">Настроить ЭТрН</a>
+  <a href="tel:+79850757675" class="k-sticky-call" aria-label="Позвонить">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  </a>
+</div>
+
 <!-- Модалка -->
 <div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
   <div class="modal-box">
     <span class="modal-logo">Trex<span>Go</span></span>
-    <h3 id="leadModalTitle">Подключим Контур</h3>
-    <p class="modal-sub">Оставьте номер — перезвоним и назовём срок запуска</p>
+    <h3 id="leadModalTitle">Настроим ЭТрН в Контуре</h3>
+    <p class="modal-sub">Оставьте номер — перезвоним, уточним, что уже есть, и назовём срок и стоимость.</p>
     <div class="form-wrap">
       <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-modal" novalidate>
         <div class="form-row">
-          <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
-          <button class="k-btn k-btn-teal" type="submit">Отправить</button>
+          <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Телефон" />
+          <button class="k-btn k-btn-teal" type="submit">Настроить ЭТрН</button>
         </div>
         <button class="k-btn k-btn-ghost modal-cancel" type="button">Закрыть</button>
         <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a></p>
