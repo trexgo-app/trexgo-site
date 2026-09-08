@@ -129,6 +129,34 @@
     .k-hero-facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 24px; font-size: 15px; color: rgba(255,255,255,.75); }
     .k-hero-facts span::before { content: '✓'; color: var(--k-teal); margin-right: 8px; font-weight: 700; }
 
+    /* ===== 2. Квиз ===== */
+    .k-quiz { background: var(--k-card); border-radius: 24px; padding: 48px 56px; display: grid; grid-template-columns: 1fr 1.35fr; gap: 48px; align-items: start; }
+    .k-quiz-intro .k-h2 { margin-bottom: 14px; font-size: 36px; }
+    .k-quiz-intro p { font-size: 17px; color: #555; line-height: 1.55; max-width: 380px; }
+    .k-quiz-intro ul { list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; color: #444; }
+    .k-quiz-intro li::before { content: '✓'; color: var(--k-teal); font-weight: 700; margin-right: 10px; }
+    .k-quiz-box { background: #fff; border-radius: 20px; padding: 32px; min-height: 380px; display: flex; flex-direction: column; }
+    .k-quiz-top { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--k-muted); margin-bottom: 12px; }
+    .k-quiz-bar { height: 6px; background: var(--k-line); border-radius: 100px; overflow: hidden; margin-bottom: 28px; }
+    .k-quiz-bar i { display: block; height: 100%; width: 0; background: var(--k-teal); border-radius: 100px; transition: width .25s ease; }
+    .k-quiz-step { display: none; flex: 1; flex-direction: column; }
+    .k-quiz-step.is-active { display: flex; }
+    .k-quiz-q { font-size: 24px; font-weight: 700; line-height: 1.3; margin-bottom: 22px; text-wrap: balance; }
+    .k-quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .k-quiz-opt { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 14px 18px; border-radius: 14px; border: 1.5px solid #dcdcdc; background: #fff; text-align: left; font-size: 16px; font-weight: 500; line-height: 1.3; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+    .k-quiz-opt:hover { border-color: var(--k-teal); }
+    .k-quiz-opt::before { content: ''; width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; border: 2px solid #cfcfcf; transition: all .15s ease; }
+    .k-quiz-opt.is-selected { border-color: var(--k-teal); background: rgba(0,190,162,.06); }
+    .k-quiz-opt.is-selected::before { border-color: var(--k-teal); background: var(--k-teal); box-shadow: inset 0 0 0 3px #fff; }
+    .k-quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 24px; }
+    .k-quiz-back { background: none; border: 0; color: var(--k-muted); font-size: 15px; cursor: pointer; padding: 8px 0; }
+    .k-quiz-back:hover { color: var(--k-text); }
+    .k-quiz-back[hidden] { visibility: hidden; display: block; }
+    .k-quiz-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+    .k-quiz-summary span { font-size: 13px; font-weight: 600; color: var(--k-teal-dark); background: rgba(0,190,162,.1); border-radius: 100px; padding: 6px 12px; }
+    .k-quiz-final .form-row { flex-direction: column; }
+    .k-quiz-final .form-note { margin-top: 12px; }
+
     /* ===== 2. Боль ===== */
     .k-pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .k-pain { background: var(--k-card); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 12px; }
@@ -234,7 +262,7 @@
     @media (max-width: 1024px) {
       .k-h1 { font-size: 44px; }
       .k-h2 { font-size: 36px; }
-      .k-hero-card, .k-final, .k-diadok { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
+      .k-hero-card, .k-final, .k-diadok, .k-quiz { grid-template-columns: 1fr; padding: 40px; gap: 32px; }
       .k-hero-img { max-width: 480px; }
       .k-pain-grid, .k-price-grid { grid-template-columns: 1fr 1fr; }
       .k-for { grid-template-columns: 1fr; }
@@ -252,7 +280,14 @@
       .k-brand .k-partner { display: none; }
       .k-nav-hours, .k-nav-right .k-btn { display: none; }
       .k-hero { padding: 8px 0 48px; }
-      .k-hero-card, .k-final, .k-diadok { padding: 28px 20px; border-radius: 20px; }
+      .k-hero-card, .k-final, .k-diadok, .k-quiz { padding: 28px 20px; border-radius: 20px; }
+      .k-quiz { gap: 20px; }
+      .k-quiz-intro .k-h2 { font-size: 26px; }
+      .k-quiz-intro ul { display: none; }
+      .k-quiz-box { padding: 20px; min-height: 0; }
+      .k-quiz-q { font-size: 20px; }
+      .k-quiz-opts { grid-template-columns: 1fr; gap: 10px; }
+      .k-quiz-opt { min-height: 52px; padding: 12px 14px; font-size: 15px; }
       .k-hero-card { gap: 24px; }
       .k-hero-img { order: 3; }
       .k-hero-form-box { grid-template-columns: 1fr; gap: 14px; }
@@ -357,7 +392,90 @@
   </div>
 </section>
 
-<!-- 2. Боль -->
+<!-- 2. Квиз -->
+<section class="k-section" id="quiz">
+  <div class="k-container">
+    <div class="k-quiz">
+      <div class="k-quiz-intro">
+        <h2 class="k-h2">Ответьте на 4 вопроса — скажем, что нужно именно вам</h2>
+        <p>Полминуты. В конце — срок и стоимость подключения под вашу ситуацию.</p>
+        <ul>
+          <li>Какие документы и титулы понадобятся</li>
+          <li>Что уже есть, а что настроить</li>
+          <li>Сколько это займёт и сколько стоит</li>
+        </ul>
+      </div>
+      <div class="k-quiz-box" id="quizBox">
+        <div class="k-quiz-top"><span id="quizCounter">Вопрос 1 из 4</span><span>≈ 30 секунд</span></div>
+        <div class="k-quiz-bar"><i id="quizBar"></i></div>
+
+        <div class="k-quiz-step is-active" data-step="1" data-key="Роль">
+          <div class="k-quiz-q">Кто вы в перевозке?</div>
+          <div class="k-quiz-opts">
+            <button type="button" class="k-quiz-opt">Перевозчик, транспортная компания</button>
+            <button type="button" class="k-quiz-opt">Экспедитор</button>
+            <button type="button" class="k-quiz-opt">Грузоотправитель</button>
+            <button type="button" class="k-quiz-opt">Пока не понимаю, кто мы по ЭТрН</button>
+          </div>
+        </div>
+
+        <div class="k-quiz-step" data-step="2" data-key="Кабинет">
+          <div class="k-quiz-q">Есть ли уже кабинет в Контуре?</div>
+          <div class="k-quiz-opts">
+            <button type="button" class="k-quiz-opt">Да, Контур.Логистика</button>
+            <button type="button" class="k-quiz-opt">Есть Диадок, Логистики нет</button>
+            <button type="button" class="k-quiz-opt">Другой оператор — СБИС, Такском, 1С</button>
+            <button type="button" class="k-quiz-opt">Ничего нет, всё на бумаге</button>
+          </div>
+        </div>
+
+        <div class="k-quiz-step" data-step="3" data-key="Машин">
+          <div class="k-quiz-q">Сколько машин и водителей подключать?</div>
+          <div class="k-quiz-opts">
+            <button type="button" class="k-quiz-opt">1–3</button>
+            <button type="button" class="k-quiz-opt">4–10</button>
+            <button type="button" class="k-quiz-opt">11–30</button>
+            <button type="button" class="k-quiz-opt">Больше 30 или не свои — наёмный транспорт</button>
+          </div>
+        </div>
+
+        <div class="k-quiz-step" data-step="4" data-key="Мешает">
+          <div class="k-quiz-q">Что сейчас мешает больше всего?</div>
+          <div class="k-quiz-opts">
+            <button type="button" class="k-quiz-opt">Не понимаем, обязаны ли мы вообще</button>
+            <button type="button" class="k-quiz-opt">Кабинет есть, накладная не выпускается</button>
+            <button type="button" class="k-quiz-opt">Водители не могут подписать</button>
+            <button type="button" class="k-quiz-opt">Некогда разбираться — нужно под ключ</button>
+          </div>
+        </div>
+
+        <div class="k-quiz-step k-quiz-final" data-step="5">
+          <div class="k-quiz-q">Готово. Куда прислать срок и стоимость?</div>
+          <div class="k-quiz-summary" id="quizSummary"></div>
+          <div class="form-wrap">
+            <form class="lead-form" data-redirect="../spasibo.html" data-source="kontur-landing-quiz" novalidate>
+              <input type="hidden" name="comment" id="quizComment" value="" />
+              <div class="form-row">
+                <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Телефон" />
+                <button class="k-btn k-btn-teal" type="submit">Получить срок и стоимость</button>
+              </div>
+              <p class="form-note">Перезвоним с готовым ответом по вашим четырём пунктам. Без предоплаты.</p>
+              <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="../privacy.html">политикой конфиденциальности</a></p>
+            </form>
+            <div class="form-success">✓ Заявка принята. Перезвоним в ближайшее время.</div>
+          </div>
+        </div>
+
+        <div class="k-quiz-nav">
+          <button type="button" class="k-quiz-back" id="quizBack" hidden>← Назад</button>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Боль -->
 <section class="k-section" id="pains">
   <div class="k-container">
     <h2 class="k-h2">Нужно работать с ЭТрН, а разбираться в системе некогда?</h2>
@@ -610,5 +728,54 @@
 </div>
 
 <script src="../script.js?v=20260910"></script>
+<script>
+// Квиз: ответы копятся в скрытое поле comment и уходят вместе с заявкой.
+(function () {
+  const box = document.getElementById('quizBox');
+  if (!box) return;
+  const steps = [...box.querySelectorAll('.k-quiz-step')];
+  const total = steps.length - 1;
+  const counter = document.getElementById('quizCounter');
+  const bar = document.getElementById('quizBar');
+  const back = document.getElementById('quizBack');
+  const summary = document.getElementById('quizSummary');
+  const comment = document.getElementById('quizComment');
+  const answers = {};
+  let current = 1;
+
+  const goal = name => { if (typeof window.ym === 'function') window.ym(112278172, 'reachGoal', name); };
+
+  const render = () => {
+    steps.forEach(st => st.classList.toggle('is-active', Number(st.dataset.step) === current));
+    const done = current > total;
+    counter.textContent = done ? 'Готово' : `Вопрос ${current} из ${total}`;
+    bar.style.width = `${Math.min(current - 1, total) / total * 100}%`;
+    back.hidden = current === 1;
+    if (done) {
+      summary.innerHTML = '';
+      Object.entries(answers).forEach(([k, v]) => {
+        const chip = document.createElement('span'); chip.textContent = `${k}: ${v}`; summary.appendChild(chip);
+      });
+      comment.value = 'Квиз: ' + Object.entries(answers).map(([k, v]) => `${k} — ${v}`).join('; ');
+      goal('quiz_finish');
+      setTimeout(() => box.querySelector('.k-quiz-final input[type="tel"]')?.focus(), 200);
+    }
+  };
+
+  box.querySelectorAll('.k-quiz-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const step = opt.closest('.k-quiz-step');
+      step.querySelectorAll('.k-quiz-opt').forEach(o => o.classList.remove('is-selected'));
+      opt.classList.add('is-selected');
+      answers[step.dataset.key] = opt.textContent.trim();
+      if (current === 1) goal('quiz_start');
+      setTimeout(() => { current += 1; render(); }, 220);
+    });
+  });
+  back.addEventListener('click', () => { if (current > 1) { current -= 1; render(); } });
+  render();
+})();
+</script>
+
 </body>
 </html>
