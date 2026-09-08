@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" sizes="64x64" href="../kontur/favicon.png" />
+  <link rel="icon" type="image/svg+xml" href="../kontur/logo.svg" />
   <link rel="apple-touch-icon" href="../kontur/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -96,8 +96,8 @@
     .k-brand { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 600; }
     .k-brand .k-logo { font-weight: 700; font-size: 22px; letter-spacing: -0.3px; }
     .k-brand .k-logo span { color: var(--k-teal); }
-    .k-brand .k-partner { display: flex; align-items: center; gap: 8px; padding-left: 12px; border-left: 1px solid #d5d5d5; font-weight: 500; color: var(--k-muted); font-size: 15px; }
-    .k-brand .k-partner img { width: 22px; height: 22px; border-radius: 5px; }
+    .k-logo-img { width: 40px; height: 40px; border-radius: 10px; display: block; }
+    .k-brand .k-partner { font-weight: 600; color: var(--k-text); font-size: 17px; }
     .k-nav-right { display: flex; align-items: center; gap: 28px; }
     .k-nav-phone { font-size: 18px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
     .k-nav-hours { font-size: 13px; color: var(--k-muted); display: block; line-height: 1.2; margin-top: 2px; }
@@ -277,8 +277,7 @@
     .modal-overlay.is-open { opacity: 1; pointer-events: auto; }
     .modal-box { background: #fff; border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 440px; transform: translateY(12px); transition: transform .2s ease; }
     .modal-overlay.is-open .modal-box { transform: translateY(0); }
-    .modal-logo { display: block; font-size: 22px; font-weight: 700; margin-bottom: 20px; }
-    .modal-logo span { color: var(--k-teal); }
+    .modal-logo-img { width: 44px; height: 44px; border-radius: 11px; display: block; margin-bottom: 18px; }
     .modal-box h3 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
     .modal-box .modal-sub { font-size: 15px; color: #555; margin-bottom: 20px; line-height: 1.5; }
     .modal-box .form-row { flex-direction: column; }
@@ -310,7 +309,7 @@
       .k-h2 { font-size: 27px; margin-bottom: 24px; }
       .k-sub-h { margin: -8px 0 24px; font-size: 16px; }
       .k-nav-inner { height: 64px; }
-      .k-brand .k-partner { display: none; }
+      .k-brand .k-partner { font-size: 15px; }
       .k-nav-hours, .k-nav-right .k-btn { display: none; }
       .k-hero { padding: 8px 0 48px; }
       .k-hero-card, .k-final, .k-diadok, .k-quiz { padding: 28px 20px; border-radius: 20px; }
@@ -378,8 +377,8 @@
 <header class="k-nav">
   <div class="k-container k-nav-inner">
     <a href="./" class="k-brand">
-      <span class="k-logo">Trex<span>Go</span></span>
-      <span class="k-partner"><img src="../logo-provayder/kontur.webp" alt="" />Настройка ЭТрН в Контуре</span>
+      <img class="k-logo-img" src="../kontur/logo.svg" alt="" width="40" height="40" />
+      <span class="k-partner">Настройка ЭТрН в Контуре</span>
     </a>
     <div class="k-nav-right">
       <div>
@@ -706,7 +705,7 @@
 <!-- Модалка -->
 <div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
   <div class="modal-box">
-    <span class="modal-logo">Trex<span>Go</span></span>
+    <img class="modal-logo-img" src="../kontur/logo.svg" alt="" width="44" height="44" />
     <h3 id="leadModalTitle">Настроим ЭТрН в Контуре</h3>
     <p class="modal-sub">Оставьте номер — перезвоним, уточним, что уже есть, и назовём срок и стоимость.</p>
     <div class="form-wrap">
