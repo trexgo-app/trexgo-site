@@ -98,7 +98,7 @@
     .k-brand .k-partner { display: flex; align-items: center; gap: 8px; padding-left: 12px; border-left: 1px solid #d5d5d5; font-weight: 500; color: var(--k-muted); font-size: 15px; }
     .k-brand .k-partner img { width: 22px; height: 22px; border-radius: 5px; }
     .k-nav-right { display: flex; align-items: center; gap: 28px; }
-    .k-nav-phone { font-size: 18px; font-weight: 600; }
+    .k-nav-phone { font-size: 18px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
     .k-nav-hours { font-size: 13px; color: var(--k-muted); display: block; line-height: 1.2; margin-top: 2px; }
 
     /* ===== 1. Первый экран ===== */
@@ -239,7 +239,7 @@
     .k-final { background: var(--k-navy); border-radius: 24px; padding: 64px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; color: #fff; }
     .k-final .k-h2 { color: #fff; margin-bottom: 16px; font-size: 40px; }
     .k-final p { color: rgba(255,255,255,.78); font-size: 18px; line-height: 1.55; }
-    .k-final-phone { display: block; font-size: 32px; font-weight: 700; margin-top: 28px; color: #fff; }
+    .k-final-phone { display: block; font-size: 32px; font-weight: 700; margin-top: 28px; color: #fff; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
     .k-final-phone small { display: block; font-size: 15px; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 4px; }
     .k-final .form-input { border-color: transparent; }
     .k-final p.form-note { color: rgba(255,255,255,.78); font-size: 15px; }
@@ -254,6 +254,7 @@
     .k-footer { padding: 40px 0 48px; border-top: 1px solid var(--k-line); font-size: 14px; color: var(--k-muted); }
     .k-footer-row { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: center; }
     .k-footer a:hover { text-decoration: underline; }
+    .k-footer a[href^="tel:"] { text-decoration: underline; text-underline-offset: 2px; }
     .k-footer-disclaimer { margin-top: 18px; font-size: 13px; line-height: 1.5; max-width: 760px; }
 
     /* ===== Модалка ===== */
