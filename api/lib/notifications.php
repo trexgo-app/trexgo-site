@@ -3,13 +3,18 @@
 declare(strict_types=1);
 
 /** @param array<string, mixed> $lead */
-function trexgo_notification_text(array $lead, bool $databaseUnavailable): string
+function trexgo_notification_title(array $lead, bool $databaseUnavailable): string
 {
     $title = $databaseUnavailable ? 'БАЗА НЕДОСТУПНА — новая заявка TrexGo' : 'Новая заявка TrexGo';
     if ($lead['form_kind'] === 'subscription') {
         $title = $databaseUnavailable ? 'БАЗА НЕДОСТУПНА — новая подписка TrexGo' : 'Новая подписка TrexGo';
     }
+    return $title;
+}
 
+/** @param array<string, mixed> $lead */
+function trexgo_notification_text(array $lead, bool $databaseUnavailable): string
+{
     $labels = [
         'name' => 'Имя',
         'phone' => 'Телефон',
@@ -28,12 +33,73 @@ function trexgo_notification_text(array $lead, bool $databaseUnavailable): strin
         'request_id' => 'request_id',
     ];
 
-    $lines = [$title];
+    $lines = [trexgo_notification_title($lead, $databaseUnavailable)];
     foreach ($labels as $field => $label) {
         $value = $lead[$field] ?? null;
         if ($value !== null && $value !== '') {
             $lines[] = $label . ': ' . $value;
         }
+    }
+
+    return mb_substr(implode("\n", $lines), 0, 3900, 'UTF-8');
+}
+
+/** @param array<string, mixed> $lead */
+function trexgo_notification_html(array $lead, bool $databaseUnavailable): string
+{
+    $esc = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+    $lines = [($databaseUnavailable ? '⚠️ ' : '') . '<b>' . $esc(trexgo_notification_title($lead, $databaseUnavailable)) . '</b>'];
+
+    $primaryLabels = [
+        'name' => 'Имя',
+        'phone' => 'Телефон',
+        'email' => 'Email',
+        'company' => 'Компания',
+        'comment' => 'Комментарий',
+        'source' => 'Источник',
+    ];
+    foreach ($primaryLabels as $field => $label) {
+        $value = $lead[$field] ?? null;
+        if ($value === null || $value === '') {
+            continue;
+        }
+        $value = (string) $value;
+        $lines[] = in_array($field, ['phone', 'email'], true)
+            ? $label . ': <code>' . $esc($value) . '</code>'
+            : $label . ': ' . $esc($value);
+    }
+
+    $pageUrl = (string) ($lead['page_url'] ?? '');
+    if ($pageUrl !== '') {
+        $path = parse_url($pageUrl, PHP_URL_PATH);
+        $linkText = is_string($path) && $path !== '' ? $path : $pageUrl;
+        $lines[] = 'Страница: <a href="' . $esc($pageUrl) . '">' . $esc($linkText) . '</a>';
+    }
+
+    $techLabels = [
+        'referrer' => 'Referrer',
+        'utm_source' => 'utm_source',
+        'utm_medium' => 'utm_medium',
+        'utm_campaign' => 'utm_campaign',
+        'utm_content' => 'utm_content',
+        'utm_term' => 'utm_term',
+        'yclid' => 'yclid',
+        'request_id' => 'request_id',
+    ];
+    $techLines = [];
+    foreach ($techLabels as $field => $label) {
+        $value = $lead[$field] ?? null;
+        if ($value === null || $value === '') {
+            continue;
+        }
+        $value = (string) $value;
+        $techLines[] = $label . ': ' . (in_array($field, ['yclid', 'request_id'], true)
+            ? '<code>' . $esc($value) . '</code>'
+            : $esc($value));
+    }
+    if ($techLines !== []) {
+        $lines[] = '<blockquote expandable>' . implode("\n", $techLines) . '</blockquote>';
     }
 
     return mb_substr(implode("\n", $lines), 0, 3900, 'UTF-8');
@@ -45,11 +111,17 @@ function trexgo_notification_text(array $lead, bool $databaseUnavailable): strin
 function trexgo_notify(array $lead, array $config, bool $databaseUnavailable = false): array
 {
     $notificationConfig = is_array($config['notifications'] ?? null) ? $config['notifications'] : [];
-    $text = trexgo_notification_text($lead, $databaseUnavailable);
+    $html = trexgo_notification_html($lead, $databaseUnavailable);
+    $plain = trexgo_notification_text($lead, $databaseUnavailable);
+
+    $telegramSent = trexgo_notify_telegram($html, $notificationConfig, 'HTML');
+    if (!$telegramSent) {
+        $telegramSent = trexgo_notify_telegram($plain, $notificationConfig);
+    }
 
     return [
-        'telegram' => trexgo_notify_telegram($text, $notificationConfig),
-        'mail' => trexgo_notify_mail($text, $notificationConfig),
+        'telegram' => $telegramSent,
+        'mail' => trexgo_notify_mail($plain, $notificationConfig),
     ];
 }
 
@@ -64,7 +136,7 @@ function trexgo_notify_operational(string $text, array $config): array
 }
 
 /** @param array<string, mixed> $config */
-function trexgo_notify_telegram(string $text, array $config): bool
+function trexgo_notify_telegram(string $text, array $config, ?string $parseMode = null): bool
 {
     $token = (string) ($config['telegram_bot_token'] ?? '');
     $chatId = (string) ($config['telegram_chat_id'] ?? '');
@@ -76,13 +148,18 @@ function trexgo_notify_telegram(string $text, array $config): bool
         return false;
     }
 
+    $params = ['chat_id' => $chatId, 'text' => $text];
+    if ($parseMode !== null) {
+        $params['parse_mode'] = $parseMode;
+    }
+
     $curl = curl_init('https://api.telegram.org/bot' . $token . '/sendMessage');
     if ($curl === false) {
         return false;
     }
     curl_setopt_array($curl, [
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => http_build_query(['chat_id' => $chatId, 'text' => $text]),
+        CURLOPT_POSTFIELDS => http_build_query($params),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 3,
         CURLOPT_TIMEOUT => 7,
