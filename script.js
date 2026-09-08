@@ -24,7 +24,10 @@ document.addEventListener('click', closeNavSubs);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSubs(); });
 
 // Lead and subscription forms + их цели в Метрике.
-const LEADS_ENDPOINT = 'api/leads';
+// Адрес считается от места самого скрипта, а не страницы: страницы во
+// вложенных папках (kontur/) иначе отправляли бы заявку в несуществующий
+// kontur/api/leads. На stage остаётся относительным — свой домен, свой api.
+const LEADS_ENDPOINT = new URL('api/leads', document.currentScript?.src || window.location.href).href;
 const METRIKA_COUNTER_ID = 112278172;
 const LEAD_SUCCESS_GOALS = {
   lead: 'lead_submit_success',
