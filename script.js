@@ -365,3 +365,55 @@ if (leadModal) {
     if (event.key === 'Escape' && leadModal.classList.contains('is-open')) closeLeadModal();
   });
 }
+
+
+// Уведомление о cookies. Живёт здесь, а не в разметке страниц: script.js
+// подключён на каждой странице сайта и на поддоменах, так что баннер один
+// для всех. Ссылка на страницу согласия считается от места скрипта — с
+// kontur.trexgo.ru она ведёт на trexgo.ru/cookies.html, а не в никуда.
+(function () {
+  const KEY = 'cookieConsent';
+  try {
+    if (localStorage.getItem(KEY) === '1' || sessionStorage.getItem('cookieDismissed') === '1') return;
+  } catch (e) { return; }
+  const base = document.currentScript?.src || window.location.href;
+  const href = new URL('cookies.html', base).href;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .cookie-bar { position: fixed; left: 20px; bottom: 20px; z-index: 90; max-width: 600px; background: #fff; color: #222;
+      border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.16); padding: 22px 56px 22px 24px; font-size: 15px; line-height: 1.5; }
+    .cookie-bar p { margin: 0 0 16px; }
+    .cookie-bar a { color: var(--orange, #00a88f); text-decoration: none; }
+    .cookie-bar a:hover { text-decoration: underline; }
+    .cookie-bar-ok { height: 44px; padding: 0 22px; border-radius: 999px; border: 2px solid #222; background: #fff; color: #222;
+      font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .cookie-bar-ok:hover { background: #222; color: #fff; }
+    .cookie-bar-close { position: absolute; top: 14px; right: 16px; width: 28px; height: 28px; border: 0; background: none;
+      color: #8a8a8a; font-size: 22px; line-height: 1; cursor: pointer; }
+    .cookie-bar-close:hover { color: #222; }
+    @media (max-width: 640px) { .cookie-bar { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      padding: 18px 48px 18px 18px; font-size: 14px; border-radius: 14px; } }
+  `;
+  document.head.appendChild(style);
+
+  const bar = document.createElement('div');
+  bar.className = 'cookie-bar';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', 'Уведомление о cookies');
+  bar.innerHTML = '<p>Используя сайт, вы соглашаетесь на обработку данных в Cookies для корректной работы сайта. '
+    + '<a href="' + href + '">Подробнее</a>.</p>'
+    + '<button type="button" class="cookie-bar-ok">Понятно</button>'
+    + '<button type="button" class="cookie-bar-close" aria-label="Закрыть">×</button>';
+  document.body.appendChild(bar);
+
+  const hide = () => bar.remove();
+  bar.querySelector('.cookie-bar-ok').addEventListener('click', () => {
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    hide();
+  });
+  bar.querySelector('.cookie-bar-close').addEventListener('click', () => {
+    try { sessionStorage.setItem('cookieDismissed', '1'); } catch (e) {}
+    hide();
+  });
+})();
