@@ -25,6 +25,9 @@ return [
     'notifications' => [
         'telegram_bot_token' => '',
         'telegram_chat_id' => '',
+        // Получатели письма о заявке. Несколько адресов — через запятую в одной
+        // строке: 'first@example.com, second@example.com'. Настоящие адреса живут
+        // только в приватном конфиге на сервере, в репозиторий не попадают.
         'mail_to' => '',
         'mail_from' => 'noreply@trexgo.ru',
     ],
