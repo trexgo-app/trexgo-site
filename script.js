@@ -49,8 +49,9 @@ const formatRuPhone = digits => {
   const d = digits.slice(0, RU_PHONE_DIGITS);
   let out = '+7';
   if (d.length) out += ' (' + d.slice(0, 3);
-  if (d.length >= 3) out += ')';
-  if (d.length > 3) out += ' ' + d.slice(3, 6);
+  // Скобка закрывается только вместе с четвёртой цифрой. Иначе маска после
+  // Backspace тут же дорисовывала «)» обратно, и код города нельзя было стереть.
+  if (d.length > 3) out += ') ' + d.slice(3, 6);
   if (d.length > 6) out += '-' + d.slice(6, 8);
   if (d.length > 8) out += '-' + d.slice(8, 10);
   return out;
@@ -61,6 +62,9 @@ const formatRuPhone = digits => {
 const extractRuDigits = value => {
   let d = value.replace(/\D/g, '');
   if (d.startsWith('7') || d.startsWith('8')) d = d.slice(1);
+  // В поле уже стоит «+7», а человек набрал номер с восьмёрки (8 903 …):
+  // цифр выходит на одну больше, и лишняя — именно эта восьмёрка.
+  if (d.length > RU_PHONE_DIGITS && d.startsWith('8')) d = d.slice(1);
   return d.slice(0, RU_PHONE_DIGITS);
 };
 
@@ -68,7 +72,8 @@ const attachRuPhoneMask = field => {
   if (!field || field.dataset.maskAttached) return;
   field.dataset.maskAttached = '1';
   field.setAttribute('inputmode', 'tel');
-  field.setAttribute('maxlength', '18');
+  // 18 знаков — полный номер; ещё один нужен, чтобы дописать номер, начатый с 8
+  field.setAttribute('maxlength', '19');
 
   const apply = () => {
     const digits = extractRuDigits(field.value);
