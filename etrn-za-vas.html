@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <title>ЭТрН полностью за вас: оформляем и подписываем накладные | TrexGo</title>
+  <meta name="description" content="Берём на себя оформление, подписание и сопровождение электронных транспортных накладных. Вы занимаетесь перевозками, мы занимаемся ЭТрН." />
+  <link rel="canonical" href="https://trexgo.ru/etrn-za-vas.html" />
+  <meta property="og:title" content="ЭТрН полностью за вас | TrexGo" />
+  <meta property="og:description" content="Вы занимаетесь перевозками. Мы занимаемся ЭТрН: оформляем, подписываем, следим за документами." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://trexgo.ru/etrn-za-vas.html" />
+  <meta name="theme-color" content="#fcf8f2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Страница самодостаточная, как kontur/: стили здесь, формы и модалка — общий script.js.
+       Цвета и шрифт — из styles.css основного сайта. Скругления: кнопки и поля 12px, карточки 24px. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #fcf8f2;
+      --card: #ffffff;
+      --ink: #201515;
+      --text: #36342e;
+      --muted: #6f6c62;
+      --line: #e6e2d8;
+      --accent: #ff4f00;
+      --accent-dark: #e04500;
+      --accent-soft: #fff0e8;
+      --error: #c62f1d;
+      --r-ctl: 12px;
+      --r-card: 24px;
+      --shadow: 0 1px 2px rgba(54, 40, 20, .05), 0 12px 32px -12px rgba(54, 40, 20, .14);
+      --font: 'Onest', Helvetica, Arial, sans-serif;
+    }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    /* Телефоны подчёркнуты везде, кроме кнопок: видно, что по номеру можно нажать */
+    a[href^="tel:"]:not(.btn):not(.fab) { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: currentColor; }
+    a[href^="tel:"]:not(.btn):not(.fab):hover { color: var(--accent-dark); }
+    button, input { font: inherit; color: inherit; }
+    h1, h2, h3 { color: var(--ink); font-weight: 800; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
+    h2 { font-size: clamp(30px, 8vw, 44px); }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    section { padding: clamp(72px, 10vw, 128px) 0; }
+    .nowrap { white-space: nowrap; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+
+    /* Кнопки */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 58px; padding: 0 30px; border: 0; border-radius: var(--r-ctl); background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background .2s ease, transform .15s ease; }
+    .btn:hover { background: var(--accent-dark); }
+    .btn:active { transform: scale(.98); }
+    .btn[disabled] { opacity: .6; cursor: default; }
+    .btn-sm { height: 46px; padding: 0 20px; font-size: 16px; }
+    .btn-outline { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px #cfcabc; }
+    .btn-outline:hover { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+
+    /* Шапка */
+    .top { position: sticky; top: 0; z-index: 50; background: rgba(252, 248, 242, .86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .top-inner { height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 28px; min-width: 0; }
+    .logo { display: flex; align-items: baseline; gap: 10px; text-decoration: none; white-space: nowrap; }
+    .logo b { font-size: 23px; font-weight: 900; letter-spacing: -0.9px; color: var(--ink); }
+    .logo b span { color: var(--accent); }
+    .contact { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
+    .contact a { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; text-underline-offset: 2px !important; text-decoration-thickness: 1px !important; }
+    .contact span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+    /* Hero */
+    .hero { overflow-x: clip; padding: clamp(40px, 6vw, 84px) 0 clamp(64px, 8vw, 104px); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+    .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .chips li { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 9px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+    .chips svg { width: 12px; height: 12px; color: var(--accent); flex: none; }
+    .hero h1 { font-size: clamp(34px, 4.7vw, 68px); font-weight: 900; letter-spacing: -0.045em; line-height: .98; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub { margin-top: 26px; font-size: clamp(18px, 2vw, 26px); line-height: 1.3; font-weight: 600; color: var(--ink); letter-spacing: -0.015em; max-width: 24ch; }
+    .hero-cta { margin-top: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+    /* Сцена квиза: за белой карточкой лежит оранжевая «вторая карточка» под углом и мягкое свечение.
+       Обе подложки медленно дышат; при reduce-motion стоят на месте. */
+    .quiz-stage { position: relative; isolation: isolate; }
+    .quiz-stage::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: var(--r-card); background: var(--accent); transform: rotate(4deg) translate(6px, 10px); transform-origin: 60% 50%; animation: quizSway 9s ease-in-out infinite alternate; }
+    .quiz-stage::after { content: ""; position: absolute; inset: -14% -10%; z-index: -2; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 79, 0, .30), rgba(255, 79, 0, 0)); filter: blur(24px); animation: quizGlow 7s ease-in-out infinite alternate; pointer-events: none; }
+    @keyframes quizSway { from { transform: rotate(3deg) translate(4px, 8px); } to { transform: rotate(5.5deg) translate(10px, 12px); } }
+    @keyframes quizGlow { from { opacity: .55; transform: scale(.94); } to { opacity: 1; transform: scale(1.06); } }
+
+    /* Квиз */
+    .quiz { position: relative; background: var(--card); border-radius: var(--r-card); box-shadow: var(--shadow); padding: clamp(24px, 3vw, 36px); border: 1px solid rgba(197, 192, 177, .3); }
+    .quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 15px; color: var(--muted); font-weight: 500; }
+    .quiz-head b { color: var(--ink); font-weight: 700; }
+    .quiz-bar { margin-top: 12px; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+    .quiz-bar span { display: block; height: 100%; width: 25%; background: var(--accent); border-radius: 4px; transition: width .35s cubic-bezier(.16, 1, .3, 1); }
+    .quiz-step { display: none; border: 0; min-width: 0; margin-top: 26px; }
+    .quiz-step.is-active { display: block; animation: stepIn .35s cubic-bezier(.16, 1, .3, 1); }
+    @keyframes stepIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    .quiz-q { display: block; font-size: clamp(23px, 2.3vw, 28px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; color: var(--ink); }
+    .quiz-hint { margin-top: 8px; font-size: 15px; color: var(--muted); }
+    .quiz-opts { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quiz-opt { height: 64px; border-radius: var(--r-ctl); border: 1.5px solid var(--line); background: var(--card); font-size: 18px; font-weight: 700; color: var(--ink); cursor: pointer; transition: border-color .15s ease, background .15s ease, transform .15s ease; }
+    .quiz-opt:hover { border-color: var(--ink); }
+    .quiz-opt:active { transform: scale(.98); }
+    .quiz-opt.is-selected { border-color: var(--accent); background: var(--accent-soft); }
+    .quiz-field { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .quiz-field label, .field-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .form-input { width: 100%; height: 58px; padding: 0 18px; border-radius: var(--r-ctl); border: 1.5px solid #cfcabc; background: #fff; font-size: 18px; font-weight: 600; color: var(--ink); transition: border-color .15s ease; }
+    .form-input::placeholder { color: #8d8a7f; font-weight: 500; }
+    .form-input:focus { outline: none; border-color: var(--ink); }
+    .form-input.is-invalid { border-color: var(--error); }
+    .quiz-step .btn { width: 100%; margin-top: 12px; }
+    .quiz-foot { margin-top: 14px; min-height: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .quiz-back { background: none; border: 0; padding: 4px 0; font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer; }
+    .quiz-back:hover { color: var(--ink); }
+    .quiz-back[hidden] { display: none; }
+    .quiz-note { font-size: 14px; color: var(--muted); }
+
+    /* Общие хуки script.js */
+    .form-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .form-status { display: none; margin-top: 12px; font-size: 15px; font-weight: 500; }
+    .form-status.is-visible { display: block; }
+    .form-status[data-state="error"] { color: var(--error); }
+    .form-success { display: none; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .form-privacy { margin-top: 12px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+    .form-privacy a { text-underline-offset: 3px; }
+    .lead-form.is-loading { opacity: .7; pointer-events: none; }
+
+    /* Не нужно нанимать сотрудника */
+    .nohire-grid { display: grid; grid-template-columns: minmax(0, .905fr) minmax(0, 1.095fr); gap: clamp(32px, 6vw, 88px); align-items: center; }
+    .perks { list-style: none; margin-top: 32px; }
+    .perks li { display: grid; grid-template-columns: 32px 1fr; gap: 16px; align-items: start; padding: 18px 0; }
+    .perks li + li { border-top: 1px solid var(--line); }
+    .tick { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+    .tick svg { width: 16px; height: 16px; }
+    .perks b { display: block; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); }
+    .perks span:not(.tick) { display: block; margin-top: 4px; font-size: 16px; color: var(--muted); }
+    .nohire-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .nohire-img { display: block; width: 100%; height: auto; aspect-ratio: 1068 / 1128; object-fit: cover; border-radius: var(--r-card); background: #efeae0; }
+
+    /* Доверие */
+    .trust { background: var(--card); }
+    .trust h2 { text-align: center; }
+    .stats { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(3, 1fr); }
+    .stat { text-align: center; padding: 0 16px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat b { display: block; font-size: 90px; font-weight: 900; letter-spacing: -0.055em; line-height: 1; color: var(--ink); }
+    .stat b i { font-style: normal; color: var(--accent); }
+    .stat span { display: block; margin-top: 12px; font-size: 16px; font-weight: 500; color: var(--muted); }
+    .trust-text { margin: clamp(36px, 4vw, 56px) auto 0; text-align: center; max-width: 60ch; font-size: 18px; }
+
+    /* Лента отзывов в блоке доверия */
+    .marquee { margin-top: clamp(48px, 6vw, 80px); overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+    .marquee::-webkit-scrollbar { display: none; }
+    .marquee[hidden] { display: none; }
+    .marquee-track { display: flex; gap: 20px; width: max-content; padding: 4px 20px; }
+    .marquee.is-run { overflow: hidden; }
+    .marquee.is-run .marquee-track { padding: 4px 0; animation: drift 70s linear infinite; }
+    .marquee.is-run:hover .marquee-track { animation-play-state: paused; }
+    @keyframes drift { from { transform: translateX(calc(-50% - 10px)); } to { transform: translateX(0); } }
+    .rv { flex: none; width: 340px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-card); padding: 26px 28px 28px; }
+    .stars { color: var(--accent); font-size: 16px; letter-spacing: 3px; }
+    .rv blockquote { margin-top: 14px; font-size: 16px; line-height: 1.5; color: var(--ink); }
+
+    /* Как это работает */
+    .steps { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 20px; counter-reset: step; }
+    .step { position: relative; padding: 28px 28px 32px; border-radius: var(--r-card); border: 1.5px solid var(--line); }
+    .step-num { font-size: 56px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; color: #c9c4b5; }
+    .step h3 { margin-top: 28px; font-size: clamp(18px, 2.1vw, 27px); letter-spacing: -0.03em; line-height: 1.15; }
+    .step p { margin-top: 10px; font-size: 16px; color: var(--muted); }
+    .step-last { background: var(--ink); border-color: var(--ink); }
+    .step-last .step-num { color: var(--accent); }
+    .step-last h3 { color: #fff; }
+    .step-last p { color: #cfc9bb; }
+    .step-last .step-result { margin-top: 22px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .16); font-size: 18px; font-weight: 700; letter-spacing: -0.015em; color: #fff; line-height: 1.3; }
+    .steps-cta { margin-top: 40px; display: flex; justify-content: center; }
+
+    /* FAQ: отделён линией от «Как это работает», фон у них одинаковый */
+    #faq { border-top: 1px solid var(--line); }
+    .faq-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+    .faq-side { position: sticky; top: 112px; }
+    .faq-side p { margin-top: 20px; color: var(--muted); max-width: 32ch; }
+    .faq-actions { margin-top: 28px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .faq-actions .btn { min-width: 300px; }
+    .faq details { border-bottom: 1px solid var(--line); }
+    .faq details:first-child { border-top: 1px solid var(--line); }
+    .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px 0; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); line-height: 1.25; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary:hover { color: var(--accent-dark); }
+    .plus { flex: none; position: relative; width: 20px; height: 20px; }
+    .plus::before, .plus::after { content: ""; position: absolute; left: 0; top: 9px; width: 20px; height: 2px; border-radius: 2px; background: currentColor; transition: transform .25s ease; }
+    .plus::after { transform: rotate(90deg); }
+    details[open] .plus::after { transform: rotate(0); }
+    .faq details p { padding: 0 44px 26px 0; max-width: 62ch; }
+
+    /* Финальный CTA */
+    .final { padding-top: 0; }
+    .final-box { background: var(--card); border-radius: 32px; box-shadow: var(--shadow); padding: clamp(40px, 7vw, 96px) clamp(24px, 5vw, 64px); text-align: center; }
+    .final-box h2 { max-width: 18ch; margin: 0 auto; }
+    .final-sub { margin-top: 16px; font-size: clamp(18px, 2.6vw, 32px); font-weight: 700; letter-spacing: -0.025em; color: var(--accent); }
+    .final-form { margin: 36px auto 0; max-width: 560px; }
+    .form-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .final-text { margin: 20px auto 0; max-width: 46ch; color: var(--muted); }
+
+    /* Подвал */
+    .foot { padding: 40px 0 48px; border-top: 1px solid var(--line); }
+    .foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px 40px; }
+    .foot-contact { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; }
+    .foot-contact a { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+    .foot-contact span { font-size: 12px; color: var(--muted); }
+    .foot-legal { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--muted); }
+    .foot-legal a { text-decoration: none; }
+    .foot-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* Плавающая кнопка звонка: на всех экранах, под модалкой */
+    .fab { position: fixed; right: 24px; bottom: 24px; z-index: 40; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 28px -8px rgba(255, 79, 0, .6), 0 2px 6px rgba(54, 40, 20, .18); transition: background .2s ease, transform .15s ease; }
+    .fab:hover { background: var(--accent-dark); transform: scale(1.05); }
+    .fab:active { transform: scale(.96); }
+    .fab svg { width: 26px; height: 26px; }
+    .fab::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--accent); animation: fabPulse 2.6s ease-out infinite; pointer-events: none; }
+    @keyframes fabPulse { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(1.55); opacity: 0; } }
+
+    /* Модалка: открывает script.js по data-modal="lead" */
+    .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(32, 21, 21, .5); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .modal-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .modal-box { width: 100%; max-width: 480px; background: var(--card); border-radius: var(--r-card); padding: 36px; transform: translateY(12px); transition: transform .25s cubic-bezier(.16, 1, .3, 1); }
+    .modal-overlay.is-open .modal-box { transform: none; }
+    .modal-logo { margin-bottom: 18px; }
+    .modal-box h3 { font-size: 30px; }
+    .modal-sub { margin-top: 10px; color: var(--muted); }
+    .modal-box .lead-form { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+    .modal-box .btn { width: 100%; margin-top: 4px; }
+
+    /* Появление блоков при прокрутке: только с JS и без reduce */
+    .js .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s cubic-bezier(.16, 1, .3, 1); }
+    .js .reveal.is-in { opacity: 1; transform: none; }
+
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: clamp(36px, 9vw, 68px); }
+      .hero-sub { max-width: 40ch; }
+      .steps { grid-template-columns: 1fr; }
+      .nohire-grid { grid-template-columns: 1fr; }
+      .nohire-img { order: -1; }
+      .step { display: grid; grid-template-columns: 72px 1fr; column-gap: 8px; padding: 24px; }
+      .step-num { font-size: 44px; grid-row: span 3; }
+      .step h3 { margin-top: 4px; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .faq-side { position: static; }
+    }
+    @media (max-width: 640px) {
+      body { font-size: 16px; }
+      .wrap { padding: 0 16px; }
+      .top-inner { height: 64px; gap: 10px; }
+      .brand { flex-direction: column; align-items: flex-start; gap: 1px; }
+      .logo b { font-size: 18px; }
+      .contact span { display: none; }
+      .contact a { font-size: 14px; font-weight: 600; }
+      .fab { right: 16px; bottom: 16px; width: 56px; height: 56px; }
+      .top .btn-sm { height: 44px; padding: 0 12px; font-size: 16px; }
+      .hero-cta { display: none; }
+      .nohire-actions .btn { flex: 1 1 auto; height: 54px; padding: 0 14px; font-size: 16px; }
+      .quiz-opt { height: 60px; }
+      .rv { width: 286px; padding: 22px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat { padding: 0 8px; }
+      .stat:nth-child(3) { display: none; }
+      .stat b { font-size: 56px; }
+      .stat span { font-size: 15px; margin-top: 8px; }
+      .steps-cta .btn, .final-form .btn { width: 100%; }
+      .faq-side p, .faq-actions { display: none; }
+      .faq-grid { gap: 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .foot-contact { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .faq details p { padding-right: 0; }
+      .final-box { border-radius: var(--r-card); }
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal-box { max-width: none; border-radius: var(--r-card) var(--r-card) 0 0; padding: 28px 16px 24px; transform: translateY(100%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,"script","https://mc.yandex.ru/metrika/tag.js?id=112278172", "ym");
+
+    ym(112278172, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112278172" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- Шапка -->
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <a href="index.html" class="logo" aria-label="TrexGo, на главную"><b>Trex<span>Go</span></b></a>
+      <div class="contact">
+        <a href="tel:+79850757675">+7 985 075-76-75</a>
+        <span>Ежедневно с 8:00 до 20:00</span>
+      </div>
+    </div>
+    <button type="button" data-modal="lead" class="btn btn-sm">Подключить компанию</button>
+  </div>
+</header>
+
+<main>
+
+<!-- Hero + квиз -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <ul class="chips" aria-label="Что мы делаем за вас">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Оформляем</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Подписываем</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Обновляем справочники</li>
+      </ul>
+      <h1><span class="nowrap">ЭТрН полностью</span> <em class="nowrap">за вас</em></h1>
+      <p class="hero-sub">Вы занимаетесь перевозками&nbsp;— мы берём электронный документооборот на&nbsp;себя.</p>
+      <div class="hero-cta">
+        <button type="button" data-modal="lead" class="btn">Подключить компанию</button>
+        <a href="tel:+79850757675" class="btn btn-outline" aria-label="Позвонить: +7 985 075-76-75">Позвонить</a>
+      </div>
+    </div>
+
+    <div class="quiz-stage">
+    <div class="quiz" id="quiz">
+      <div class="quiz-head"><b>Узнайте стоимость для вашей компании</b><span class="nowrap"><span id="quizNow">1</span> из 4</span></div>
+      <div class="quiz-bar" aria-hidden="true"><span id="quizBar"></span></div>
+
+      <div class="form-wrap">
+        <form class="lead-form" data-redirect="spasibo.html" data-source="etrn-za-vas-quiz" novalidate>
+          <input type="hidden" name="comment" id="quizComment" />
+
+          <fieldset class="quiz-step is-active" data-step="1" data-key="Машин">
+            <legend class="quiz-q">Сколько у вас машин?</legend>
+            <div class="quiz-opts">
+              <button type="button" class="quiz-opt">1</button>
+              <button type="button" class="quiz-opt">2–5</button>
+              <button type="button" class="quiz-opt">6–10</button>
+              <button type="button" class="quiz-opt">10+</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="quiz-step" data-step="2" data-key="Перевозок в день">
+            <legend class="quiz-q">Сколько перевозок в день?</legend>
+            <p class="quiz-hint">Примерно, в обычный рабочий день.</p>
+            <div class="quiz-opts">
+              <button type="button" class="quiz-opt">1–3</button>
+              <button type="button" class="quiz-opt">4–10</button>
+              <button type="button" class="quiz-opt">10+</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="quiz-step" data-step="3" data-key="ЭДО">
+            <legend class="quiz-q">Каким ЭДО пользуетесь?</legend>
+            <p class="quiz-hint">ЭДО&nbsp;— сервис для обмена электронными документами. Если не знаете, выберите «Не использую».</p>
+            <div class="quiz-opts">
+              <button type="button" class="quiz-opt">Не использую</button>
+              <button type="button" class="quiz-opt">Контур</button>
+              <button type="button" class="quiz-opt">Диадок</button>
+              <button type="button" class="quiz-opt">Другое</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="quiz-step" data-step="4">
+            <legend class="quiz-q">Куда сообщить стоимость?</legend>
+            <p class="quiz-hint">Менеджер перезвонит и назовёт цену для вашей компании.</p>
+            <div class="quiz-field">
+              <label for="quizPhone">Контактный телефон</label>
+              <input class="form-input" id="quizPhone" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
+            </div>
+            <button type="submit" class="btn">Рассчитать стоимость</button>
+            <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a></p>
+          </fieldset>
+        </form>
+        <div class="form-success">Заявка принята. Перезвоним в ближайшее время.</div>
+      </div>
+
+      <div class="quiz-foot">
+        <button type="button" class="quiz-back" id="quizBack" hidden>← Назад</button>
+        <span class="quiz-note" id="quizNote">Займёт меньше минуты</span>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- Не нужно нанимать сотрудника -->
+<section class="nohire" id="nohire">
+  <div class="wrap nohire-grid">
+    <div class="reveal">
+      <h2>Вам не нужно нанимать отдельного сотрудника</h2>
+      <ul class="perks">
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Без зарплаты, взносов и отпускных</b><span>Вы платите за услугу, а не содержите ставку.</span></div></li>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Работа не встаёт</b><span>Сотрудник может заболеть или уволиться. За вашими ЭТрН следит команда.</span></div></li>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Никого не нужно учить</b><span>Мы уже разбираемся в ЭДО, подписях и правилах.</span></div></li>
+      </ul>
+      <div class="nohire-actions">
+        <button type="button" data-modal="lead" class="btn">Подключить компанию</button>
+        <a href="tel:+79850757675" class="btn btn-outline" aria-label="Позвонить: +7 985 075-76-75">Позвонить</a>
+      </div>
+    </div>
+    <img class="nohire-img reveal" src="img/etrn-za-vas-manager.webp" width="1068" height="1128" alt="Менеджер TrexGo за рабочим местом" loading="lazy" />
+  </div>
+</section>
+
+<!-- Доверие -->
+<section class="trust">
+  <div class="wrap">
+    <h2 class="reveal">ЭТрН уже доверяют нам</h2>
+    <div class="stats reveal">
+      <div class="stat"><b>10<i>+</i></b><span>компаний подключили</span></div>
+      <div class="stat"><b>250<i>+</i></b><span>ЭТрН подписали</span></div>
+      <div class="stat"><b>24<i>/</i>7</b><span>контроль и поддержка</span></div>
+    </div>
+    <p class="trust-text reveal">Работаем с транспортными компаниями и предпринимателями, которым важно, чтобы ЭТрН просто работала без постоянного участия с их стороны.</p>
+  </div>
+
+  <!-- Лента отзывов: 8 карточек, плывут слева направо. Имён и подписей нет по решению Сергея.
+       В карточках стоит текст-заглушка, поэтому лента скрыта атрибутом hidden: когда в карточки
+       встанут настоящие слова клиентов, hidden убрать. Сюда вставляются только реальные отзывы
+       (rules/code.md, «Факты не выдумывать»). Вторую копию ленты для бесшовной прокрутки делает скрипт. -->
+  <div class="marquee reveal" id="reviews" aria-label="Отзывы клиентов" hidden>
+    <div class="marquee-track">
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
+        </figure>
+        <figure class="rv">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
+        </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Как это работает -->
+<section id="how">
+  <div class="wrap">
+    <h2 class="reveal">Как это работает</h2>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Оставляете заявку</h3>
+        <p>Достаточно номера телефона. Менеджер перезвонит и задаст пару простых вопросов.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Мы всё подключаем и настраиваем</h3>
+        <p>ЭДО, электронная подпись, доверенность. Вам не нужно ни в чём разбираться.</p>
+      </div>
+      <div class="step step-last">
+        <div class="step-num">03</div>
+        <h3>Дальше ведём ЭТрН за вас</h3>
+        <p>Оформляем, подписываем и контролируем документы по каждой перевозке.</p>
+        <p class="step-result">Вам остаётся только заниматься перевозками.</p>
+      </div>
+    </div>
+    <div class="steps-cta reveal">
+      <button type="button" data-modal="lead" class="btn">Подключить компанию</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap faq-grid">
+    <div class="faq-side reveal">
+      <h2>Частые вопросы</h2>
+      <p>Не нашли свой? Оставьте номер или позвоните, ответим по-человечески.</p>
+      <div class="faq-actions">
+        <button type="button" data-modal="lead" class="btn">Подключить компанию</button>
+        <a href="tel:+79850757675" class="btn btn-outline" aria-label="Позвонить: +7 985 075-76-75">Позвонить</a>
+      </div>
+    </div>
+    <div class="faq reveal">
+      <details name="faq" open>
+        <summary>Что такое ЭТрН?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Электронная транспортная накладная. Та же накладная на груз, только не на бумаге, а в электронном виде. С 1 сентября 2026 года она обязательна для грузоперевозок.</p>
+      </details>
+      <details name="faq">
+        <summary>Мне нужно самому оформлять документы?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Нет. Вы сообщаете менеджеру данные о перевозке так, как вам удобно, например сообщением в мессенджере. Оформление и подписание берём на себя.</p>
+      </details>
+      <details name="faq">
+        <summary>Нужен ли компьютер?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Нет, достаточно телефона. Быть на связи с менеджером можно прямо из рейса.</p>
+      </details>
+      <details name="faq">
+        <summary>Поможете с подключением?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Да, подключение входит в услугу. Менеджер сам всё настроит: ЭДО, электронную подпись, доверенность. От вас нужны только документы компании.</p>
+      </details>
+      <details name="faq">
+        <summary>Что делать, если уже есть ЭДО?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Ничего менять не придётся. Работаем с Контуром, Диадоком и другими операторами. Если ЭДО ещё нет, подключим.</p>
+      </details>
+      <details name="faq">
+        <summary>Можно ли работать с несколькими машинами и водителями?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Да. Ведём ЭТрН и для ИП, который сам за рулём, и для парка в 20 машин и больше. Водителям ничего осваивать не нужно.</p>
+      </details>
+      <details name="faq">
+        <summary>Кто подписывает документы?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Наш менеджер, по электронной доверенности от вашей компании. Вы оформляете её один раз при подключении и можете отозвать в любой момент.</p>
+      </details>
+      <details name="faq">
+        <summary>Что будет, если возникнет проблема с ЭТрН?<span class="plus" aria-hidden="true"></span></summary>
+        <p>Разберёмся сами: исправим ошибку, свяжемся с отправителем или получателем и доведём документ до подписания. Если понадобится ваше решение, менеджер позвонит.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Финальный CTA -->
+<section class="final" id="final">
+  <div class="wrap">
+    <div class="final-box reveal">
+      <h2>Не хотите заниматься ЭТрН самостоятельно?</h2>
+      <p class="final-sub">Мы всё сделаем за вас.</p>
+      <div class="final-form form-wrap">
+        <form class="lead-form" data-redirect="spasibo.html" data-source="etrn-za-vas-final" novalidate>
+          <div class="form-row">
+            <input class="form-input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required aria-label="Контактный телефон" />
+            <button class="btn" type="submit">Подключить компанию</button>
+          </div>
+          <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a></p>
+        </form>
+        <div class="form-success">Заявка принята. Перезвоним в ближайшее время.</div>
+      </div>
+      <p class="final-text">Оставьте контакты&nbsp;— менеджер свяжется с вами и расскажет, как передать ЭТрН нам.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Подвал -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-row">
+      <a href="index.html" class="logo" aria-label="TrexGo, на главную"><b>Trex<span>Go</span></b></a>
+      <div class="foot-contact">
+        <a href="tel:+79850757675">+7 985 075-76-75</a>
+        <span>Ежедневно с 8:00 до 20:00</span>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <span>© 2026 TrexGo · ИП Соловьян С.</span>
+      <a href="privacy.html">Политика обработки персональных данных</a>
+      <a href="cookies.html">Согласие на обработку cookies</a>
+      <a href="pep.html">Соглашение о простой электронной подписи</a>
+      <a href="privacy.html#requisites">Реквизиты</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Плавающая кнопка звонка -->
+<a href="tel:+79850757675" class="fab" aria-label="Позвонить: +7 985 075-76-75">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+</a>
+
+<!-- Модалка заявки -->
+<div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+  <div class="modal-box">
+    <div class="logo modal-logo" aria-hidden="true"><b>Trex<span>Go</span></b></div>
+    <h3 id="leadModalTitle">Передайте ЭТрН нам</h3>
+    <p class="modal-sub">Оставьте номер. Менеджер перезвонит, ответит на вопросы и назовёт стоимость.</p>
+    <div class="form-wrap">
+      <form class="lead-form" data-redirect="spasibo.html" data-source="etrn-za-vas-modal" novalidate>
+        <label class="field-label" for="modalPhone">Контактный телефон</label>
+        <input class="form-input" id="modalPhone" type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
+        <button class="btn" type="submit">Подключить компанию</button>
+        <button class="btn btn-outline modal-cancel" type="button">Закрыть</button>
+        <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a></p>
+      </form>
+      <div class="form-success">Заявка принята. Перезвоним в ближайшее время.</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js?v=20260918"></script>
+<script>
+// Квиз: вариант выбран — сразу следующий шаг. Ответы копятся в скрытое поле
+// comment и уходят вместе с заявкой (так же, как на kontur/).
+(function () {
+  const box = document.getElementById('quiz');
+  if (!box) return;
+  const steps = [...box.querySelectorAll('.quiz-step')];
+  const total = steps.length;
+  const bar = document.getElementById('quizBar');
+  const now = document.getElementById('quizNow');
+  const back = document.getElementById('quizBack');
+  const note = document.getElementById('quizNote');
+  const comment = document.getElementById('quizComment');
+  const answers = {};
+  let current = 1;
+  let started = false;
+  let finished = false;
+
+  const goal = name => { if (typeof window.ym === 'function') window.ym(112278172, 'reachGoal', name); };
+
+  const render = focus => {
+    steps.forEach(st => st.classList.toggle('is-active', Number(st.dataset.step) === current));
+    bar.style.width = `${current / total * 100}%`;
+    now.textContent = current;
+    back.hidden = current === 1;
+    note.hidden = current !== 1;
+    if (current === total) {
+      comment.value = 'Квиз: ' + Object.entries(answers).map(([k, v]) => `${k}: ${v}`).join('; ');
+      if (!finished) { finished = true; goal('quiz_finish'); }
+    }
+    if (focus) {
+      const target = steps[current - 1].querySelector('input:not([type="hidden"]), .quiz-opt.is-selected, .quiz-opt');
+      setTimeout(() => target?.focus({ preventScroll: true }), 60);
+    }
+  };
+
+  const go = n => { current = Math.max(1, Math.min(total, n)); render(true); };
+
+  box.querySelectorAll('.quiz-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const step = opt.closest('.quiz-step');
+      step.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('is-selected'));
+      opt.classList.add('is-selected');
+      answers[step.dataset.key] = opt.textContent.trim();
+      if (!started) { started = true; goal('quiz_start'); }
+      setTimeout(() => go(Number(step.dataset.step) + 1), 180);
+    });
+  });
+
+  back.addEventListener('click', () => go(current - 1));
+  render(false);
+})();
+
+// Лента отзывов: дублируем карточки для бесшовного круга. Без JS и при reduce —
+// обычная горизонтальная прокрутка пальцем.
+(function () {
+  const box = document.querySelector('.marquee');
+  if (!box || box.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const track = box.querySelector('.marquee-track');
+  [...track.children].forEach(card => {
+    const copy = card.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    track.appendChild(copy);
+  });
+  box.classList.add('is-run');
+})();
+
+// На телефоне все вопросы FAQ свёрнуты, на десктопе первый открыт
+if (matchMedia('(max-width: 640px)').matches) {
+  document.querySelectorAll('.faq details[open]').forEach(d => d.removeAttribute('open'));
+}
+
+// Появление блоков при прокрутке
+(function () {
+  const items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    items.forEach(el => el.classList.add('is-in'));
+    return;
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); } });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  items.forEach(el => io.observe(el));
+})();
+</script>
+
+</body>
+</html>
