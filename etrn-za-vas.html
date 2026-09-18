@@ -82,11 +82,11 @@
     .hero-sub { margin-top: 26px; font-size: clamp(18px, 2vw, 26px); line-height: 1.3; font-weight: 600; color: var(--ink); letter-spacing: -0.015em; max-width: 24ch; }
     .hero-cta { margin-top: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 
-    /* Сцена квиза: за белой карточкой лежит оранжевая «вторая карточка» под углом и мягкое свечение.
+    /* Сцена квиза: за белой карточкой лежит «вторая карточка» под углом — цвета фона, чуть темнее — и мягкая тень-свечение.
        Обе подложки медленно дышат; при reduce-motion стоят на месте. */
     .quiz-stage { position: relative; isolation: isolate; }
-    .quiz-stage::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: var(--r-card); background: var(--accent); transform: rotate(4deg) translate(6px, 10px); transform-origin: 60% 50%; animation: quizSway 9s ease-in-out infinite alternate; }
-    .quiz-stage::after { content: ""; position: absolute; inset: -14% -10%; z-index: -2; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 79, 0, .30), rgba(255, 79, 0, 0)); filter: blur(24px); animation: quizGlow 7s ease-in-out infinite alternate; pointer-events: none; }
+    .quiz-stage::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: var(--r-card); background: #e9e1d2; transform: rotate(4deg) translate(6px, 10px); transform-origin: 60% 50%; animation: quizSway 9s ease-in-out infinite alternate; }
+    .quiz-stage::after { content: ""; position: absolute; inset: -14% -10%; z-index: -2; border-radius: 50%; background: radial-gradient(closest-side, rgba(150, 125, 85, .22), rgba(150, 125, 85, 0)); filter: blur(24px); animation: quizGlow 7s ease-in-out infinite alternate; pointer-events: none; }
     @keyframes quizSway { from { transform: rotate(3deg) translate(4px, 8px); } to { transform: rotate(5.5deg) translate(10px, 12px); } }
     @keyframes quizGlow { from { opacity: .55; transform: scale(.94); } to { opacity: 1; transform: scale(1.06); } }
 
@@ -255,11 +255,10 @@
       body { font-size: 16px; }
       .wrap { padding: 0 16px; }
       .top-inner { height: 64px; gap: 10px; }
-      .brand { flex-direction: column; align-items: flex-start; gap: 1px; }
-      .logo b { font-size: 18px; }
-      .contact span { display: none; }
-      .contact a { font-size: 14px; font-weight: 600; }
-      .fab { right: 16px; bottom: 16px; width: 56px; height: 56px; }
+      .logo b { font-size: 23.4px; }
+      .contact { display: none; }
+      .fab { right: 16px; bottom: 16px; width: 56px; height: 56px; transition: bottom .3s ease, background .2s ease, transform .15s ease; }
+      .has-cookie-bar .fab { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
       .top .btn-sm { height: 44px; padding: 0 12px; font-size: 16px; }
       .hero-cta { display: none; }
       .nohire-actions .btn { flex: 1 1 auto; height: 54px; padding: 0 14px; font-size: 16px; }
@@ -337,7 +336,7 @@
       </div>
     </div>
 
-    <div class="quiz-stage">
+    <div class="quiz-stage" data-cookie-after>
     <div class="quiz" id="quiz">
       <div class="quiz-head"><b>Узнайте стоимость для вашей компании</b><span class="nowrap"><span id="quizNow">1</span> из 4</span></div>
       <div class="quiz-bar" aria-hidden="true"><span id="quizBar"></span></div>
@@ -616,7 +615,7 @@
   </div>
 </div>
 
-<script src="script.js?v=20260918"></script>
+<script src="script.js?v=20260918b"></script>
 <script>
 // Квиз: вариант выбран — сразу следующий шаг. Ответы копятся в скрытое поле
 // comment и уходят вместе с заявкой (так же, как на kontur/).
