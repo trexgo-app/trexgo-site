@@ -397,8 +397,21 @@ if (leadModal) {
     .cookie-bar-close { position: absolute; top: 14px; right: 16px; width: 28px; height: 28px; border: 0; background: none;
       color: #8a8a8a; font-size: 22px; line-height: 1; cursor: pointer; }
     .cookie-bar-close:hover { color: #222; }
-    @media (max-width: 640px) { .cookie-bar { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-      padding: 18px 48px 18px 18px; font-size: 14px; border-radius: 14px; } }
+    /* Плашка появляется классом is-shown: на странице с [data-cookie-after] — только когда
+       этот блок прокручен (на телефоне плашка иначе закрывает квиз в первом экране). */
+    .cookie-bar { opacity: 0; visibility: hidden; transform: translateY(12px);
+      transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s; }
+    .cookie-bar.is-shown { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    /* Телефон: узкая полоса в две строки у нижнего края — текст короче, кнопка в той же строке, без крестика */
+    @media (max-width: 640px) {
+      .cookie-bar { left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); max-width: none;
+        display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; font-size: 12px; line-height: 1.3;
+        border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.18); }
+      .cookie-bar p { margin: 0; flex: 1; }
+      .cookie-bar-long, .cookie-bar-close { display: none; }
+      .cookie-bar-ok { flex: none; height: 34px; padding: 0 14px; border-width: 1.5px; font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .cookie-bar { transition: none; } }
   `;
   document.head.appendChild(style);
 
@@ -406,13 +419,32 @@ if (leadModal) {
   bar.className = 'cookie-bar';
   bar.setAttribute('role', 'region');
   bar.setAttribute('aria-label', 'Уведомление о cookies');
-  bar.innerHTML = '<p>Используя сайт, вы соглашаетесь на обработку данных в Cookies для корректной работы сайта. '
+  bar.innerHTML = '<p>Используя сайт, вы соглашаетесь на обработку данных в Cookies<span class="cookie-bar-long"> для корректной работы сайта</span>. '
     + '<a href="' + href + '">Подробнее</a>.</p>'
     + '<button type="button" class="cookie-bar-ok">Понятно</button>'
     + '<button type="button" class="cookie-bar-close" aria-label="Закрыть">×</button>';
   document.body.appendChild(bar);
 
-  const hide = () => bar.remove();
+  // Класс на <html> нужен страницам с плавающими кнопками: пока плашка на экране,
+  // они поднимаются над ней, а не перекрываются.
+  const show = () => {
+    bar.classList.add('is-shown');
+    document.documentElement.classList.add('has-cookie-bar');
+  };
+  const gate = document.querySelector('[data-cookie-after]');
+  if (gate && 'IntersectionObserver' in window && window.matchMedia('(max-width: 640px)').matches) {
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting && entry.boundingClientRect.bottom < 0) { show(); io.disconnect(); }
+    });
+    io.observe(gate);
+  } else {
+    requestAnimationFrame(show);
+  }
+
+  const hide = () => {
+    document.documentElement.classList.remove('has-cookie-bar');
+    bar.remove();
+  };
   bar.querySelector('.cookie-bar-ok').addEventListener('click', () => {
     try { localStorage.setItem(KEY, '1'); } catch (e) {}
     hide();
