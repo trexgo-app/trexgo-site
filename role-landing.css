@@ -5,18 +5,10 @@
 /* ===== Ролевой лендинг ===== */
 
 /* --- Шапка ---
-   Ролевые лендинги используют общесайтовую шапку `.nav` из styles.css: одна
-   шапка на все страницы — один бургер, одно поведение в адаптиве. Навигация
-   по самой странице живёт отдельно, в плавающей таблетке `.pv-pagenav` ниже. */
-.pv-deadline-badge {
-  font-size: 12px;
-  font-weight: 700;
-  color: #8a6400;
-  background: #fdf3d7;
-  border-radius: 20px;
-  padding: 6px 12px;
-  white-space: nowrap;
-}
+   Ролевые лендинги используют общесайтовую шапку `.nav` из nav.css: одна
+   шапка на все страницы — один бургер, одно поведение в адаптиве, своих
+   элементов в неё не добавляем. Навигация по самой странице живёт отдельно,
+   в плавающей таблетке `.pv-pagenav` ниже. */
 
 /* --- Плавающее меню по странице ---
    Таблетка висит под общей шапкой и выезжает, когда первый экран прокручен:
@@ -737,10 +729,6 @@
 
 /* Счётчик дней в шапке уходит первым: он дублируется в тексте страницы,
    а телефон и кнопка заявки — нет. */
-@media (max-width: 1180px) {
-  .pv-deadline-badge { display: none; }
-}
-
 @media (max-width: 960px) {
   .pv-hero-inner { grid-template-columns: 1fr; gap: 32px; }
   .pv-hero-content { padding-bottom: 0; }
@@ -754,7 +742,6 @@
   .pv-trust-nums { justify-content: center; width: 100%; text-align: center; }
 }
 @media (max-width: 768px) {
-  .pv-deadline-badge { display: none; }
   .pv-hero { padding-top: 48px; }
   .pv-hero-inner { padding: 0 20px; }
   .pv-pain-grid { grid-template-columns: 1fr; }
