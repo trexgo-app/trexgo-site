@@ -18,6 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="nav.css?v=20260921" />
+  <link rel="stylesheet" href="footer.css?v=20260921b" />
 
   <style>
     /* Страница самодостаточная, как kontur/: стили здесь, формы и модалка — общий script.js.
@@ -45,8 +46,8 @@
     body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
     a { color: inherit; }
     /* Телефоны подчёркнуты везде, кроме кнопок: видно, что по номеру можно нажать */
-    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone) { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: currentColor; }
-    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone):hover { color: var(--accent-dark); }
+    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone):not(.footer-phone) { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: currentColor; }
+    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone):not(.footer-phone):hover { color: var(--accent-dark); }
     button, input { font: inherit; color: inherit; }
     h1, h2, h3 { color: var(--ink); font-weight: 800; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
     h2 { font-size: clamp(30px, 8vw, 44px); }
@@ -202,15 +203,6 @@
     .form-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
     .final-text { margin: 20px auto 0; max-width: 46ch; color: var(--muted); }
 
-    /* Подвал */
-    .foot { padding: 40px 0 48px; border-top: 1px solid var(--line); }
-    .foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px 40px; }
-    .foot-contact { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; }
-    .foot-contact a { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; }
-    .foot-contact span { font-size: 12px; color: var(--muted); }
-    .foot-legal { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--muted); }
-    .foot-legal a { text-decoration: none; }
-    .foot-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
     /* Плавающая кнопка звонка: на всех экранах, под модалкой */
     .fab { position: fixed; right: 24px; bottom: 24px; z-index: 40; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 28px -8px rgba(255, 79, 0, .6), 0 2px 6px rgba(54, 40, 20, .18); transition: background .2s ease, transform .15s ease; }
@@ -266,7 +258,6 @@
       .faq-side p, .faq-actions { display: none; }
       .faq-grid { gap: 24px; }
       .form-row { grid-template-columns: 1fr; }
-      .foot-contact { flex-direction: column; align-items: flex-start; gap: 4px; }
       .faq details p { padding-right: 0; }
       .final-box { border-radius: var(--r-card); }
       .modal-overlay { align-items: flex-end; padding: 0; }
@@ -587,23 +578,49 @@
 
 </main>
 
-<!-- Подвал -->
-<footer class="foot">
-  <div class="wrap">
-    <div class="foot-row">
-      <a href="index.html" class="logo" aria-label="TrexGo, на главную"><b>Trex<span>Go</span></b></a>
-      <div class="foot-contact">
-        <a href="tel:+79850757675">+7 985 075-76-75</a>
-        <span>Ежедневно с 8:00 до 20:00</span>
+<!-- Подвал: общий для всего сайта, стили — footer.css -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <a href="index.html" class="footer-logo">Trex<span>Go</span></a>
+        <p class="footer-tagline">Подключение и сопровождение ЭТрН под ключ для транспортных компаний России.</p>
+        <a href="tel:+79850757675" class="footer-phone">+7 985 075-76-75</a>
+        <p style="font-size:12px;color:var(--gray);margin-top:6px">Ежедневно с 08:00 до 23:00 · Бесплатная консультация</p>
+      </div>
+      <div class="footer-col">
+        <h4>Услуги</h4>
+        <ul class="footer-links">
+          <li><a href="etrn.html">Электронные ТрН (ЭТрН)</a></li>
+          <li><a href="index.html">Установка под ключ</a></li>
+          <li><a href="kontur/">ЭТрН в Контуре</a></li>
+          <li><a href="etrn-za-vas.html">ЭТрН полностью за вас</a></li>
+          <li><a href="index.html#pricing">Прайс-лист</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Компания</h4>
+        <ul class="footer-links">
+          <li><a href="blog.html">Блог</a></li>
+          <li><a href="partners.html">Партнёрам</a></li>
+          <li><a href="privacy.html#requisites">Реквизиты</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Правовое</h4>
+        <ul class="footer-links">
+          <li><a href="privacy.html">Политика обработки персональных данных</a></li>
+          <li><a href="cookies.html">Согласие на обработку cookies</a></li>
+          <li><a href="pep.html">Соглашение о простой электронной подписи</a></li>
+        </ul>
       </div>
     </div>
-    <div class="foot-legal">
+    <div class="footer-bottom">
       <span>© 2026 TrexGo · ИП Соловьян С.</span>
-      <a href="partners.html">Партнёрам</a>
-      <a href="privacy.html">Политика обработки персональных данных</a>
-      <a href="cookies.html">Согласие на обработку cookies</a>
-      <a href="pep.html">Соглашение о простой электронной подписи</a>
-      <a href="privacy.html#requisites">Реквизиты</a>
+      <div class="footer-legal">
+        <a href="privacy.html#requisites">Реквизиты</a>
+        <a href="cookies.html">Cookies</a>
+      </div>
     </div>
   </div>
 </footer>

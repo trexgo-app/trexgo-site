@@ -1,0 +1,109 @@
+/* Общий футер сайта — единственный источник его стилей.
+   Подключается на каждой странице рядом с nav.css (на самодостаточных лендингах вроде
+   etrn-za-vas.html — без styles.css). Разметка футера на всех страницах одинаковая.
+   Нужные переменные: --black, --cream, --sand, --gray, --orange, --font. */
+
+footer {
+  /* база футера не зависит от body страницы */
+  font-family: var(--font);
+  line-height: 1.5;
+  background: var(--black);
+  color: var(--cream);
+  padding: 64px 0 32px;
+  border-top: 1px solid rgba(197,192,177,0.18);
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(197,192,177,0.18);
+}
+
+.footer-logo {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--cream);
+  text-decoration: none;
+  letter-spacing: -0.8px;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.footer-logo span { color: var(--orange); }
+
+.footer-tagline {
+  font-size: 14px;
+  color: var(--sand);
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+
+.footer-phone {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cream);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.footer-phone:hover { color: var(--orange); }
+
+.footer-col h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--sand);
+  margin-bottom: 16px;
+}
+
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+
+.footer-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(197,192,177,0.8);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--cream); }
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.footer-legal { display: flex; gap: 20px; }
+
+.footer-legal a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.footer-legal a:hover { color: var(--sand); }
+
+@media (max-width: 1024px) {
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+}
+
+@media (max-width: 768px) {
+  .footer-inner { padding: 0 20px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .footer-legal { flex-direction: column; gap: 8px; align-items: center; }
+}
