@@ -17,6 +17,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
+  <link rel="stylesheet" href="nav.css?v=20260921" />
+
   <style>
     /* Страница самодостаточная, как kontur/: стили здесь, формы и модалка — общий script.js.
        Цвета и шрифт — из styles.css основного сайта. Скругления: кнопки и поля 12px, карточки 24px. */
@@ -36,13 +38,15 @@
       --r-card: 24px;
       --shadow: 0 1px 2px rgba(54, 40, 20, .05), 0 12px 32px -12px rgba(54, 40, 20, .14);
       --font: 'Onest', Helvetica, Arial, sans-serif;
+      /* имена из styles.css — их ждёт общая шапка nav.css */
+      --cream: #fcf8f2; --black: #201515; --gray: #939084; --sand: #c5c0b1; --light-sand: #eceae3; --orange: #ff4f00;
     }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
     body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
     a { color: inherit; }
     /* Телефоны подчёркнуты везде, кроме кнопок: видно, что по номеру можно нажать */
-    a[href^="tel:"]:not(.btn):not(.fab) { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: currentColor; }
-    a[href^="tel:"]:not(.btn):not(.fab):hover { color: var(--accent-dark); }
+    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone) { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: currentColor; }
+    a[href^="tel:"]:not(.btn):not(.fab):not(.nav-phone):hover { color: var(--accent-dark); }
     button, input { font: inherit; color: inherit; }
     h1, h2, h3 { color: var(--ink); font-weight: 800; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
     h2 { font-size: clamp(30px, 8vw, 44px); }
@@ -56,20 +60,13 @@
     .btn:hover { background: var(--accent-dark); }
     .btn:active { transform: scale(.98); }
     .btn[disabled] { opacity: .6; cursor: default; }
-    .btn-sm { height: 46px; padding: 0 20px; font-size: 16px; }
     .btn-outline { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px #cfcabc; }
     .btn-outline:hover { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
 
-    /* Шапка */
-    .top { position: sticky; top: 0; z-index: 50; background: rgba(252, 248, 242, .86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-    .top-inner { height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: flex; align-items: center; gap: 28px; min-width: 0; }
+    /* Логотип (модалка и футер). Шапка — общая, nav.css */
     .logo { display: flex; align-items: baseline; gap: 10px; text-decoration: none; white-space: nowrap; }
     .logo b { font-size: 23px; font-weight: 900; letter-spacing: -0.9px; color: var(--ink); }
     .logo b span { color: var(--accent); }
-    .contact { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
-    .contact a { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; text-underline-offset: 2px !important; text-decoration-thickness: 1px !important; }
-    .contact span { font-size: 12px; color: var(--muted); white-space: nowrap; }
 
     /* Hero */
     .hero { overflow-x: clip; padding: clamp(40px, 6vw, 84px) 0 clamp(64px, 8vw, 104px); }
@@ -162,7 +159,7 @@
     .marquee.is-run:hover .marquee-track { animation-play-state: paused; }
     @keyframes drift { from { transform: translateX(calc(-50% - 10px)); } to { transform: translateX(0); } }
     .rv { flex: none; width: 340px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-card); padding: 26px 28px 28px; }
-    .stars { color: var(--accent); font-size: 16px; letter-spacing: 3px; }
+    .rv-stars { color: var(--accent); font-size: 16px; letter-spacing: 3px; }
     .rv blockquote { margin-top: 14px; font-size: 16px; line-height: 1.5; color: var(--ink); }
 
     /* Как это работает */
@@ -254,12 +251,8 @@
     @media (max-width: 640px) {
       body { font-size: 16px; }
       .wrap { padding: 0 16px; }
-      .top-inner { height: 64px; gap: 10px; }
-      .logo b { font-size: 23.4px; }
-      .contact { display: none; }
       .fab { right: 16px; bottom: 16px; width: 56px; height: 56px; transition: bottom .3s ease, background .2s ease, transform .15s ease; }
       .has-cookie-bar .fab { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
-      .top .btn-sm { height: 44px; padding: 0 12px; font-size: 16px; }
       .hero-cta { display: none; }
       .nohire-actions .btn { flex: 1 1 auto; height: 54px; padding: 0 14px; font-size: 16px; }
       .quiz-opt { height: 60px; }
@@ -303,19 +296,42 @@
 </head>
 <body>
 
-<!-- Шапка -->
-<header class="top">
-  <div class="wrap top-inner">
-    <div class="brand">
-      <a href="index.html" class="logo" aria-label="TrexGo, на главную"><b>Trex<span>Go</span></b></a>
-      <div class="contact">
-        <a href="tel:+79850757675">+7 985 075-76-75</a>
-        <span>Ежедневно с 8:00 до 20:00</span>
+<!-- Шапка: общая для всего сайта, стили — nav.css -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Trex<span>Go</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">ЭТрН под ключ</a></li>
+      <li><a href="etrn-za-vas.html" class="active">ЭТрН менеджер</a></li>
+      <li class="nav-has-sub">
+        <button class="nav-sub-toggle" type="button" aria-expanded="false">Кому подходит<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 3 3-3"/></svg></button>
+        <ul class="nav-sub">
+          <li><a href="perevozchiki.html">Перевозчикам</a></li>
+          <li><a href="gruzootpravitelyam.html">Грузоотправителям</a></li>
+          <li><a href="gruzopoluchatelyam.html">Грузополучателям</a></li>
+        </ul>
+      </li>
+      <li><a href="blog.html">Блог</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-meta">
+        <div class="nav-meta-item">
+          <span class="nav-meta-label">Рейтинг</span>
+          <span class="nav-meta-value"><span class="stars"><em>★★★★</em>★</span> 4.8</span>
+        </div>
+        <div class="nav-meta-item">
+          <span class="nav-meta-label">Ежедневно</span>
+          <span class="nav-meta-value">с 08:00 до 23:00</span>
+        </div>
+      </div>
+      <div class="nav-phone-wrap">
+        <a href="tel:+79850757675" class="nav-phone">+7 985 075-76-75</a>
+        <span class="nav-online"><span class="online-dot"></span>2 менеджера онлайн</span>
       </div>
     </div>
-    <button type="button" data-modal="lead" class="btn btn-sm">Подключить компанию</button>
+    <button class="nav-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
   </div>
-</header>
+</nav>
 
 <main>
 
@@ -437,35 +453,35 @@
   <div class="marquee reveal" id="reviews" aria-label="Отзывы клиентов" hidden>
     <div class="marquee-track">
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Одно-три предложения его словами: как было раньше и что изменилось.»</blockquote>
         </figure>
         <figure class="rv">
-          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <div class="rv-stars" aria-label="Оценка 5 из 5">★★★★★</div>
           <blockquote>«Место для отзыва клиента. Короткая цитата его словами.»</blockquote>
         </figure>
     </div>
