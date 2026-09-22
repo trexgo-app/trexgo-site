@@ -9,6 +9,9 @@ function trexgo_notification_title(array $lead, bool $databaseUnavailable): stri
     if ($lead['form_kind'] === 'subscription') {
         $title = $databaseUnavailable ? 'БАЗА НЕДОСТУПНА — новая подписка TrexGo' : 'Новая подписка TrexGo';
     }
+    if (is_array($lead['partner'] ?? null)) {
+        $title .= ' — от партнёра';
+    }
     return $title;
 }
 
@@ -34,6 +37,9 @@ function trexgo_notification_text(array $lead, bool $databaseUnavailable): strin
     ];
 
     $lines = [trexgo_notification_title($lead, $databaseUnavailable)];
+    if (is_array($lead['partner'] ?? null)) {
+        $lines = array_merge($lines, trexgo_partner_lines($lead['partner']), ['']);
+    }
     foreach ($labels as $field => $label) {
         $value = $lead[$field] ?? null;
         if ($value !== null && $value !== '') {
@@ -50,6 +56,18 @@ function trexgo_notification_html(array $lead, bool $databaseUnavailable): strin
     $esc = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 
     $lines = [($databaseUnavailable ? '⚠️ ' : '') . '<b>' . $esc(trexgo_notification_title($lead, $databaseUnavailable)) . '</b>'];
+
+    // Партнёр — сразу под заголовком: с кем согласовывать клиента и кому начислять вознаграждение.
+    if (is_array($lead['partner'] ?? null)) {
+        $partnerLines = trexgo_partner_lines($lead['partner']);
+        $first = array_shift($partnerLines);
+        $block = ['🤝 <b>' . $esc((string) $first) . '</b>'];
+        foreach ($partnerLines as $line) {
+            $block[] = $esc($line);
+        }
+        $lines[] = implode("\n", $block);
+        $lines[] = '';
+    }
 
     $primaryLabels = [
         'name' => 'Имя',

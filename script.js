@@ -111,6 +111,29 @@ const createLeadRequestId = () => {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 };
 
+// Партнёрская ссылка (partner.trexgo.ru/r/<код>) приводит сюда с ?ref=<код>&rc=<переход>.
+// Запоминаем на 90 дней — человек может оставить заявку не сразу и с другой страницы;
+// при переходе по ссылке другого партнёра побеждает последний. С заявкой код уходит
+// в api/leads, а тот сообщает кабинету партнёров и пишет партнёра в уведомление.
+const PARTNER_STORAGE_KEY = 'trexgo_partner';
+const partnerAttribution = (() => {
+  const params = new URLSearchParams(window.location.search);
+  const ref = (params.get('ref') || '').toLowerCase();
+  try {
+    if (/^[a-z0-9][a-z0-9-]{1,31}$/.test(ref)) {
+      const rc = (params.get('rc') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40);
+      const saved = { ref, rc, exp: Date.now() + 90 * 24 * 3600 * 1000 };
+      window.localStorage.setItem(PARTNER_STORAGE_KEY, JSON.stringify(saved));
+      return saved;
+    }
+    const saved = JSON.parse(window.localStorage.getItem(PARTNER_STORAGE_KEY) || 'null');
+    return saved && saved.exp > Date.now() ? saved : null;
+  } catch {
+    // Хранилище недоступно (приватный режим) — партнёр сохранится хотя бы для заявки с этой же страницы.
+    return /^[a-z0-9][a-z0-9-]{1,31}$/.test(ref) ? { ref, rc: params.get('rc') || '' } : null;
+  }
+})();
+
 const leadTrackingParams = () => {
   const params = new URLSearchParams(window.location.search);
   return {
@@ -119,7 +142,9 @@ const leadTrackingParams = () => {
     utm_campaign: params.get('utm_campaign') || '',
     utm_content: params.get('utm_content') || '',
     utm_term: params.get('utm_term') || '',
-    yclid: params.get('yclid') || ''
+    yclid: params.get('yclid') || '',
+    partner_ref: partnerAttribution?.ref || '',
+    partner_click: partnerAttribution?.rc || ''
   };
 };
 

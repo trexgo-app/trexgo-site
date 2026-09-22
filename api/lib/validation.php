@@ -117,6 +117,11 @@ function trexgo_validate_submission(array $payload, array $config, ?int $now = n
 
     $honeypot = trexgo_text($payload['website'] ?? null, 200);
 
+    // Код партнёра и токен перехода по его ссылке (script.js запоминает их из ?ref=&rc=).
+    // Кривое значение не повод отказать в заявке — просто не считаем её партнёрской.
+    $partnerRef = strtolower(trim((string) ($payload['partner_ref'] ?? '')));
+    $partnerClick = trim((string) ($payload['partner_click'] ?? ''));
+
     return [
         'request_id' => $requestId,
         'form_kind' => $kind,
@@ -134,6 +139,8 @@ function trexgo_validate_submission(array $payload, array $config, ?int $now = n
         'utm_content' => trexgo_text($payload['utm_content'] ?? null, 255),
         'utm_term' => trexgo_text($payload['utm_term'] ?? null, 255),
         'yclid' => trexgo_text($payload['yclid'] ?? null, 255),
+        'partner_ref' => preg_match('/^[a-z0-9][a-z0-9-]{1,31}$/', $partnerRef) === 1 ? $partnerRef : null,
+        'partner_click' => preg_match('/^[A-Za-z0-9_-]{6,40}$/', $partnerClick) === 1 ? $partnerClick : null,
         'honeypot' => $honeypot,
         'consent_text_version' => (string) ($config['consent_text_version'] ?? 'unknown'),
     ];

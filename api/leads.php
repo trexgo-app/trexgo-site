@@ -6,6 +6,7 @@ require_once __DIR__ . '/lib/bootstrap.php';
 require_once __DIR__ . '/lib/validation.php';
 require_once __DIR__ . '/lib/repository.php';
 require_once __DIR__ . '/lib/notifications.php';
+require_once __DIR__ . '/lib/partners.php';
 
 $method = (string) ($_SERVER['REQUEST_METHOD'] ?? '');
 if ($method !== 'POST' && $method !== 'OPTIONS') {
@@ -105,6 +106,12 @@ try {
 
 if ($databaseError === null) {
     if ($stored['created']) {
+        // Партнёрская заявка — в кабинет партнёров; ответ (кто партнёр, откуда переход) идёт в уведомление.
+        try {
+            $lead['partner'] = trexgo_partner_lead($lead, $config);
+        } catch (Throwable $error) {
+            trexgo_log_event('partner_lead_exception', ['type' => get_class($error)]);
+        }
         try {
             $channels = trexgo_notify($lead, $config, false);
         } catch (Throwable $error) {
@@ -127,6 +134,11 @@ trexgo_log_event('database_unavailable', [
     'type' => get_class($databaseError),
     'code' => (string) $databaseError->getCode(),
 ]);
+try {
+    $lead['partner'] = trexgo_partner_lead($lead, $config);
+} catch (Throwable $error) {
+    trexgo_log_event('partner_lead_exception', ['type' => get_class($error)]);
+}
 try {
     $channels = trexgo_notify($lead, $config, true);
 } catch (Throwable $error) {
