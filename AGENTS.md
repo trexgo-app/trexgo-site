@@ -20,7 +20,7 @@
 права, а правила процесса обязательны.
 
 Факт про ЭТрН, ЭПЛ, титулы или регулирование — в `../knowledge/wiki/etrn/`, не выдумывать.
-Что сознательно не вынесено на лендинг и почему — `../knowledge/Landing/sources-and-approach.md`,
+Что сознательно не вынесено на лендинг и почему — `../knowledge/content/landing/sources-and-approach.md`,
 читать до правки текстов.
 
 **Движение фактов одностороннее: из базы знаний в сайт.** Ничего приватного —
@@ -57,8 +57,9 @@
   `python -m http.server 8000` из этой папки → `http://127.0.0.1:8000/`. Stage на
   хостинге — для показа второму участнику, а не для отладки своей вёрстки. Что
   локально не проверяется — [docs/README.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Локальный просмотр».
-- **Репозиторий — источник правды.** Выкладка удаляет с сервера всё, чего нет в репозитории.
-  Правки напрямую по FTP затрутся при следующем push.
+- **Репозиторий — источник правды.** Production-выкладка обновляет файлы репозитория,
+  но не удаляет посторонние серверные файлы; stage использует `--delete`.
+  Правки напрямую по FTP затрутся при следующем push. Канон — `../rules/deploy.md`.
 - **Версия Apache неизвестна**, хостер её скрывает. В `.htaccess` писать только синтаксис,
   работающий и на 2.2, и на 2.4: `RewriteRule ... [F,L]`, не `Require all denied`.
 - **Путь `/.well-known/` не блокировать** — через него Let's Encrypt продлевает сертификат.
@@ -108,19 +109,16 @@
 
 ## Документация этого репозитория
 
-Общие правила ведения документации — `../rules/docs.md`. Здесь только раскладка
-по файлам этой папки:
+Follow `../rules/docs.md`. Detailed documentation has one canonical home in the
+private knowledge repository:
+https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/index.md
 
-| Данные | Куда |
-|---|---|
-| Текущее состояние, адреса, проверки | `docs/README.md` |
-| Конфигурация хостинга | `config-snapshots/mchost.md` — read-only, снимать заново |
-| Заметные вехи и решения | `docs/archive/CHANGELOG.md` |
-| Отклонённые варианты и почему | `docs/archive/proposals/` |
-| Старая диагностика | `docs/archive/diagnostics/` |
-| Правила для агента, gotchas | этот файл |
+Keep short setup/check instructions, executable resources and local agent rules
+in site. Update the appropriate knowledge page in the same task when behavior,
+configuration or operations change. Link paired repository changes and the
+reviewed code revision. New detailed documents must not be added to site/docs.
 
-Всё неактуальное — в `docs/archive/`, одной папкой. Не заводить `old/`, `backup/`, `legacy/`.
-
-В `docs/README.md` не писать «раньше было так, но потом...» — либо удалить, либо перенести
-в архив с датой. README отвечает на вопрос «как сейчас», а не «как дошли до жизни такой».
+Existing docs and config-snapshots Markdown files are compatibility redirects;
+they do not hold a second editable copy. Recheck their consumers after
+2027-01-05 before removing them. Historical documentation belongs in the
+corresponding archive in knowledge. Never publish private material in site.
