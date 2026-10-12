@@ -39,8 +39,8 @@
 **Здесь только лендинг.** Личный кабинет — отдельный репозиторий `trexgo-lk`. Не смешивать:
 код кабинета, работа с API Платформы ОФД, база данных сюда не попадают никогда.
 
-Текущее состояние проекта, адреса, проверки — [docs/README.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md).
-Конфигурация хостинга — [config-snapshots/mchost.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/config-snapshots/mchost.md).
+Текущее состояние проекта, адреса, проверки — [knowledge/documentation/site/operations/deployment/index.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md).
+Конфигурация хостинга — [knowledge/documentation/site/config-snapshots/mchost.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/config-snapshots/mchost.md).
 
 ## Правила работы
 
@@ -56,7 +56,7 @@
 - **Правки показывать локально, а не пушить ради проверки.** Сайт статический:
   `python -m http.server 8000` из этой папки → `http://127.0.0.1:8000/`. Stage на
   хостинге — для показа второму участнику, а не для отладки своей вёрстки. Что
-  локально не проверяется — [docs/README.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Локальный просмотр».
+  локально не проверяется — [knowledge/documentation/site/operations/deployment/index.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Локальный просмотр».
 - **Репозиторий — источник правды.** Production-выкладка обновляет файлы репозитория,
   но не удаляет посторонние серверные файлы; stage использует `--delete`.
   Правки напрямую по FTP затрутся при следующем push. Канон — `../rules/deploy.md`.
@@ -68,12 +68,12 @@
 - **Кодировка базы по умолчанию cp1251.** Таблицы создавать явно в `utf8mb4`,
   иначе кириллица и эмодзи побьются.
 - **Сертификат wildcard `*.trexgo.ru`** — поддомены первого уровня покрыты
-  (в том числе `stage.trexgo.ru`), второго — нет. Сроки — [config-snapshots/mchost.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/config-snapshots/mchost.md).
+  (в том числе `stage.trexgo.ru`), второго — нет. Сроки — [knowledge/documentation/site/config-snapshots/mchost.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/config-snapshots/mchost.md).
 - Форма заявки на stage — заглушка (`ops/stage-overlay/api/leads.php`), на боевом
   сайте работает по-настоящему.
 - Блок Яндекс.Метрики на stage вырезается из HTML при выкладке (`pull-deploy.sh`) —
   просмотры и тестовые заявки не должны попадать в боевой счётчик. Номер счётчика
-  и список целей — [docs/README.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Форма заявки и аналитика».
+  и список целей — [knowledge/documentation/site/operations/deployment/index.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Форма заявки и аналитика».
 - **Ссылки в HTML только относительные** (`privacy.html`, не `/privacy.html`) — иначе
   со stage они уводят на боевой сайт.
 - **`stage.trexgo.ru` — рабочий стенд под Basic Auth**, закрыт от поисковиков
@@ -100,7 +100,7 @@
 
 Две оси навигации — продуктовая и ролевая («Кому подходит»), устройство раздела,
 общие `role-landing.css` и `role-landing.js` для ролевых лендингов и почему их пока
-нет в `sitemap.xml` — в [docs/README.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md).
+нет в `sitemap.xml` — в [knowledge/documentation/site/operations/deployment/index.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md).
 
 ## Чего не делать
 
@@ -118,7 +118,7 @@ in site. Update the appropriate knowledge page in the same task when behavior,
 configuration or operations change. Link paired repository changes and the
 reviewed code revision. New detailed documents must not be added to site/docs.
 
-Existing docs and config-snapshots Markdown files are compatibility redirects;
-they do not hold a second editable copy. Recheck their consumers after
-2027-01-05 before removing them. Historical documentation belongs in the
-corresponding archive in knowledge. Never publish private material in site.
+Link directly to the final knowledge page. When moving a document, update its
+known consumers and remove the old file; do not create redirect Markdown files
+or keep a parallel tree of old addresses. Historical documentation belongs
+in the corresponding archive in knowledge. Never publish private material in site.
