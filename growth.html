@@ -33,12 +33,6 @@ header{background:#fafafc;border-bottom:1px solid #e8e8ee}.nav{min-height:74px;d
 @media(max-width:760px){.offers-section{padding:66px 0}}
 @media print{.phase-link{display:none}.offers-section{padding:0;break-before:page}}
 
-/* Compact regulatory announcement belongs to the hero, not a separate slide. */
-.market-alert{display:grid;grid-template-columns:235px minmax(0,1fr);gap:28px;margin-top:32px;padding:23px 27px;border:1px solid #e4d7c6;border-left:4px solid var(--orange);border-radius:14px;background:var(--warm);scroll-margin-top:28px;break-inside:avoid}
-.alert-deadline{display:flex;flex-direction:column;justify-content:center;gap:3px}.alert-eyebrow{font-size:11px;line-height:1.65;color:#756754}.alert-deadline strong{font-size:24px;line-height:1.25;letter-spacing:-.035em;color:var(--orange)}.alert-status{font-size:13px;color:#685b4b}.alert-copy>p{font-size:15px;line-height:1.75;color:var(--ink)}.alert-footer{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-top:10px}.alert-footer>span{font-size:13px;line-height:1.65;color:#6e6255;max-width:650px}.alert-footer>a{font-size:12px;white-space:nowrap;color:var(--orange);text-decoration:underline;text-underline-offset:3px}
-@media(max-width:1150px){.market-alert{grid-template-columns:210px minmax(0,1fr);gap:22px;padding:22px}.alert-deadline strong{font-size:23px}.alert-footer{display:block}.alert-footer>a{display:inline-block;margin-top:7px}}
-@media(max-width:760px){.market-alert{grid-template-columns:1fr;gap:13px;margin-top:26px;padding:20px;border-radius:12px}.alert-eyebrow{font-size:10px}.alert-deadline strong{font-size:23px}.alert-status{font-size:12px}.alert-copy>p{font-size:14px;line-height:1.75}.alert-footer{margin-top:10px}.alert-footer>span{font-size:12px}.alert-footer>a{font-size:11px;margin-top:8px}}
-@media print{.market-alert{grid-template-columns:55mm 1fr;gap:7mm;margin-top:7mm;padding:5mm}.alert-eyebrow{font-size:8pt}.alert-deadline strong{font-size:18pt}.alert-status{font-size:9pt}.alert-copy>p{font-size:10pt;line-height:1.6}.alert-footer>span{font-size:9pt}.alert-footer>a{font-size:8pt}}
 .card-grid{display:grid;gap:16px;margin-top:28px}.card-grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.card-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.info-card{background:#fff;border:1px solid #e1e1e7;border-radius:18px;padding:24px 22px;min-width:0}.info-card h3{font-size:22px;line-height:1.2;margin-bottom:10px}.info-card p{font-size:15px;line-height:1.75;color:var(--muted)}.card-index{display:block;font-size:12px;color:var(--orange);margin-bottom:14px}.mock{background:#fff;border:1px solid #e1e1e7;border-radius:20px;overflow:hidden}.mock-bar{height:6px;background:var(--orange)}.mock-body{padding:28px}.mock-kicker{font-size:12px;color:var(--orange)}.mock h3{font-size:26px;margin:10px 0 18px}.mock-row{padding:12px 0;border-top:1px solid var(--line)}.mock-row span{display:block;font-size:12px;color:#8b8b93}.mock-row b{font-size:16px;font-weight:600}.bar-line{height:8px;border-radius:8px;background:#e6eef8;margin-top:6px;overflow:hidden}.bar-line i{display:block;height:100%;background:var(--orange)}.bar-line.soft i{background:#8aa0c4;width:48%}.close-list{list-style:none;margin:22px 0 0;padding:0}.close-list li{font-size:18px;line-height:1.4;padding:10px 0 10px 28px;position:relative}.close-list li:before{content:'';position:absolute;left:0;top:16px;width:12px;height:7px;border-left:2px solid var(--orange);border-bottom:2px solid var(--orange);transform:rotate(-45deg)}.cta-title{font-size:22px;color:var(--orange);margin-top:28px}.cta-contacts{margin-top:18px;font-size:15px;line-height:1.8}.cta-contacts a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:1150px){.card-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.card-grid.three{grid-template-columns:1fr}.info-card h3{font-size:20px}}
 @media(max-width:760px){.card-grid.four,.card-grid.two{grid-template-columns:1fr}.info-card{padding:22px}.info-card h3{font-size:22px}.mock-body{padding:22px}.mock h3{font-size:22px}.close-list li{font-size:16px}}
@@ -155,7 +149,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 <a class="skip" href="#main">К содержанию</a>
 <header><div class="shell nav">
   <a class="logo" href="#main">trexgo<span>.</span></a>
-  <nav data-version-nav="1" aria-label="Разделы презентации"><a href="#market">Рынок</a><a href="#roadmap">Развитие</a><a href="#orders">Поиск</a><a href="#planning">Планирование</a><a href="#finance">Финансы</a></nav>
+  <nav data-version-nav="1" aria-label="Разделы презентации"><a href="#roadmap">Развитие</a><a href="#orders">Поиск</a><a href="#planning">Планирование</a><a href="#finance">Финансы</a></nav>
   <nav data-version-nav="2" hidden aria-label="Разделы презентации"><a href="#problem">Задачи</a><a href="#process">Процесс</a><a href="#v2-orders">Поиск</a><a href="#etrn">ЭТрН</a><a href="#expenses">Расходы</a><a href="#v2-finance">Деньги</a></nav>
   <div class="header-tools">
     <div class="version-switch" role="group" aria-label="Версия страницы">
@@ -171,10 +165,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   <p class="eyebrow">TrexGo · Перспективы развития</p>
   <h1>Сервис для логистики<br> и перевозок <span>с AI‑функциями</span></h1>
   <p class="lead">В основе — документы, облачная подпись и AI-ассистент.<br> Следующие направления — поиск заказов, планирование рейсов<br> и финансовые услуги.</p>
-  <aside class="market-alert" id="market" aria-labelledby="market-alert-title">
-    <div class="alert-deadline"><span class="alert-eyebrow">Переход на электронные документы</span><strong id="market-alert-title">До 1 марта 2027</strong><span class="alert-status">нештрафуемый период</span></div>
-    <div class="alert-copy"><p>Переход на ЭПД обязателен с 1 сентября 2026. Временно не штрафуют за бумажные документы вместо электронных.</p><div class="alert-footer"><span>Для TrexGo — окно подключения перевозчиков к ЭДО.</span> <a href="https://www.mintrans.gov.ru/press-center/news/12933" target="_blank" rel="noopener">Минтранс ↗</a></div></div>
-  </aside>
 </section>
 
 <section class="roadmap-section shell" id="roadmap" aria-labelledby="roadmap-title">
