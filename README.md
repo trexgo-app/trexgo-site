@@ -11,6 +11,9 @@ python -m http.server 8000
 Страницы — в корне, ассеты — в assets/, серверные обработчики — в api/,
 выкладка — в ops/ и .github/workflows/. Секреты не хранятся в Git.
 
+`growth.html` — автономная презентация развития по прямой ссылке, без индексации.
+`partners.html` — отдельная страница партнёрской программы.
+
 ## Документация
 
 [Единая документация сайта](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/index.md)
