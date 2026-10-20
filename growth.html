@@ -264,7 +264,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   <div class="shell">
     <div class="section-heading"><p class="eyebrow kicker">Глубокая аналитика и контроль</p><h2 id="analytics-title">Финансовая аналитика<br> для логистических компаний</h2></div>
     <p class="finance-intro">Даём подробную финансовую аналитику, анализ рынка и другие данные, которые нужны логистической компании. По ним можно быстро и эффективно управлять работой.</p>
-    <div class="dash-clip"><img class="dash-photo" src="img/growth-dash.jpg?v=20261020b" alt="Пример финансового дашборда" width="2560" height="720"></div>
+    <div class="dash-clip"><img class="dash-photo" src="img/growth-dash.jpg?v=20261020c" alt="Пример финансового дашборда" width="2560" height="864"></div>
   </div>
 </section>
 
@@ -421,14 +421,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 </section>
 </div>
 </main>
-<footer class="shell"><a class="logo" href="#main">trexgo<span>.</span></a><p id="page-note">Перспективы развития · октябрь 2026</p></footer>
+<footer class="shell"><a class="logo" href="#main">trexgo<span>.</span></a><p id="page-note" hidden></p></footer>
 <script>'use strict';
 const titles = {
   '1': 'TrexGo — этапы развития и новые рынки',
   '2': 'TrexGo — от поиска груза до получения оплаты'
 };
 const notes = {
-  '1': 'Перспективы развития · октябрь 2026',
+  '1': '',
   '2': 'От поиска груза до оплаты · октябрь 2026'
 };
 const v2Only = new Set(['problem','process','v2-orders','manager','etrn','expenses','v2-finance','closing','start']);
@@ -448,7 +448,9 @@ function applyVersion(version, resetHash) {
     button.setAttribute('aria-pressed', button.dataset.setVersion === version ? 'true' : 'false');
   });
   document.title = titles[version];
-  document.querySelector('#page-note').textContent = notes[version];
+  const pageNote = document.querySelector('#page-note');
+  pageNote.textContent = notes[version];
+  pageNote.hidden = !notes[version];
   const url = new URL(location.href);
   if (version === '2') url.searchParams.set('v', '2');
   else url.searchParams.delete('v');
