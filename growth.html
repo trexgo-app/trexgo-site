@@ -45,6 +45,7 @@ header{background:#fafafc;border-bottom:1px solid #e8e8ee}.nav{min-height:74px;d
 nav[hidden],[data-version-panel][hidden]{display:none !important}
 @media(max-width:760px){.header-tools{gap:8px}.version-switch button{font-size:11px;padding:7px 10px}}
 @media print{nav[hidden],[data-version-panel][hidden]{display:none !important}.version-switch{display:none}}
+.hero-video-block{position:relative;overflow:hidden;width:100%}.hero-video{position:absolute;left:50%;top:50%;width:120%;height:120%;transform:translate(-50%,-50%);object-fit:cover;filter:blur(18px);z-index:0;pointer-events:none}.hero-shade{position:absolute;inset:0;background:rgba(8,10,14,.62);z-index:1;pointer-events:none}.hero-copy{position:relative;z-index:2}.hero-video-block h1{color:#fff}.hero-video-block .hero-points li{color:rgba(255,255,255,.88)}@media print{.hero-video,.hero-shade{display:none !important}.hero-video-block h1,.hero-video-block .hero-points li{color:#16161a}}
 </style>
   
 <!-- Golos Text font license
@@ -161,7 +162,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 </div></header>
 <main id="main">
 <div data-version-panel="1">
-<section class="hero shell">
+<section class="hero hero-video-block">
+  <video class="hero-video" autoplay muted playsinline preload="auto" src="img/hero-truck.webm"></video>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="shell hero-copy">
   <h1>Сервис для логистики<br> и перевозок <span>с AI‑функциями</span></h1>
   <ul class="hero-points">
     <li>Автоматический поиск заказов</li>
@@ -170,6 +174,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <li>Финансовые инструменты для логистических компаний</li>
   </ul>
   <p class="lead-mark">Всё в одном личном кабинете.</p>
+  </div>
 </section>
 
 <section class="roadmap-section shell" id="roadmap" aria-labelledby="roadmap-title">
@@ -463,5 +468,14 @@ document.querySelectorAll('[data-set-version]').forEach((button) => {
   button.addEventListener('click', () => applyVersion(button.dataset.setVersion, true));
 });
 applyVersion(currentVersion(), false);
+
+const heroVideo = document.querySelector('.hero-video');
+if (heroVideo) {
+  heroVideo.addEventListener('timeupdate', () => {
+    const end = heroVideo.duration;
+    if (!Number.isFinite(end) || end < 0.2) return;
+    if (heroVideo.currentTime >= end - 0.35) heroVideo.pause();
+  });
+}
 </script>
 </body></html>
