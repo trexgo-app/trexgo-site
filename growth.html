@@ -47,6 +47,13 @@ nav[hidden],[data-version-panel][hidden]{display:none !important}
 @media print{nav[hidden],[data-version-panel][hidden]{display:none !important}.version-switch{display:none}}
 .hero-video-block{position:relative;overflow:hidden;width:100%;display:flex;align-items:center}.hero-video{position:absolute;left:50%;top:50%;width:108%;height:108%;transform:translate(-50%,-50%);object-fit:cover;filter:blur(4px);z-index:0;pointer-events:none}.hero-shade{position:absolute;inset:0;background:rgba(8,10,14,.6);z-index:1;pointer-events:none}.hero-copy{position:relative;z-index:2}.hero-video-block h1{color:#fff}.hero-video-block .hero-points li{color:rgba(255,255,255,.88)}@media print{.hero-video,.hero-shade{display:none !important}.hero-video-block{min-height:0 !important;display:block !important}.hero-video-block h1,.hero-video-block .hero-points li{color:#16161a}.hero-video-block .lead-mark{background:none;padding:0;color:#ff4f00}}
 @media(max-width:760px){.reason-num{font-size:126px;right:4px;bottom:-18px}.scenario-frame,.scenario-photo,.dash-clip{border-radius:24px}.scenario-frame{width:100%;order:-1}.detail-split,.tall-split{display:grid}.hero-video-block .lead-mark{max-width:100%;font-size:16px;padding:10px 16px}.reasons-section{padding:56px 0 72px}#analytics .shell{display:flex;flex-direction:column}#analytics .dash-clip{order:-1;margin-top:0;margin-bottom:28px}.roadmap{padding-left:0}.roadmap:before,.phase:before,.phase.current:before{content:none;display:none;box-shadow:none}}
+
+/* Local preview: a compact regulatory note below the strategy tiles. */
+.regulation-note{display:grid;grid-template-columns:235px minmax(0,1fr);gap:30px;align-items:center;margin-top:24px;padding:24px 28px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:24px;break-inside:avoid}
+.regulation-note-date{display:flex;flex-direction:column;gap:4px}.regulation-note-date>span{font-size:13px;line-height:1.5;color:var(--muted)}.regulation-note-date>strong{font-size:25px;line-height:1.2;letter-spacing:-.035em;color:var(--orange);font-weight:600}.regulation-note-copy>p{font-size:16px;line-height:1.65;color:var(--ink)}.regulation-note-copy>a{display:inline-block;margin-top:8px;font-size:13px;line-height:1.5;color:var(--muted);text-decoration:underline;text-underline-offset:3px}.regulation-note-copy>a:hover{color:var(--orange)}
+@media(max-width:1050px){.regulation-note{grid-template-columns:215px minmax(0,1fr);gap:22px;padding:23px}.regulation-note-copy>p{font-size:15px}}
+@media(max-width:760px){.regulation-note{grid-template-columns:1fr;gap:15px;padding:22px;margin-top:20px}.regulation-note-date>strong{font-size:25px}.regulation-note-copy>p{font-size:15px;line-height:1.7}.regulation-note-copy>a{font-size:12px;margin-top:10px}}
+@media print{.regulation-note{grid-template-columns:55mm 1fr;gap:6mm;margin-top:5mm;padding:5mm;border-radius:5mm}.regulation-note-date>span{font-size:9pt}.regulation-note-date>strong{font-size:18pt}.regulation-note-copy>p{font-size:10pt;line-height:1.5}.regulation-note-copy>a{font-size:9pt;margin-top:2mm}}
 </style>
   
 <!-- Golos Text font license
@@ -195,6 +202,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <p>Экономика рейсов, задолженность, поступления и контроль документов.</p>
     </li>
   </ol>
+  <aside class="regulation-note" id="epd-transition-note" aria-labelledby="epd-transition-title">
+    <div class="regulation-note-date"><span>Переход на ЭПД</span><strong id="epd-transition-title">До 1 марта 2027</strong><span>нештрафуемый период</span></div>
+    <div class="regulation-note-copy"><p>Электронные перевозочные документы обязательны с 1 сентября 2026. На первые полгода введён период без штрафов за бумажное оформление.</p><a href="https://www.mintrans.gov.ru/press-center/news/12933" target="_blank" rel="noopener">Разъяснение Минтранса ↗</a></div>
+  </aside>
 </section>
 
 <section class="detail-section search-section" id="rn" tabindex="-1" aria-labelledby="rn-title">
