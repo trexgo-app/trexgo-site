@@ -46,7 +46,7 @@ nav[hidden],[data-version-panel][hidden]{display:none !important}
 @media(max-width:760px){.header-tools{gap:8px}.version-switch button{font-size:11px;padding:7px 10px}}
 @media print{nav[hidden],[data-version-panel][hidden]{display:none !important}.version-switch{display:none}}
 .hero-video-block{position:relative;overflow:hidden;width:100%;display:flex;align-items:center}.hero-video{position:absolute;left:50%;top:50%;width:108%;height:108%;transform:translate(-50%,-50%);object-fit:cover;filter:blur(4px);z-index:0;pointer-events:none}.hero-shade{position:absolute;inset:0;background:rgba(8,10,14,.6);z-index:1;pointer-events:none}.hero-copy{position:relative;z-index:2}.hero-video-block h1{color:#fff}.hero-video-block .hero-points li{color:rgba(255,255,255,.88)}@media print{.hero-video,.hero-shade{display:none !important}.hero-video-block{min-height:0 !important;display:block !important}.hero-video-block h1,.hero-video-block .hero-points li{color:#16161a}.hero-video-block .lead-mark{background:none;padding:0;color:#ff4f00}}
-@media(max-width:760px){.reason-num{font-size:180px;right:4px;bottom:-28px}.scenario-frame{width:100%}.hero-video-block .lead-mark{max-width:100%;font-size:16px;padding:10px 16px}.reasons-section{padding:56px 0 72px}}
+@media(max-width:760px){.reason-num{font-size:126px;right:4px;bottom:-18px}.scenario-frame,.scenario-photo,.dash-clip{border-radius:24px}.scenario-frame{width:100%;order:-1}.detail-split,.tall-split{display:grid}.hero-video-block .lead-mark{max-width:100%;font-size:16px;padding:10px 16px}.reasons-section{padding:56px 0 72px}#analytics .shell{display:flex;flex-direction:column}#analytics .dash-clip{order:-1;margin-top:0;margin-bottom:28px}.roadmap{padding-left:0}.roadmap:before,.phase:before,.phase.current:before{content:none;display:none;box-shadow:none}}
 </style>
   
 <!-- Golos Text font license
@@ -489,7 +489,8 @@ if (heroBlock) {
   const fitHero = () => {
     heroBlock.style.minHeight = '0px';
     const base = heroBlock.getBoundingClientRect().height;
-    heroBlock.style.minHeight = Math.ceil(base * 1.2) + 'px';
+    const mobile = window.matchMedia('(max-width:760px)').matches;
+    heroBlock.style.minHeight = Math.ceil(base * (mobile ? 1.44 : 1.2)) + 'px';
   };
   fitHero();
   window.addEventListener('resize', fitHero);
