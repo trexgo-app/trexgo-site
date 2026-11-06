@@ -1,8 +1,17 @@
-@../rules/collaboration.md
-
 # AGENTS.md
 
-Указания для Codex при работе с этим репозиторием.
+Shared instructions for Codex and Claude Code.
+
+## Workspace rules
+
+From any checkout or worktree, locate the primary checkout with
+`git rev-parse --path-format=absolute --git-common-dir`: in these non-bare
+repositories its parent is the primary checkout. Find `rules/collaboration.md`
+in that checkout or its parent; that directory is the workspace. Resolve
+workspace paths below against it, not against the current worktree.
+Before editing, read collaboration.md and every rule file it lists. When
+reading through a file tool, explicitly follow its `@...` imports.
+If the workspace rules are unavailable, stop before editing and explain why.
 
 ## Карта проекта
 
@@ -15,9 +24,8 @@
 | `lk/` | бэкенд личного кабинета, PHP 8.1 + MySQL на Макхосте | приватный |
 | `knowledge/` | вики по ЭПД, конкуренты, черновики текстов, стратегия | приватный |
 
-**Перед любой правкой прочитай `../rules/collaboration.md`.** Если файл недоступен —
-скажи об этом и не начинай работу: значит, соседние папки не склонированы или не выданы
-права, а правила процесса обязательны.
+Пути `../rules/` и `../knowledge/` ниже показаны для основного клона.
+Из worktree разрешай их относительно найденного workspace по процедуре выше.
 
 Факт про ЭТрН, ЭПЛ, титулы или регулирование — в `../knowledge/wiki/etrn/`, не выдумывать.
 Что сознательно не вынесено на лендинг и почему — `../knowledge/content/landing/sources-and-approach.md`,
@@ -44,8 +52,8 @@
 
 ## Правила работы
 
-Процесс — ветки, stage, деплой, что решается вдвоём — в `../rules/`, они подключены
-строкой импорта выше. Здесь не дублируются.
+Процесс — ветки, stage, деплой, что решается вдвоём — в правилах workspace.
+Перед изменениями прочитай их по процедуре выше.
 
 Одно правило повторено намеренно, потому что цена ошибки необратима:
 **репозиторий публичный.** Ни паролей, ни ключей, ни токенов в коде. Доступы —
@@ -55,7 +63,8 @@
 
 - **Правки показывать локально, а не пушить ради проверки.** Сайт статический:
   `python -m http.server 8000` из этой папки → `http://127.0.0.1:8000/`. Stage на
-  хостинге — для показа второму участнику, а не для отладки своей вёрстки. Что
+  хостинге — для финальной проверки; приёмка владельца нужна, когда это
+  зафиксировано в плане. Порядок приёмки — `rules/workflow.md`. Что
   локально не проверяется — [knowledge/documentation/site/operations/deployment/index.md](https://github.com/vanss13-ops/trexgo-knowledge-base/blob/main/documentation/site/operations/deployment/index.md), «Локальный просмотр».
 - **Репозиторий — источник правды.** Production-выкладка обновляет файлы репозитория,
   но не удаляет посторонние серверные файлы; stage использует `--delete`.
@@ -95,8 +104,8 @@
 `gruzootpravitelyam.html`, `gruzopoluchatelyam.html`, `blog.html`, `article-etrn.html`,
 `ai-analytics.html`, `privacy.html`. Картинки — в папках рядом.
 
-При добавлении новой страницы — прописать ссылку в навигации и в футере на остальных
-страницах, добавить в `sitemap.xml`.
+Добавление страницы — по `rules/code.md`, раздел «Новая страница»;
+согласование структуры — по `rules/workflow.md`.
 
 Две оси навигации — продуктовая и ролевая («Кому подходит»), устройство раздела,
 общие `role-landing.css` и `role-landing.js` для ролевых лендингов и почему их пока
@@ -106,6 +115,16 @@
 
 Список — в `../rules/code.md` и `../rules/workflow.md`: фреймворк, зависимости,
 юридические тексты, домен и DNS. Здесь не повторяется.
+
+## Разработка и проверки
+
+Start setup and checks at README.md. Read the relevant current operations guide
+before changing configuration; config snapshots and development/agent-context.md
+are historical evidence and must not override current rules. Keep executable
+schemas, fixtures and generated contracts in this repository. Answer in Russian;
+preserve unrelated edits, use isolated worktrees and inspect diff/status.
+Pure documentation uses the workflow exception; runtime changes reach production
+and are verified in the same session. Documentation checks remain advisory.
 
 ## Документация этого репозитория
 
